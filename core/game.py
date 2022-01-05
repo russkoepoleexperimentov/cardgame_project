@@ -2,16 +2,25 @@ import sys
 
 from render import renderer
 from core import scene_manager
+from core import log
+from core import config
 
-import settings
 import pygame
+
+
+def close_app():
+    log.end()
+    sys.exit()
 
 
 class Game:
     def __init__(self, caption):
-        global window_global
-        self.size = self.width, self.height = settings.WND_SIZE
-        self.target_framerate = settings.TARGET_FRAMERATE
+        config.load_settings()
+
+        pygame.init()
+        pygame.font.init()
+        self.size = self.width, self.height = tuple(map(int, config.get_value('vid_mode').split('x')))
+        self.target_framerate = int(config.get_value('target_fps'))
 
         pygame.display.set_caption(caption)
         self.window = pygame.display.set_mode(self.size)
@@ -20,15 +29,14 @@ class Game:
     def dispatch_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                sys.exit()
+                close_app()
             scene_manager.loaded_scene.event_hook(event)
 
     def run(self):
-        pygame.init()
         while True:
             self.dispatch_events()
 
-            scene_manager.loaded_scene.update_objects()
+            scene_manager.loaded_scene.update()
 
             self.window.fill((0, 0, 0))
             renderer.render_scene(self.window)

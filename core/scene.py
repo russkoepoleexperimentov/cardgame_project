@@ -6,7 +6,7 @@ class Scene:
         for game_object in self.game_objects:
             game_object.event_hook(event)
 
-    def update_objects(self):
+    def update(self):
         for game_object in self.game_objects:
             game_object.update()
 
