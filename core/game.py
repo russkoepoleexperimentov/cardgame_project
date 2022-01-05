@@ -21,6 +21,7 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
+            scene_manager.loaded_scene.event_hook(event)
 
     def run(self):
         pygame.init()

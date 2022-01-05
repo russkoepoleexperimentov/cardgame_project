@@ -6,6 +6,12 @@ class Vector:
     def xy(self):
         return self.x, self.y
 
-    def yx(self):
-        return self.y, self.x
-    
+
+def vector_from_collection(collection):
+    if isinstance(collection, (tuple, list)):
+        raise TypeError()
+
+    if len(collection) != 2:
+        raise Exception()
+
+    return Vector(collection[0], collection[1])
