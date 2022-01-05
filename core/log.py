@@ -22,7 +22,7 @@ def start():
 
 
 def end():
-    trace('log ended!')
+    trace('log finished!')
     add_line()
     file_stream = open(LOG_FILE_NAME, 'a')
     for line in log:

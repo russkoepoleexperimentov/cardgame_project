@@ -1,10 +1,10 @@
 import pygame
 
-from core.game_object import GameObject
+from core.ui.ui_element import UIElement
 from core.vector import Vector
 
 
-class Text(GameObject):
+class Text(UIElement):
     def __init__(self, position=Vector(), size=Vector(), title='', font=None,
                  color=pygame.Color('white')):
         super().__init__(position, size, None)

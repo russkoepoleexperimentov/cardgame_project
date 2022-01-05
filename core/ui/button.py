@@ -1,9 +1,9 @@
 import pygame
-from core.game_object import GameObject
+from core.ui.ui_element import UIElement
 from core.vector import Vector, vector_from_collection
 
 
-class Button(GameObject):
+class Button(UIElement):
     def __init__(self, position=Vector(), size=Vector(), sprite=None):
         super().__init__(position, size, sprite)
         self.on_click = []
