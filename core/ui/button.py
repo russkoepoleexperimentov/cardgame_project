@@ -1,6 +1,6 @@
 import pygame
 from core.ui.ui_element import UIElement
-from core.vector import Vector, vector_from_collection
+from core.vector import Vector
 
 
 class Button(UIElement):
