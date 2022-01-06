@@ -17,7 +17,6 @@ def load_settings():
 
     file_stream = open(CONFIG_FILE_NAME, 'r')
     for line in file_stream.read().strip().split('\n'):
-        print(line)
         key, value = line.split(KEY_VALUE_DELIMITER)
         key_value_pairs[key] = value
     file_stream.close()

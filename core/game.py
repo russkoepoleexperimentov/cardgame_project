@@ -4,6 +4,7 @@ from render import renderer
 from core import scene_manager
 from core import log
 from core import config
+from core.ui import ui_manager
 
 import pygame
 
@@ -36,6 +37,7 @@ class Game:
         while True:
             self.dispatch_events()
 
+            ui_manager.update()
             scene_manager.loaded_scene.update()
 
             self.window.fill((0, 0, 0))

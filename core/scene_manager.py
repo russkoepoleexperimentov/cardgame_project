@@ -1,8 +1,7 @@
 from core.scene import Scene
 from core import log
 
-loaded_scene = Scene
-
+loaded_scene = Scene()
 
 def load(scene):
     if not isinstance(scene, Scene):

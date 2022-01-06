@@ -1,19 +1,20 @@
 from core.vector import Vector
-from core.ui.ui_element import UIElement
+from core.game_object import GameObject
 
 
-class VerticalLayoutGroup:
-    def __init__(self, start_position=Vector(), spacing=0):
-        self.start_position = start_position
+class VerticalLayoutGroup(GameObject):
+    def __init__(self, position=Vector(), size=Vector(), spacing=0):
+        super().__init__(position, size, None)
         self.spacing = spacing
-        self.elements = []
 
-    def add(self, ui_element: UIElement):
-        self.elements.append(ui_element)
+    def on_add_children(self, other):
         self.refresh()
 
     def refresh(self):
         step = 0
-        for elem in self.elements:
-            elem.position = self.start_position + Vector(0, step)
+        for elem in self.get_children():
+            elem.position = Vector(0, step)
             step += elem.size.y + self.spacing
+
+    def render(self, window):
+        super().render(window)

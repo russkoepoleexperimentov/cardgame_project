@@ -1,9 +1,5 @@
-import sys
-
 from core.scene import Scene
-from core.game_object import GameObject
 from core.ui.button import Button
-from core.ui.text import Text
 from core.ui.layout_group import VerticalLayoutGroup
 from core.vector import Vector
 from core.filesystem import load_image
@@ -19,20 +15,24 @@ class MenuScene(Scene):
         super().__init__()
 
         screen_w = int(config.get_value('vid_mode').split('x')[0])
-        buttons_layout_group = VerticalLayoutGroup(Vector(screen_w // 2 - BUTTONS_SIZE.x // 2,
-                                                          BUTTONS_TOP_OFFSET), 10)
+        buttons_layout_group = VerticalLayoutGroup(position=Vector(screen_w // 2 - BUTTONS_SIZE.x // 2,
+                                                                   BUTTONS_TOP_OFFSET), spacing=10)
+        buttons_layout_group.draw_bounds = True
+        self.add_game_object(buttons_layout_group)
 
         start_button = Button(
             size=BUTTONS_SIZE,
-            sprite=load_image('button.png')
+            sprite=load_image('button.png'),
+            title='Start'
         )
-        buttons_layout_group.add(start_button)
+        start_button.set_parent(buttons_layout_group)
         self.add_game_object(start_button)
 
         exit_button = Button(
             size=BUTTONS_SIZE,
-            sprite=load_image('button.png')
+            sprite=load_image('button.png'),
+            title='End'
         )
         exit_button.on_click.append(close_app)
-        buttons_layout_group.add(exit_button)
+        exit_button.set_parent(buttons_layout_group)
         self.add_game_object(exit_button)
