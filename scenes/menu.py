@@ -1,6 +1,7 @@
 from core.scene import Scene
 from core.ui.image import Image
 from core.ui.button import Button
+from core.ui.text import Text
 from core.ui.layout_group import VerticalLayoutGroup
 from core.vector import Vector
 from core.resources import load_image
@@ -30,6 +31,10 @@ class MenuScene(Scene):
                                                                    BUTTONS_TOP_OFFSET), spacing=10)
         buttons_layout_group.draw_bounds = True
         self.add_game_object(buttons_layout_group)
+
+        game_title = Text(size=BUTTONS_SIZE, title='=GAME NAME=', align='center', valign='middle')
+        game_title.set_parent(buttons_layout_group)
+        self.add_game_object(game_title)
 
         start_button = Button(**button_design, title='Start')
         start_button.set_parent(buttons_layout_group)

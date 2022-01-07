@@ -6,7 +6,7 @@ from core.vector import Vector
 
 class Text(UIElement):
     def __init__(self, position=Vector(), size=Vector(), title='', font=None,
-                 color=pygame.Color('white'), anchor='topleft'):
+                 color=pygame.Color('white'), align='left', valign='top'):
         super().__init__(position, size, None)
         self.font = font if font is not None else pygame.font.Font(None, 30)
         self.color = color
@@ -15,7 +15,8 @@ class Text(UIElement):
         self.__title = title
         self.__rendered_title = None
         self.__rect = None
-        self.__anchor = anchor
+        self.__align = align
+        self.__valign = valign
 
         self.render_title()
 
@@ -26,20 +27,40 @@ class Text(UIElement):
     def get_title(self):
         return self.__title
 
-    def set_anchor(self, anchor):
-        self.__anchor = anchor
+    def set_align(self, align):
+        self.__align = align
         self.render_title()
 
-    def get_anchor(self):
-        return self.__anchor
+    def get_align(self):
+        return self.__align
+
+    def set_valign(self, valign):
+        self.__valign = valign
+        self.render_title()
+
+    def get_valign(self):
+        return self.__valign
 
     def render_title(self):
         self.__rendered_title = self.font.render(self.__title, True, self.color)
         self.__rect = self.__rendered_title.get_rect()
-        setattr(self.__rect, self.__anchor, self.position.xy())
 
     def render(self, window):
+        super(Text, self).render(window)
         rect = self.__rect.copy()
-        rect.x += (self.get_global_position() - self.position).x
-        rect.y += (self.get_global_position() - self.position).y
+
+        if self.__align == 'left':
+            rect.left = self.get_rect().left
+        elif self.__align == 'right':
+            rect.right = self.get_rect().right
+        elif self.__align == 'center':
+            rect.centerx = self.get_rect().centerx
+
+        if self.__valign == 'top':
+            rect.top = self.get_rect().top
+        elif self.__valign == 'bottom':
+            rect.bottom = self.get_rect().bottom
+        elif self.__valign == 'middle':
+            rect.centery = self.get_rect().centery
+
         window.blit(self.__rendered_title, rect)

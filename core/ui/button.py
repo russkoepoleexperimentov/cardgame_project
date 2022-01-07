@@ -27,7 +27,7 @@ class Button(Image):
         self.interactable = True
         self.on_click = Action()
         self.mouse_over_down = False
-        self.label = Text(position=self.size * 0.5, size=size, anchor='center')
+        self.label = Text(size=size, align='center', valign='middle')
         self.label.set_parent(self)
         self.set_title(title)
 
