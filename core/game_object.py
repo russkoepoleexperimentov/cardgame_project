@@ -8,6 +8,7 @@ class GameObject:
         self.position = position
         self.size = size
         self.sprite = sprite
+        self.enabled = True
         self.draw_bounds = False
 
         self.__components = []
@@ -51,17 +52,15 @@ class GameObject:
     def get_rect(self):
         return pygame.Rect(*self.get_global_position().xy(), *self.size.xy())
 
-    def start(self):
-        for component in self.__components:
-            component.start()
-
     def update(self, delta_time):
         for component in self.__components:
-            component.update(delta_time)
+            if component.enabled:
+                component.update(delta_time)
 
     def event_hook(self, event):
         for component in self.__components:
-            component.event_hook(event)
+            if component.enabled:
+                component.event_hook(event)
 
     def render(self, window):
         if self.sprite is not None:
@@ -72,7 +71,8 @@ class GameObject:
             pygame.draw.rect(window, 'red', self.get_rect())
 
         for child in self.get_children():
-            child.render(window)
+            if child.enabled:
+                child.render(window)
 
     def add_component(self, component_type: type):
         component = component_type(self)

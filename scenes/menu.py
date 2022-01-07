@@ -6,6 +6,7 @@ from core.vector import Vector
 from core.resources import load_image
 from core.application import close
 from core.components.drag_handler import DragHandler
+from core.components.drop_handler import DropHandler
 from core import config
 
 BUTTONS_SIZE = Vector(260, 54)
@@ -39,6 +40,9 @@ class MenuScene(Scene):
         exit_button.set_parent(buttons_layout_group)
         self.add_game_object(exit_button)
 
+        drop_handle = exit_button.add_component(DropHandler)
+        drop_handle.on_drop.add_listener(lambda drag: print(drag))
+
         test_drag_go = Image(size=Vector(100, 100), position=Vector(50, 50), sprite=load_image('button.png'))
-        drag_handler = test_drag_go.add_component(DragHandler)
+        test_drag_go.add_component(DragHandler)
         self.add_game_object(test_drag_go)

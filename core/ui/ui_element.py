@@ -10,10 +10,8 @@ class UIElement(GameObject):
         super().__init__(position, size, sprite)
         self.block_raycasts = True
 
-    def update(self, delta_time):
-        super().update(delta_time)
+    def update_ui_selected(self):
         if self.block_raycasts:
             mouse_pos = pygame.mouse.get_pos()
             if self.get_rect().collidepoint(mouse_pos):
                 ui_manager.set_selected(self)
-
