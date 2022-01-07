@@ -1,6 +1,8 @@
 import os
 import pygame
 
+from core import log
+
 DATA_PATH = 'data'
 
 loaded_images = {}
@@ -13,7 +15,7 @@ def load_image(name):
     fullname = os.path.join(DATA_PATH, name)
 
     if not os.path.isfile(fullname):
-        print(f"Файл с изображением '{fullname}' не найден")
+        log.trace(f"image '{fullname}' not found!")
 
     image = loaded_images[name] = pygame.image.load(fullname)
     return image

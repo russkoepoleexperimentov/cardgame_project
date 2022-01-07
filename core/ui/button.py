@@ -9,7 +9,7 @@ class Button(UIElement):
     def __init__(self, position=Vector(), size=Vector(), sprite=None, title=''):
         super().__init__(position, size, sprite)
         self.on_click = []
-        self.label = Text(size=size)
+        self.label = Text(position=self.size * 0.5, size=size, anchor='center')
         self.label.set_parent(self)
         self.set_title(title)
 
@@ -22,5 +22,5 @@ class Button(UIElement):
 
     def set_title(self, title=''):
         self.label.size = self.size
-        self.label.title = title
+        self.label.set_title(title)
 

@@ -2,7 +2,7 @@ from core.scene import Scene
 from core.ui.button import Button
 from core.ui.layout_group import VerticalLayoutGroup
 from core.vector import Vector
-from core.filesystem import load_image
+from core.resources import load_image
 from core.game import close_app
 from core import config
 
@@ -27,6 +27,7 @@ class MenuScene(Scene):
         )
         start_button.set_parent(buttons_layout_group)
         self.add_game_object(start_button)
+
 
         exit_button = Button(
             size=BUTTONS_SIZE,

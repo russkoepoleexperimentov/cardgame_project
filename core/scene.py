@@ -1,5 +1,6 @@
 from core.game_object import GameObject
 
+
 class Scene:
     def __init__(self):
         self.__game_objects = dict()
@@ -38,3 +39,6 @@ class Scene:
         else:
             raise ValueError(obj)
         self.sort_game_objects_by_priority()
+
+    def get_game_objects(self):
+        return tuple(self.__game_objects)

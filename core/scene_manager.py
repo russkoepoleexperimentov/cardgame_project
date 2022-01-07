@@ -3,10 +3,8 @@ from core import log
 
 loaded_scene = Scene()
 
-def load(scene):
-    if not isinstance(scene, Scene):
-        raise TypeError()
 
+def load(scene: Scene):
     global loaded_scene
     log.trace('loading scene...')
     loaded_scene = scene
