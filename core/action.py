@@ -2,7 +2,7 @@ class Action:
     def __init__(self):
         self.__listeners = []
 
-    def add_listener(self, listener: callable):
+    def add_listener(self, listener):
         self.__listeners.append(listener)
 
     def invoke(self, *args, **kwargs):

@@ -75,9 +75,8 @@ class GameObject:
             child.render(window)
 
     def add_component(self, component_type: type):
-        component = component_type()
+        component = component_type(self)
         self.__components.append(component)
-        component.start()
         return component
 
     def remove_component(self, component: Component):

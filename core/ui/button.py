@@ -33,11 +33,11 @@ class Button(Image):
 
     def event_hook(self, event):
         super().event_hook(event)
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
             if ui_manager.get_selected() == self and self.interactable:
                 self.mouse_over_down = True
 
-        if event.type == pygame.MOUSEBUTTONUP:
+        if event.type == pygame.MOUSEBUTTONUP and event.button == pygame.BUTTON_LEFT:
             if self.mouse_over_down:
                 self.on_click.invoke()
             self.mouse_over_down = False

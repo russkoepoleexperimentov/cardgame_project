@@ -21,5 +21,5 @@ class Vector:
     def __mul__(self, other: int):
         return Vector(self.x * other, self.y * other)
 
-    def __imul__(self, other):
+    def __imul__(self, other: int):
         return self.__mul__(other)
