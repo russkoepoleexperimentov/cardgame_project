@@ -3,6 +3,7 @@ from core.ui import ui_manager
 from core.ui.image import Image
 from core.ui.text import Text
 from core.vector import Vector
+from core.action import Action
 
 
 class Button(Image):
@@ -24,7 +25,7 @@ class Button(Image):
             'disabled': disabled_sprite if disabled_sprite else sprite
         }
         self.interactable = True
-        self.on_click = []
+        self.on_click = Action()
         self.mouse_over_down = False
         self.label = Text(position=self.size * 0.5, size=size, anchor='center')
         self.label.set_parent(self)
@@ -38,8 +39,7 @@ class Button(Image):
 
         if event.type == pygame.MOUSEBUTTONUP:
             if self.mouse_over_down:
-                for action in self.on_click:
-                    action()
+                self.on_click.invoke()
             self.mouse_over_down = False
                     
     def update(self, delta_time):

@@ -40,6 +40,6 @@ class MenuScene(Scene):
             disabled_sprite=load_image('button_d.png'),
             title='Exit'
         )
-        exit_button.on_click.append(close)
+        exit_button.on_click.add_listener(close)
         exit_button.set_parent(buttons_layout_group)
         self.add_game_object(exit_button)

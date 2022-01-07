@@ -5,6 +5,6 @@ from scenes.menu import MenuScene
 
 if __name__ == '__main__':
     log.start()
-    app = Application('Hearts Of Iron V')
+    app = Application('Grand Theft Auto VI')
     scene_manager.load(MenuScene())
     app.run()
