@@ -9,12 +9,12 @@ from core.ui import ui_manager
 import pygame
 
 
-def close_app():
+def close():
     log.end()
     sys.exit()
 
 
-class Game:
+class Application:
     def __init__(self, caption):
         config.load_settings()
 
@@ -30,7 +30,7 @@ class Game:
     def dispatch_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                close_app()
+                close()
             scene_manager.loaded_scene.event_hook(event)
 
     def run(self):

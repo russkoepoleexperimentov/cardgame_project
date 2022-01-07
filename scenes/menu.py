@@ -3,7 +3,7 @@ from core.ui.button import Button
 from core.ui.layout_group import VerticalLayoutGroup
 from core.vector import Vector
 from core.resources import load_image
-from core.game import close_app
+from core.application import close
 from core import config
 
 BUTTONS_SIZE = Vector(260, 54)
@@ -34,6 +34,6 @@ class MenuScene(Scene):
             sprite=load_image('button.png'),
             title='End'
         )
-        exit_button.on_click.append(close_app)
+        exit_button.on_click.append(close)
         exit_button.set_parent(buttons_layout_group)
         self.add_game_object(exit_button)
