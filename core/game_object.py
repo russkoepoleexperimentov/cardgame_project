@@ -1,5 +1,6 @@
 import pygame
 from core.vector import Vector
+from core.component import Component
 
 
 class GameObject:
@@ -8,8 +9,8 @@ class GameObject:
         self.size = size
         self.sprite = sprite
         self.draw_bounds = False
-        self.on_update = []
 
+        self.__components = []
         self.__parent = None
         self.__children = []
 
@@ -50,12 +51,17 @@ class GameObject:
     def get_rect(self):
         return pygame.Rect(*self.get_global_position().xy(), *self.size.xy())
 
-    def update(self):
-        for method in self.on_update:
-            method()
+    def start(self):
+        for component in self.__components:
+            component.start()
+
+    def update(self, delta_time):
+        for component in self.__components:
+            component.update(delta_time)
 
     def event_hook(self, event):
-        pass
+        for component in self.__components:
+            component.event_hook(event)
 
     def render(self, window):
         if self.sprite is not None:
@@ -67,3 +73,20 @@ class GameObject:
 
         for child in self.get_children():
             child.render(window)
+
+    def add_component(self, component_type: type):
+        component = component_type()
+        self.__components.append(component)
+        component.start()
+        return component
+
+    def remove_component(self, component: Component):
+        if component not in self.__components:
+            raise ValueError(component)
+        self.__components.remove(component)
+
+    def get_component(self, component_type: type):
+        for component in self.__components:
+            if type(component) == component_type:
+                return component
+        return None

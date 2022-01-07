@@ -17,13 +17,3 @@ class Vector:
 
     def __imul__(self, other):
         return self.__mul__(other)
-
-
-def vector_from_collection(collection):
-    if isinstance(collection, (tuple, list)):
-        raise TypeError()
-
-    if len(collection) != 2:
-        raise Exception()
-
-    return Vector(collection[0], collection[1])

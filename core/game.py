@@ -34,14 +34,15 @@ class Game:
             scene_manager.loaded_scene.event_hook(event)
 
     def run(self):
+        delta_time = 0
         while True:
             self.dispatch_events()
 
             ui_manager.update()
-            scene_manager.loaded_scene.update()
+            scene_manager.loaded_scene.update(delta_time)
 
             self.window.fill((0, 0, 0))
             renderer.render_scene(self.window)
             pygame.display.flip()
 
-            self.clock.tick(self.target_framerate)
+            delta_time = self.clock.tick(self.target_framerate)
