@@ -23,6 +23,9 @@ class MenuScene(Scene):
         start_button = Button(
             size=BUTTONS_SIZE,
             sprite=load_image('button.png'),
+            pressed_sprite=load_image('button_p.png'),
+            selected_sprite=load_image('button_s.png'),
+            disabled_sprite=load_image('button_d.png'),
             title='Start'
         )
         start_button.set_parent(buttons_layout_group)
@@ -32,7 +35,10 @@ class MenuScene(Scene):
         exit_button = Button(
             size=BUTTONS_SIZE,
             sprite=load_image('button.png'),
-            title='End'
+            pressed_sprite=load_image('button_p.png'),
+            selected_sprite=load_image('button_s.png'),
+            disabled_sprite=load_image('button_d.png'),
+            title='Exit'
         )
         exit_button.on_click.append(close)
         exit_button.set_parent(buttons_layout_group)
