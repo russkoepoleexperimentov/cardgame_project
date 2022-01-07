@@ -1,6 +1,6 @@
 import sys
 
-from render import renderer
+from core.rendering import renderer
 from core import scene_manager
 from core import log
 from core import config
