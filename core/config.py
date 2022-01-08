@@ -25,6 +25,7 @@ def load_settings():
 def load_defaults():
     key_value_pairs['vid_mode'] = '1280x720'
     key_value_pairs['target_fps'] = '60'
+    key_value_pairs['volume'] = '100'
 
 
 def save_settings():

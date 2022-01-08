@@ -19,3 +19,13 @@ def load_image(name):
 
     image = loaded_images[name] = pygame.image.load(fullname)
     return image
+
+
+def load_sound(name):
+    fullname = os.path.join(DATA_PATH, name)
+
+    if not os.path.isfile(fullname):
+        log.trace(f"sound '{fullname}' not found!")
+
+    sound = pygame.mixer.Sound(fullname)
+    return sound

@@ -5,8 +5,11 @@ from core import scene_manager
 from core import log
 from core import config
 from core.ui import ui_manager
+from core.action import Action
 
 import pygame
+
+on_update = Action()
 
 
 def close():
@@ -40,6 +43,9 @@ class Application:
 
             ui_manager.update()
             scene_manager.update(delta_time)
+
+            global on_update
+            on_update.invoke(delta_time)
 
             self.window.fill((0, 0, 0))
             renderer.render_scene(self.window)

@@ -1,5 +1,8 @@
 from core import scene_manager
 from core.game_object import GameObject
+from core.action import Action
+
+on_render = Action()
 
 
 def render_scene(window):
@@ -8,3 +11,6 @@ def render_scene(window):
             # render only root game objects (without parent)
             if game_object.get_parent() is None and game_object.enabled:
                 game_object.render(window)
+
+    global on_render
+    on_render.invoke(window)
