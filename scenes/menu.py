@@ -5,9 +5,10 @@ from core.ui.text import Text
 from core.ui.layout_group import VerticalLayoutGroup
 from core.vector import Vector
 from core.resources import load_image
-from core.application import close
+from core.application import close as close_app
 from core.components.drag_handler import DragHandler
 from core.components.drop_handler import DropHandler
+from core.localization import translate_string
 from core import config
 
 from game import cursor
@@ -41,17 +42,17 @@ class MenuScene(Scene):
         background = Image(size=screen, sprite=load_image('sprites/ui/menu.png'))
         self.add_game_object(background, -100)
 
-        game_title = Text(size=BUTTONS_SIZE, title='=GAME NAME=', align='center', valign='middle')
+        game_title = Text(size=BUTTONS_SIZE, title=translate_string('game_name'), align='center', valign='middle')
         game_title.set_parent(buttons_layout_group)
         self.add_game_object(game_title)
 
-        start_button = Button(**button_design, title='Start')
+        start_button = Button(**button_design, title=translate_string('ui.start'))
         start_button.set_parent(buttons_layout_group)
         start_button.add_component(ButtonSounds)
         self.add_game_object(start_button)
 
-        exit_button = Button(**button_design, title='Exit')
-        exit_button.on_click.add_listener(close)
+        exit_button = Button(**button_design, title=translate_string('ui.quit'))
+        exit_button.on_click.add_listener(close_app)
         exit_button.set_parent(buttons_layout_group)
         exit_button.add_component(ButtonSounds)
         self.add_game_object(exit_button)

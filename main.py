@@ -1,10 +1,12 @@
 from core.application import Application
+from core.localization import load_localization, translate_string
 from core import scene_manager
 from core import log
 from scenes.menu import MenuScene
 
 if __name__ == '__main__':
+    load_localization('languages/russian.csv')
     log.start()
-    app = Application('Grand Theft Auto VI')
+    app = Application(translate_string('game_name'))
     scene_manager.load(MenuScene())
     app.run()
