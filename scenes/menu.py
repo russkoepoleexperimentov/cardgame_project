@@ -13,17 +13,8 @@ from core import config
 
 from game import cursor
 from game.button_sounds import ButtonSounds
-
-BUTTONS_SIZE = Vector(260, 54)
-BUTTONS_TOP_OFFSET = 200
-
-button_design = {
-    'size': BUTTONS_SIZE,
-    'sprite': load_image('sprites/ui/button.png'),
-    'pressed_sprite': load_image('sprites/ui/button_p.png'),
-    'selected_sprite': load_image('sprites/ui/button_s.png'),
-    'disabled_sprite': load_image('sprites/ui/button_d.png'),
-}
+from game.contstants import BUTTON_DEFAULT_DESIGN, BUTTONS_SIZE, BUTTONS_TOP_OFFSET
+from game import alert_popup
 
 
 class MenuScene(Scene):
@@ -46,12 +37,14 @@ class MenuScene(Scene):
         game_title.set_parent(buttons_layout_group)
         self.add_game_object(game_title)
 
-        start_button = Button(**button_design, title=translate_string('ui.start'))
+        start_button = Button(**BUTTON_DEFAULT_DESIGN, title=translate_string('ui.start'))
         start_button.set_parent(buttons_layout_group)
         start_button.add_component(ButtonSounds)
+        start_button.on_click.add_listener(lambda: alert_popup.instance().hide() if alert_popup.instance().is_shown()
+                                           else alert_popup.instance().show())
         self.add_game_object(start_button)
 
-        exit_button = Button(**button_design, title=translate_string('ui.quit'))
+        exit_button = Button(**BUTTON_DEFAULT_DESIGN, title=translate_string('ui.quit'))
         exit_button.on_click.add_listener(close_app)
         exit_button.set_parent(buttons_layout_group)
         exit_button.add_component(ButtonSounds)

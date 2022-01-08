@@ -3,6 +3,8 @@ from core.ui.ui_element import UIElement
 from core.components.drag_handler import DragHandler
 from core import scene_manager
 
+ui_stack = []
+
 on_ui_update = Action()
 __selected = None
 __dragged = None
@@ -34,6 +36,9 @@ def remove_dragged():
 def update():
     global __selected
     __selected = None
-    for game_object in scene_manager.get_loaded_scene().get_game_objects():
+    all_game_objects = scene_manager.get_loaded_scene().get_game_objects() + \
+                       scene_manager.get_common_game_objects().get_game_objects()
+    for game_object in all_game_objects:
         if isinstance(game_object, UIElement):
-            game_object.update_ui_selected()
+            if game_object.enabled:
+                game_object.update_ui_selected()
