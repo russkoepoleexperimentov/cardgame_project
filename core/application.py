@@ -31,7 +31,7 @@ class Application:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 close()
-            scene_manager.loaded_scene.event_hook(event)
+            scene_manager.event_hook(event)
 
     def run(self):
         delta_time = 0
@@ -39,7 +39,7 @@ class Application:
             self.dispatch_events()
 
             ui_manager.update()
-            scene_manager.loaded_scene.update(delta_time)
+            scene_manager.update(delta_time)
 
             self.window.fill((0, 0, 0))
             renderer.render_scene(self.window)

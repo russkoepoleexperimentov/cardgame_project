@@ -34,6 +34,6 @@ def remove_dragged():
 def update():
     global __selected
     __selected = None
-    for game_object in scene_manager.loaded_scene.get_game_objects():
+    for game_object in scene_manager.get_loaded_scene().get_game_objects():
         if isinstance(game_object, UIElement):
             game_object.update_ui_selected()
