@@ -42,6 +42,7 @@ class Application:
             self.dispatch_events()
 
             ui_manager.update()
+            scene_manager.pre_update(delta_time)
             scene_manager.update(delta_time)
 
             global on_update

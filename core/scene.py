@@ -9,6 +9,10 @@ class Scene:
         for game_object in self.__game_objects.keys():
             game_object.event_hook(event)
 
+    def pre_update(self, delta_time):
+        for game_object in self.__game_objects.keys():
+            game_object.pre_update(delta_time)
+
     def update(self, delta_time):
         for game_object in self.__game_objects.keys():
             game_object.update(delta_time)

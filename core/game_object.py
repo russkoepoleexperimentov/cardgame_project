@@ -52,15 +52,28 @@ class GameObject:
     def get_rect(self):
         return pygame.Rect(*self.get_global_position().xy(), *self.size.xy())
 
+    def pre_update(self, delta_time):
+        for child in self.get_children():
+            if child.enabled:
+                child.pre_update(delta_time)
+
     def update(self, delta_time):
         for component in self.__components:
             if component.enabled:
                 component.update(delta_time)
 
+        for child in self.get_children():
+            if child.enabled:
+                child.update(delta_time)
+
     def event_hook(self, event):
         for component in self.__components:
             if component.enabled:
                 component.event_hook(event)
+
+        for child in self.get_children():
+            if child.enabled:
+                child.event_hook(event)
 
     def render(self, window):
         if self.sprite is not None:

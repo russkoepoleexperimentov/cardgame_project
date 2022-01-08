@@ -11,6 +11,13 @@ def load(scene: Scene):
     __loaded_scene = scene
 
 
+def pre_update(delta_time: float):
+    global __loaded_scene
+    if __loaded_scene is not None:
+        __loaded_scene.pre_update(delta_time)
+    __common_game_objects.pre_update(delta_time)
+
+
 def update(delta_time: float):
     global __loaded_scene
     if __loaded_scene is not None:
