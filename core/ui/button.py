@@ -46,15 +46,15 @@ class Button(Image):
         super(Button, self).update(delta_time)
 
         if self.interactable:
-            self.sprite = self.sprites['default']
+            self.set_sprite(self.sprites['default'])
 
             if ui_manager.get_selected() == self:
-                self.sprite = self.sprites['selected']
+                self.set_sprite(self.sprites['selected'])
 
             if self.mouse_over_down:
-                self.sprite = self.sprites['pressed']
+                self.set_sprite(self.sprites['pressed'])
         else:
-            self.sprite = self.sprites['disabled']
+            self.set_sprite(self.sprites['disabled'])
 
     def set_title(self, title=''):
         self.label.size = self.size

@@ -7,13 +7,25 @@ class GameObject:
     def __init__(self, position=Vector(), size=Vector(), sprite=None):
         self.position = position
         self.size = size
-        self.sprite = sprite
         self.enabled = True
         self.draw_bounds = False
 
         self.__components = []
         self.__parent = None
         self.__children = []
+
+        self.__sprite = None
+
+        self.set_sprite(sprite)
+
+    def set_sprite(self, sprite):
+        if sprite:
+            self.__sprite = pygame.transform.scale(sprite, self.size.xy())
+        else:
+            self.__sprite = None
+
+    def get_sprite(self):
+        return self.__sprite
 
     def set_parent(self, other):
         if self.__parent is not None:
@@ -76,9 +88,8 @@ class GameObject:
                 child.event_hook(event)
 
     def render(self, window):
-        if self.sprite is not None:
-            sprite = pygame.transform.scale(self.sprite, self.size.xy())
-            window.blit(sprite, self.get_global_position().xy())
+        if self.get_sprite() is not None:
+            window.blit(self.get_sprite(), self.get_global_position().xy())
 
         if self.draw_bounds:
             pygame.draw.rect(window, 'red', self.get_rect())
