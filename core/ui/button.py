@@ -44,6 +44,7 @@ class Button(Image):
                     
     def update(self, delta_time):
         super(Button, self).update(delta_time)
+
         if self.interactable:
             self.sprite = self.sprites['default']
 

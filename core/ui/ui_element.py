@@ -15,3 +15,4 @@ class UIElement(GameObject):
             mouse_pos = pygame.mouse.get_pos()
             if self.get_rect().collidepoint(mouse_pos):
                 ui_manager.set_selected(self)
+        super(UIElement, self).pre_update(delta_time)

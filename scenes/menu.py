@@ -16,12 +16,14 @@ from game.button_sounds import ButtonSounds
 from game.contstants import BUTTON_DEFAULT_DESIGN, BUTTONS_SIZE, BUTTONS_TOP_OFFSET
 from game import alert_popup
 
+import asyncio
 
 class MenuScene(Scene):
     def __init__(self):
         super().__init__()
 
         cursor.init()
+        alert_popup.init()
 
         screen_w, screen_h = tuple(map(int, config.get_value('vid_mode').split('x')))
         screen = Vector(screen_w, screen_h)
@@ -37,14 +39,12 @@ class MenuScene(Scene):
         game_title.set_parent(buttons_layout_group)
         self.add_game_object(game_title)
 
-        start_button = Button(**BUTTON_DEFAULT_DESIGN, title=translate_string('ui.start'))
+        start_button = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE, title=translate_string('ui.start'))
         start_button.set_parent(buttons_layout_group)
         start_button.add_component(ButtonSounds)
-        start_button.on_click.add_listener(lambda: alert_popup.instance().hide() if alert_popup.instance().is_shown()
-                                           else alert_popup.instance().show())
         self.add_game_object(start_button)
 
-        exit_button = Button(**BUTTON_DEFAULT_DESIGN, title=translate_string('ui.quit'))
+        exit_button = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE, title=translate_string('ui.quit'))
         exit_button.on_click.add_listener(close_app)
         exit_button.set_parent(buttons_layout_group)
         exit_button.add_component(ButtonSounds)
