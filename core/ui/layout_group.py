@@ -2,7 +2,7 @@ from core.vector import Vector
 from core.game_object import GameObject
 
 
-class VerticalLayoutGroup(GameObject):
+class LayoutGroup(GameObject):
     def __init__(self, position=Vector(), size=Vector(), spacing=0):
         super().__init__(position, size, None)
         self.spacing = spacing
@@ -11,10 +11,20 @@ class VerticalLayoutGroup(GameObject):
         self.refresh()
 
     def refresh(self):
-        step = 0
-        for elem in self.get_children():
-            elem.position = Vector(0, step)
-            step += elem.size.y + self.spacing
+        raise NotImplementedError()
 
-    def render(self, window):
-        super().render(window)
+
+class VerticalLayoutGroup(LayoutGroup):
+    def refresh(self):
+        offset = 0
+        for child in self.get_children():
+            child.position = Vector(0, offset)
+            offset += child.size.y + self.spacing
+
+
+class HorizontalLayoutGroup(LayoutGroup):
+    def refresh(self):
+        offset = 0
+        for child in self.get_children():
+            child.position = Vector(offset, 0)
+            offset += child.size.x + self.spacing
