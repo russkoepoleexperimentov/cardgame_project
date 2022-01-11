@@ -15,7 +15,9 @@ class ButtonSounds(Component):
     def update(self, delta_time):
         super(ButtonSounds, self).update(delta_time)
 
-        if ui_manager.get_selected() == self.get_game_object() and self.last_selected_ui != self.get_game_object():
+        if ui_manager.get_selected() == self.get_game_object() and \
+                self.last_selected_ui != self.get_game_object() and \
+                self.get_game_object().interactable:
             self.hover_sound.play()
 
         self.last_selected_ui = ui_manager.get_selected()

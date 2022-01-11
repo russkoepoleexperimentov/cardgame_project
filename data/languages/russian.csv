@@ -1,5 +1,6 @@
 game_name:=game name=
 ui.start:Играть
+ui.settings:Настройки
 ui.quit:Выход
 ui.yes:Да
 ui.no:Нет

@@ -42,13 +42,16 @@ class MenuScene(Scene):
         start_button = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE, title=translate_string('ui.start'))
         start_button.set_parent(buttons_layout_group)
         start_button.add_component(ButtonSounds)
-        self.add_game_object(start_button)
+
+        settings_button = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE, title=translate_string('ui.settings'))
+        settings_button.set_parent(buttons_layout_group)
+        settings_button.add_component(ButtonSounds)
+        settings_button.interactable = False
 
         exit_button = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE, title=translate_string('ui.quit'))
-        exit_button.on_click.add_listener(close_app)
         exit_button.set_parent(buttons_layout_group)
         exit_button.add_component(ButtonSounds)
-        self.add_game_object(exit_button)
+        exit_button.on_click.add_listener(close_app)
 
         drop_handle = exit_button.add_component(DropHandler)
         drop_handle.on_drop.add_listener(lambda drag: print(drag))
