@@ -13,6 +13,7 @@ from core import config, scene_manager
 
 from game import cursor
 from game.button_sounds import ButtonSounds
+from game.card import Card
 from game.contstants import BUTTON_DEFAULT_DESIGN, BUTTONS_SIZE, BUTTONS_TOP_OFFSET
 from game import alert_popup
 
@@ -76,5 +77,4 @@ class MenuScene(Scene):
         label = Text(size=Vector(200, 100), title='калоды')
         scene.add_game_object(label)
         # end
-
         scene_manager.load(scene)
