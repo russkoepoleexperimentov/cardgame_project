@@ -1,5 +1,3 @@
-
-
 class Component:
     def __init__(self, owner):
         self.__game_object = owner
