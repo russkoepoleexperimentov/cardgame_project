@@ -5,10 +5,9 @@ from core.vector import Vector
 
 
 class Text(UIElement):
-    def __init__(self, position=Vector(), size=Vector(), title='', font=None,
-                 color=pygame.Color('white'), align='left', valign='top'):
+    def __init__(self, position=Vector(), size=Vector(), title='', font_name=None,
+                 color=pygame.Color('white'), align='left', valign='top', font_size=30):
         super().__init__(position, size, None)
-        self.font = font if font is not None else pygame.font.Font(None, 30)
         self.color = color
         self.block_raycasts = False
 
@@ -17,6 +16,8 @@ class Text(UIElement):
         self.__rect = None
         self.__align = align
         self.__valign = valign
+        self.__font_name = font_name
+        self.__font_size = font_size
 
         self.render_title()
 
@@ -41,8 +42,23 @@ class Text(UIElement):
     def get_valign(self):
         return self.__valign
 
+    def set_font_size(self, size):
+        self.__font_size = size
+        self.render_title()
+
+    def get_font_size(self):
+        return self.__font_size
+
+    def set_font(self, font_name):
+        self.__font_name = font_name
+        self.render_title()
+
+    def get_font(self):
+        return self.__font_name
+
     def render_title(self):
-        self.__rendered_title = self.font.render(self.__title, True, self.color)
+        font = pygame.font.Font(self.__font_name, self.__font_size)
+        self.__rendered_title = font.render(self.__title, True, self.color)
         self.__rect = self.__rendered_title.get_rect()
 
     def render(self, window):
