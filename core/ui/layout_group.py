@@ -19,7 +19,7 @@ class VerticalLayoutGroup(LayoutGroup):
         offset = 0
         for child in self.get_children():
             child.position = Vector(0, offset)
-            offset += child.size.y + self.spacing
+            offset += child.get_size().y + self.spacing
 
 
 class HorizontalLayoutGroup(LayoutGroup):
@@ -27,4 +27,22 @@ class HorizontalLayoutGroup(LayoutGroup):
         offset = 0
         for child in self.get_children():
             child.position = Vector(offset, 0)
-            offset += child.size.x + self.spacing
+            offset += child.get_size().x + self.spacing
+
+
+class GridLayoutGroup(LayoutGroup):
+    def __init__(self, position=Vector(), size=Vector(), spacing=0, cell_size=Vector(100, 100)):
+        super(GridLayoutGroup, self).__init__(position, size, spacing)
+        self.cell_size = cell_size
+
+    def refresh(self):
+        columns = self.get_size().x // self.cell_size.x
+        for i in range(self.child_count()):
+            column_count = i % columns
+            row_count = i // columns
+
+            item = self.get_child(i)
+
+            item.position = Vector((self.cell_size.x + self.spacing) * column_count,
+                                   (self.cell_size.y + self.spacing) * row_count)
+            item.set_size(self.cell_size)

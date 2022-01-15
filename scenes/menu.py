@@ -2,7 +2,7 @@ from core.scene import Scene
 from core.ui.image import Image
 from core.ui.button import Button
 from core.ui.text import Text
-from core.ui.layout_group import VerticalLayoutGroup
+from core.ui.layout_group import VerticalLayoutGroup, GridLayoutGroup
 from core.vector import Vector
 from core.resources import load_image
 from core.application import close as close_app

@@ -6,7 +6,6 @@ from core.component import Component
 class GameObject:
     def __init__(self, position=Vector(), size=Vector(), sprite=None):
         self.position = position
-        self.size = size
         self.enabled = True
         self.draw_bounds = False
 
@@ -15,17 +14,26 @@ class GameObject:
         self.__children = []
 
         self.__sprite = None
+        self.__size = None
 
+        self.set_size(size)
         self.set_sprite(sprite)
 
     def set_sprite(self, sprite):
         if sprite:
-            self.__sprite = pygame.transform.scale(sprite, self.size.xy())
+            self.__sprite = pygame.transform.scale(sprite, self.__size.xy())
         else:
             self.__sprite = None
 
     def get_sprite(self):
         return self.__sprite
+
+    def set_size(self, size):
+        self.__size = size
+        self.set_sprite(self.__sprite)
+
+    def get_size(self):
+        return self.__size
 
     def set_parent(self, other):
         if self.__parent is not None:
@@ -43,8 +51,14 @@ class GameObject:
     def get_children(self):
         return tuple(self.__children)
 
-    def __getitem__(self, index):
+    def get_child(self, index):
         return self.__children[index]
+
+    def __getitem__(self, index):
+        return self.get_child(index)
+
+    def child_count(self):
+        return len(self.__children)
 
     def get_sibling_index(self):
         if self.__parent is None:
@@ -62,7 +76,7 @@ class GameObject:
             return self.__parent.get_global_position() + self.position
 
     def get_rect(self):
-        return pygame.Rect(*self.get_global_position().xy(), *self.size.xy())
+        return pygame.Rect(*self.get_global_position().xy(), *self.get_size().xy())
 
     def pre_update(self, delta_time):
         for child in self.get_children():

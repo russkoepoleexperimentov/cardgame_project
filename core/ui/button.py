@@ -57,5 +57,5 @@ class Button(Image):
             self.set_sprite(self.sprites['disabled'])
 
     def set_title(self, title=''):
-        self.label.size = self.size
+        self.label.set_size(self.get_size())
         self.label.set_title(title)
