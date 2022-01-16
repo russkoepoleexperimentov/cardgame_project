@@ -18,6 +18,7 @@ from game import cursor
 from game.button_sounds import ButtonSounds
 from game.card import Card
 from game.contstants import BUTTON_DEFAULT_DESIGN, BUTTONS_SIZE, BUTTONS_TOP_OFFSET
+from scenes.decks_scene import DecksScene
 
 
 class MenuScene(Scene):
@@ -102,15 +103,4 @@ class MenuScene(Scene):
                 close_app()
 
     def load_decks_showroom(self):
-        # temporary
-        scene = Scene()
-        screen_w, screen_h = tuple(map(int, config.get_value('vid_mode').split('x')))
-        screen = Vector(screen_w, screen_h)
-        background = Image(size=screen, sprite=load_image('sprites/ui/menu.png'))
-        scene.add_game_object(background, -100)
-        label = Text(size=Vector(screen_w, 50), title='Мои колоды', align='center', valign='middle',
-                     font_size=72)
-        label.set_parent(background)
-
-        # end
-        scene_manager.load(scene)
+        scene_manager.load(DecksScene())
