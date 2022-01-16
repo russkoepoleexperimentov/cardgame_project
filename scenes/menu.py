@@ -1,3 +1,5 @@
+import pygame
+
 from core.scene import Scene
 from core.ui.image import Image
 from core.ui.button import Button
@@ -15,7 +17,6 @@ from game import cursor
 from game.button_sounds import ButtonSounds
 from game.card import Card
 from game.contstants import BUTTON_DEFAULT_DESIGN, BUTTONS_SIZE, BUTTONS_TOP_OFFSET
-from game import alert_popup
 
 
 class MenuScene(Scene):
@@ -23,7 +24,6 @@ class MenuScene(Scene):
         super().__init__()
 
         cursor.init()
-        alert_popup.init()
 
         screen_w, screen_h = tuple(map(int, config.get_value('vid_mode').split('x')))
         screen = Vector(screen_w, screen_h)
@@ -70,6 +70,13 @@ class MenuScene(Scene):
         # position=Vector(50, 50), sprite=load_image('sprites/ui/button.png'))
         # test_drag_go.add_component(DragHandler)
         # self.add_game_object(test_drag_go)
+
+    def event_hook(self, event):
+        super().event_hook(event)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                close_app()
+
 
     def load_decks_showroom(self):
         # temporary
