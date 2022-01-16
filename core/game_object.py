@@ -37,13 +37,13 @@ class GameObject:
 
     def set_parent(self, other):
         if self.__parent is not None:
-            self.__parent.__children.remove(other)
+            self.__parent.__children.remove(self)
 
         self.__parent = other
 
-        if other is not None:
-            other.__children.append(self)
-            other.on_add_children(self)
+        if self.__parent is not None:
+            self.__parent.__children.append(self)
+            self.__parent.on_add_children(self)
 
     def get_parent(self):
         return self.__parent
