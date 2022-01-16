@@ -61,8 +61,7 @@ class Text(UIElement):
         self.__rendered_title = font.render(self.__title, True, self.color)
         self.__rect = self.__rendered_title.get_rect()
 
-    def render(self, window):
-        super(Text, self).render(window)
+    def render(self, window, offset=Vector(0, 0)):
         rect = self.__rect.copy()
 
         if self.__align == 'left':
@@ -79,4 +78,8 @@ class Text(UIElement):
         elif self.__valign == 'middle':
             rect.centery = self.get_rect().centery
 
+        rect.x -= offset.x
+        rect.y -= offset.y
+
         window.blit(self.__rendered_title, rect)
+        super(Text, self).render(window)

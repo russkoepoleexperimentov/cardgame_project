@@ -36,7 +36,7 @@ class GridLayoutGroup(LayoutGroup):
         self.cell_size = cell_size
 
     def refresh(self):
-        columns = self.get_size().x // self.cell_size.x
+        columns = max(1, self.get_size().x // (self.cell_size.x + self.spacing))
         for i in range(self.child_count()):
             column_count = i % columns
             row_count = i // columns

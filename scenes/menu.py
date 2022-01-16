@@ -2,7 +2,7 @@ import pygame
 
 from core.scene import Scene
 from core.ui.image import Image
-from core.ui.slider import Slider
+from core.ui.scroll_view import ScrollView
 from core.ui.button import Button
 from core.ui.text import Text
 from core.ui.layout_group import VerticalLayoutGroup, GridLayoutGroup
@@ -64,11 +64,28 @@ class MenuScene(Scene):
         exit_button.add_component(ButtonSounds)
         exit_button.on_click.add_listener(close_app)
 
-        self.slider = Slider(size=Vector(40, 400), position=Vector(25, 40),
-                             background_sprite=load_image('sprites/ui/slider_back.png'),
-                             handle_sprite=load_image('sprites/ui/slider_handle.png'))
-        self.slider.scale = 40
-        self.add_game_object(self.slider)
+        self.scroll_view = ScrollView(size=Vector(400, 400), position=Vector(25, 40),
+                                      background_sprite=
+                                      load_image('sprites/ui/scroll_view_back.png'),
+                                      slider_background_sprite=
+                                      load_image('sprites/ui/slider_back.png'),
+                                      slider_handle_sprite=
+                                      load_image('sprites/ui/slider_handle.png'),
+                                      content_type=GridLayoutGroup)
+        self.add_game_object(self.scroll_view)
+
+        content: GridLayoutGroup = self.scroll_view.content
+        content.cell_size = Vector(90, 100)
+        content.spacing = 10
+        self.scroll_view.content_offset += Vector(10, 10)
+        self.scroll_view.slider.set_value(0)
+        content.set_size(content.get_size() - Vector(10, 10) * 2)
+
+        for i in range(15):
+            wtf = Image(size=Vector(100, 100), sprite=load_image('sprites/ui/slider_back.png'))
+            wtf.set_parent(self.scroll_view.content)
+            wtf2 = Image(size=Vector(25, 25), sprite=load_image('sprites/ui/slider_handle.png'))
+            wtf2.set_parent(wtf)
 
         # drop_handle = exit_button.add_component(DropHandler)
         # drop_handle.on_drop.add_listener(lambda drag: print(drag))
@@ -83,11 +100,6 @@ class MenuScene(Scene):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 close_app()
-
-    def update(self, delta_time):
-        super(MenuScene, self).update(delta_time)
-        self.game_title.set_title(str(self.slider.value()))
-
 
     def load_decks_showroom(self):
         # temporary

@@ -101,16 +101,17 @@ class GameObject:
             if child.enabled:
                 child.event_hook(event)
 
-    def render(self, window):
+    def render(self, window, offset=Vector(0, 0)):
         if self.get_sprite() is not None:
-            window.blit(self.get_sprite(), self.get_global_position().xy())
+            window.blit(self.get_sprite(), (self.get_global_position() - offset).xy())
 
         if self.draw_bounds:
-            pygame.draw.rect(window, 'red', self.get_rect())
+            rect = pygame.Rect(*(self.get_global_position() - offset).xy(), *self.get_size().xy())
+            pygame.draw.rect(window, 'red', rect)
 
         for child in self.get_children():
             if child.enabled:
-                child.render(window)
+                child.render(window, offset)
 
     def add_component(self, component_type: type):
         component = component_type(self)
