@@ -11,7 +11,10 @@ class DragHandler(Component):
     def __init__(self, owner: UIElement):
         super(DragHandler, self).__init__(owner)
         self.drag_offset = Vector()
+        self.follow_mouse = True
+
         self.on_begin_drag = Action()
+        self.on_drag = Action()
         self.on_end_drag = Action()
 
     def event_hook(self, event):
@@ -34,6 +37,8 @@ class DragHandler(Component):
                         drop_handler.process_drop(self)
         if event.type == pygame.MOUSEMOTION:
             if ui_manager.get_dragged() == self:
-                self.get_game_object().position = Vector(*mouse_pos) + self.drag_offset
+                if self.follow_mouse:
+                    self.get_game_object().position = Vector(*mouse_pos) + self.drag_offset
+                self.on_drag.invoke()
 
 

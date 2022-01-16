@@ -6,6 +6,12 @@ class Vector:
     def xy(self):
         return self.x, self.y
 
+    def xo(self):
+        return Vector(self.x, 0)
+
+    def oy(self):
+        return Vector(0, self.y)
+
     def __add__(self, other):
         return Vector(self.x + other.x, self.y + other.y)
 

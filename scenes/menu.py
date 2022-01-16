@@ -2,6 +2,7 @@ import pygame
 
 from core.scene import Scene
 from core.ui.image import Image
+from core.ui.slider import Slider
 from core.ui.button import Button
 from core.ui.text import Text
 from core.ui.layout_group import VerticalLayoutGroup, GridLayoutGroup
@@ -36,9 +37,9 @@ class MenuScene(Scene):
         background = Image(size=screen, sprite=load_image('sprites/ui/menu.png'))
         self.add_game_object(background, -100)
 
-        game_title = Text(size=BUTTONS_SIZE, title=translate_string('game_name'), align='center',
-                          valign='middle')
-        game_title.set_parent(buttons_layout_group)
+        self.game_title = Text(size=BUTTONS_SIZE, title=translate_string('game_name'),
+                               align='center', valign='middle')
+        self.game_title.set_parent(buttons_layout_group)
 
         start_button = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE,
                               title=translate_string('ui.start'))
@@ -63,6 +64,12 @@ class MenuScene(Scene):
         exit_button.add_component(ButtonSounds)
         exit_button.on_click.add_listener(close_app)
 
+        self.slider = Slider(size=Vector(40, 400), position=Vector(25, 40),
+                             background_sprite=load_image('sprites/ui/slider_back.png'),
+                             handle_sprite=load_image('sprites/ui/slider_handle.png'))
+        self.slider.scale = 40
+        self.add_game_object(self.slider)
+
         # drop_handle = exit_button.add_component(DropHandler)
         # drop_handle.on_drop.add_listener(lambda drag: print(drag))
 
@@ -76,6 +83,10 @@ class MenuScene(Scene):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 close_app()
+
+    def update(self, delta_time):
+        super(MenuScene, self).update(delta_time)
+        self.game_title.set_title(str(self.slider.value()))
 
 
     def load_decks_showroom(self):
