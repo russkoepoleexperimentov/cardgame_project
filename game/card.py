@@ -13,14 +13,13 @@ class Card:
         cur = con.cursor()
         card_data = cur.execute(f"SELECT * FROM cards WHERE name = '{name}'").fetchall()[0]
         self.name = name
-        self.rarity = card_data[1]
-        self.hit_points = card_data[2]
-        self.damage = card_data[3]
-        self.ammo_cost = card_data[4]
-        self.fuel_cost = card_data[5]
-        self.icon_path = card_data[6]
-        self.nation = card_data[7]
-        self.type = card_data[8]
+        self.hit_points = card_data[1]
+        self.damage = card_data[2]
+        self.ammo_cost = card_data[3]
+        self.fuel_cost = card_data[4]
+        self.icon_path = card_data[5]
+        self.nation = card_data[6]
+        self.type = card_data[7]
         self.description = cur.execute(f"SELECT description FROM types WHERE type = "
                                        f"'{self.type}'").fetchall()[0][0]
 
