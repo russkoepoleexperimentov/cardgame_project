@@ -10,7 +10,7 @@ loaded_images = {}
 
 def load_image(name):
     if not name:
-        return None
+        return load_image('sprites/missing_texture.jpg')
 
     if name in loaded_images.keys():
         return loaded_images.get(name)
@@ -19,6 +19,7 @@ def load_image(name):
 
     if not os.path.isfile(fullname):
         log.trace(f"image '{fullname}' not found!")
+        return load_image('sprites/missing_texture.jpg')
 
     image = loaded_images[name] = pygame.image.load(fullname)
     return image
