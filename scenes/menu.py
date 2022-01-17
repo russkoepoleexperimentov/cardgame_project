@@ -29,39 +29,39 @@ class MenuScene(Scene):
 
         screen_w, screen_h = tuple(map(int, config.get_value('vid_mode').split('x')))
         screen = Vector(screen_w, screen_h)
-        buttons_layout_group = VerticalLayoutGroup(position=Vector(screen_w // 2 -
-                                                                   BUTTONS_SIZE.x // 2,
-                                                                   BUTTONS_TOP_OFFSET), spacing=10)
-        buttons_layout_group.draw_bounds = True
-        self.add_game_object(buttons_layout_group)
+        buttons_holder = Image(position=Vector(screen_w // 2 -
+                                               BUTTONS_SIZE.x // 2,
+                                               BUTTONS_TOP_OFFSET))
+        buttons_layout_group = buttons_holder.add_component(VerticalLayoutGroup)
+        self.add_game_object(buttons_holder)
 
         background = Image(size=screen, sprite=load_image('sprites/ui/menu.png'))
         self.add_game_object(background, -100)
 
         self.game_title = Text(size=BUTTONS_SIZE, title=translate_string('game_name'),
                                align='center', valign='middle')
-        self.game_title.set_parent(buttons_layout_group)
+        self.game_title.set_parent(buttons_holder)
 
         start_button = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE,
                               title=translate_string('ui.start'))
-        start_button.set_parent(buttons_layout_group)
+        start_button.set_parent(buttons_holder)
         start_button.add_component(ButtonSounds)
 
         decks_button = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE,
                               title=translate_string('ui.decks'))
-        decks_button.set_parent(buttons_layout_group)
+        decks_button.set_parent(buttons_holder)
         decks_button.add_component(ButtonSounds)
         decks_button.on_click.add_listener(self.load_decks_showroom)
 
         settings_button = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE,
                                  title=translate_string('ui.settings'))
-        settings_button.set_parent(buttons_layout_group)
+        settings_button.set_parent(buttons_holder)
         settings_button.add_component(ButtonSounds)
         settings_button.interactable = False
 
         exit_button = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE,
                              title=translate_string('ui.quit'))
-        exit_button.set_parent(buttons_layout_group)
+        exit_button.set_parent(buttons_holder)
         exit_button.add_component(ButtonSounds)
         exit_button.on_click.add_listener(close_app)
 
@@ -71,14 +71,14 @@ class MenuScene(Scene):
                                       slider_background_sprite=
                                       load_image('sprites/ui/slider_back.png'),
                                       slider_handle_sprite=
-                                      load_image('sprites/ui/slider_handle.png'),
-                                      content_type=GridLayoutGroup)
+                                      load_image('sprites/ui/slider_handle.png'))
         self.add_game_object(self.scroll_view)
 
-        content: GridLayoutGroup = self.scroll_view.content
-        content.cell_size = Vector(90, 100)
-        content.spacing = 10
-        self.scroll_view.content_offset += Vector(10, 10)
+        content = self.scroll_view.content
+        layout_group = content.add_component(GridLayoutGroup)
+        layout_group.cell_size = Vector(90, 100)
+        layout_group.spacing = 10
+        self.scroll_view.content_offset = Vector(10, 10)
         self.scroll_view.slider.set_value(0)
         content.set_size(content.get_size() - Vector(10, 10) * 2)
 

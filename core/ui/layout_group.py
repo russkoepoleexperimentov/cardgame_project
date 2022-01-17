@@ -1,11 +1,13 @@
+from core.component import Component
+from core.ui.ui_element import UIElement
 from core.vector import Vector
-from core.game_object import GameObject
 
 
-class LayoutGroup(GameObject):
-    def __init__(self, position=Vector(), size=Vector(), spacing=0):
-        super().__init__(position, size, None)
-        self.spacing = spacing
+class LayoutGroup(Component):
+    def __init__(self, owner: UIElement):
+        super().__init__(owner)
+        self.spacing = 0
+        owner.on_add_children = self.on_add_children
 
     def on_add_children(self, other):
         self.refresh()
@@ -17,7 +19,7 @@ class LayoutGroup(GameObject):
 class VerticalLayoutGroup(LayoutGroup):
     def refresh(self):
         offset = 0
-        for child in self.get_children():
+        for child in self.get_game_object().get_children():
             child.position = Vector(0, offset)
             offset += child.get_size().y + self.spacing
 
@@ -25,23 +27,23 @@ class VerticalLayoutGroup(LayoutGroup):
 class HorizontalLayoutGroup(LayoutGroup):
     def refresh(self):
         offset = 0
-        for child in self.get_children():
+        for child in self.get_game_object().get_children():
             child.position = Vector(offset, 0)
             offset += child.get_size().x + self.spacing
 
 
 class GridLayoutGroup(LayoutGroup):
-    def __init__(self, position=Vector(), size=Vector(), spacing=0, cell_size=Vector(100, 100)):
-        super(GridLayoutGroup, self).__init__(position, size, spacing)
-        self.cell_size = cell_size
+    def __init__(self, owner):
+        super(GridLayoutGroup, self).__init__(owner)
+        self.cell_size = Vector(100, 100)
 
     def refresh(self):
-        columns = max(1, self.get_size().x // (self.cell_size.x + self.spacing))
-        for i in range(self.child_count()):
+        columns = max(1, self.get_game_object().get_size().x // (self.cell_size.x + self.spacing))
+        for i in range(self.get_game_object().child_count()):
             column_count = i % columns
             row_count = i // columns
 
-            item = self.get_child(i)
+            item = self.get_game_object().get_child(i)
 
             item.position = Vector((self.cell_size.x + self.spacing) * column_count,
                                    (self.cell_size.y + self.spacing) * row_count)

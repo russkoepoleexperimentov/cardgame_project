@@ -13,8 +13,7 @@ class ScrollView(Image):
                  background_sprite=None,
                  slider_width=40,
                  slider_background_sprite=None,
-                 slider_handle_sprite=None,
-                 content_type=Image):
+                 slider_handle_sprite=None):
         super(ScrollView, self).__init__(position, size, background_sprite)
         self.slider = Slider(position=size.xo(), size=Vector(slider_width, size.y),
                              background_sprite=slider_background_sprite,
@@ -24,7 +23,7 @@ class ScrollView(Image):
         self.slider.set_parent(self)
         self.min_slider_width = slider_width
 
-        self.content = content_type(size=size + Vector(0, size.y * 3))
+        self.content = Image(size=size + Vector(0, size.y * 3))
         self.content.set_parent(self)
         self.content.render = self.render_content
 
