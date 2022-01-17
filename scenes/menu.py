@@ -65,29 +65,6 @@ class MenuScene(Scene):
         exit_button.add_component(ButtonSounds)
         exit_button.on_click.add_listener(close_app)
 
-        self.scroll_view = ScrollView(size=Vector(400, 400), position=Vector(25, 40),
-                                      background_sprite=
-                                      load_image('sprites/ui/scroll_view_back.png'),
-                                      slider_background_sprite=
-                                      load_image('sprites/ui/slider_back.png'),
-                                      slider_handle_sprite=
-                                      load_image('sprites/ui/slider_handle.png'))
-        self.add_game_object(self.scroll_view)
-
-        content = self.scroll_view.content
-        layout_group = content.add_component(GridLayoutGroup)
-        layout_group.cell_size = Vector(90, 100)
-        layout_group.spacing = 10
-        self.scroll_view.content_offset = Vector(10, 10)
-        self.scroll_view.slider.set_value(0)
-        content.set_size(content.get_size() - Vector(10, 10) * 2)
-
-        for i in range(15):
-            wtf = Image(size=Vector(100, 100), sprite=load_image('sprites/ui/slider_back.png'))
-            wtf.set_parent(self.scroll_view.content)
-            wtf2 = Image(size=Vector(25, 25), sprite=load_image('sprites/ui/slider_handle.png'))
-            wtf2.set_parent(wtf)
-
         # drop_handle = exit_button.add_component(DropHandler)
         # drop_handle.on_drop.add_listener(lambda drag: print(drag))
 

@@ -10,3 +10,5 @@ BUTTON_DEFAULT_DESIGN = {
     'selected_sprite': load_image('sprites/ui/button_s.png'),
     'disabled_sprite': load_image('sprites/ui/button_d.png'),
 }
+
+DATABASE = 'data/cards.sqlite3'

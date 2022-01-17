@@ -6,10 +6,12 @@ from core.ui.text import Text
 from core.vector import Vector
 from core.resources import load_image
 
+from game.contstants import DATABASE
+
 
 class Card:
     def __init__(self, name):
-        con = sqlite3.connect('data/cards.sqlite3')
+        con = sqlite3.connect(DATABASE)
         cur = con.cursor()
         card_data = cur.execute(f"SELECT * FROM cards WHERE name = '{name}'").fetchall()[0]
         self.name = name
@@ -20,8 +22,9 @@ class Card:
         self.icon_path = card_data[5]
         self.nation = card_data[6]
         self.type = card_data[7]
-        self.description = cur.execute(f"SELECT description FROM types WHERE type = "
-                                       f"'{self.type}'").fetchall()[0][0]
+        self.description = 'desc'#cur.execute(f"SELECT description FROM types WHERE type = '{self.type}'").fetchall()[0][0]
+        cur.close()
+        con.close()
 
     def create_card(self):
         card_face = Image(size=Vector(150, 250), sprite=load_image('sprites/card_face.jpg'))

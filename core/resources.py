@@ -9,6 +9,9 @@ loaded_images = {}
 
 
 def load_image(name):
+    if not name:
+        return None
+
     if name in loaded_images.keys():
         return loaded_images.get(name)
 
@@ -22,6 +25,9 @@ def load_image(name):
 
 
 def load_sound(name):
+    if not name:
+        return None
+
     fullname = os.path.join(DATA_PATH, name)
 
     if not os.path.isfile(fullname):
