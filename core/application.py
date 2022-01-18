@@ -23,12 +23,13 @@ class Application:
 
         pygame.init()
         pygame.font.init()
-        self.size = self.width, self.height = tuple(map(int, config.get_value('vid_mode').split('x')))
+        self.size = self.width, self.height = tuple(
+            map(int, config.get_value('vid_mode').split('x')))
         self.target_framerate = int(config.get_value('target_fps'))
 
         pygame.display.set_caption(caption)
-        flags = pygame.HWSURFACE|pygame.DOUBLEBUF
-        self.window = pygame.display.set_mode(self.size, flags)
+        flags = pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.NOFRAME
+        self.window = pygame.display.set_mode(self.size, flags | pygame.FULLSCREEN)
         self.clock = pygame.time.Clock()
 
     def dispatch_events(self):
