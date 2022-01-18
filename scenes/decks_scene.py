@@ -43,7 +43,7 @@ class DecksScene(Scene):
         self.screen_w, self.screen_h = tuple(map(int, config.get_value('vid_mode').split('x')))
         self.screen = Vector(self.screen_w, self.screen_h)
 
-        background = Image(size=self.screen, sprite=load_image('sprites/ui/menu.png'))
+        background = Image(size=self.screen, sprite=load_image('sprites/ui/menu_blur.png'))
         self.add_game_object(background, -100)
 
         label = Text(position=Vector(0, 50),
@@ -116,11 +116,14 @@ class DecksScene(Scene):
         self.add_game_object(self.scroll_view)
 
         content = self.scroll_view.content
-        fitter = content.add_component(VerticalContentSizeFitter)
-        layout_group = content.add_component(GridLayoutGroup)
+        content_size_fitter = content.add_component(VerticalContentSizeFitter)
+        content_size_fitter.after_space = 20
+
         from game.card import CARD_SIZE
+        layout_group = content.add_component(GridLayoutGroup)
         layout_group.cell_size = CARD_SIZE
         layout_group.spacing = 10
+
         self.scroll_view.content_offset = Vector(10, 10)
         self.scroll_view.slider.set_value(0)
         content.set_size(content.get_size() - Vector(10, 10) * 2)
@@ -146,6 +149,7 @@ class DecksScene(Scene):
         for child in self.scroll_view.content.get_children():
             child.set_parent(None)
             del child
+        self.scroll_view.slider.set_value(0)
 
     def event_hook(self, event):
         super().event_hook(event)

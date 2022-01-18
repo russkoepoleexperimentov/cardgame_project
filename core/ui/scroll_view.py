@@ -27,8 +27,10 @@ class ScrollView(Image):
         self.content.set_parent(self)
         self.content.render = self.render_content
         self.content.on_add_children.add_listener(self.on_add_child)
+        self.content.block_raycasts = False
 
         self.content_offset = Vector()
+        self.block_raycasts = False
 
         self.rescale_slider()
 
@@ -53,12 +55,3 @@ class ScrollView(Image):
         scale = self.content.get_size().y / self.get_size().y
         width = self.slider.get_size().y / scale
         self.slider.set_scale(max(self.min_slider_width, width))
-
-    def event_hook(self, event):
-        super().event_hook(event)
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if ui_manager.get_selected() in (self, self.content):
-                if event.button == 4:
-                    self.slider.set_value(self.slider.get_value() - MOUSE_WHEEL_SENSETIVITY)
-                elif event.button == 5:
-                    self.slider.set_value(self.slider.get_value() + MOUSE_WHEEL_SENSETIVITY)
