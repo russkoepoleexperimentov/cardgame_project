@@ -13,7 +13,7 @@ from core.vector import Vector
 from core.localization import translate_string
 from game.button_sounds import ButtonSounds
 
-from game.card import Card
+from game.cards import card_manager
 
 from game.contstants import BUTTON_DEFAULT_DESIGN, DATABASE
 
@@ -77,23 +77,13 @@ class DecksScene(Scene):
         horizontal_layout_group = self.switch_buttons_group.add_component(HorizontalLayoutGroup)
         horizontal_layout_group.spacing = BTN_MARGIN
 
-        # DATABASE
-        con = sqlite3.connect(DATABASE)
-        cur = con.cursor()
-
-        nations = set([x[0] for x in cur.execute(f"SELECT nation FROM cards").fetchall()])
-        nations = list(nations)
-        nations.sort()
-
-        cur.close()
-        con.close()
+        nations = sorted(card_manager.game_cards)
 
         for nation in nations:
             btn = Button(**BUTTON_DEFAULT_DESIGN, size=BTN_SIZE, title=translate_string(nation))
             btn.set_parent(self.switch_buttons_group)
             btn.add_component(ButtonSounds)
             btn.label.set_font_size(20)
-
             btn.on_click.add_listener(lambda n=nation: self.show_nation(n))
 
         if len(nations) > 0:
@@ -117,7 +107,7 @@ class DecksScene(Scene):
         content_size_fitter = content.add_component(VerticalContentSizeFitter)
         content_size_fitter.after_space = 100
 
-        from game.card import CARD_SIZE
+        from game.cards.card import CARD_SIZE
         layout_group = content.add_component(GridLayoutGroup)
         layout_group.cell_size = CARD_SIZE
         layout_group.spacing = 25
@@ -130,18 +120,10 @@ class DecksScene(Scene):
     def show_nation(self, nation: str):
         self.clear_scroll_view()
 
-        con = sqlite3.connect(DATABASE)
-        cur = con.cursor()
+        cards = card_manager.game_cards.get(nation, [])
 
-        cards_names = cur.execute(f"SELECT name FROM cards WHERE nation = '{nation}'").fetchall()
-
-        cur.close()
-        con.close()
-
-        for name in cards_names:
-            name = name[0]
-            card = Card(name)
-            card_obj = card.create_card()
+        for card_info in cards:
+            card_obj = card_info.build_card_object()
             card_obj.set_parent(self.scroll_view.content)
 
     def clear_scroll_view(self):

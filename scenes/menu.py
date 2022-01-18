@@ -2,21 +2,17 @@ import pygame
 
 from core.scene import Scene
 from core.ui.image import Image
-from core.ui.scroll_view import ScrollView
 from core.ui.button import Button
 from core.ui.text import Text
-from core.ui.layout_group import VerticalLayoutGroup, GridLayoutGroup
+from core.ui.layout_group import VerticalLayoutGroup
 from core.vector import Vector
 from core.resources import load_image
 from core.application import close as close_app
-from core.components.drag_handler import DragHandler
-from core.components.drop_handler import DropHandler
 from core.localization import translate_string
 from core import config, scene_manager
 
 from game import cursor
 from game.button_sounds import ButtonSounds
-from game.card import Card
 from game.contstants import BUTTON_DEFAULT_DESIGN, BUTTONS_SIZE, BUTTONS_TOP_OFFSET
 
 

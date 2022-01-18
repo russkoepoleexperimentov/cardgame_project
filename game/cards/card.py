@@ -27,24 +27,27 @@ COST_TEXT_SIZE = Vector(130 * CARD_SCALE, 100 * CARD_SCALE)
 BOTTOM_TEXT_SIZE = Vector(360 * CARD_SCALE, 100 * CARD_SCALE)
 BOTTOM_TEXT_POS = Vector(0, 937 * CARD_SCALE)
 
-class Card:
-    def __init__(self, name):
-        con = sqlite3.connect(DATABASE)
-        cur = con.cursor()
-        card_data = cur.execute(f"SELECT * FROM cards WHERE name = '{name}'").fetchall()[0]
-        self.name = name
-        self.hit_points = card_data[1]
-        self.damage = card_data[2]
-        self.ammo_cost = card_data[3]
-        self.fuel_cost = card_data[4]
-        self.icon_path = card_data[5]
-        self.nation = card_data[6]
-        self.type = card_data[7]
-        self.unlock = card_data[8]
-        cur.close()
-        con.close()
 
-    def create_card(self):
+class CardInfo:
+    def __init__(self,
+                 name: str,
+                 icon_path: str,
+                 card_type: str,
+                 nation: str,
+                 hit_points: int,
+                 damage: int,
+                 ammo_cost: int,
+                 fuel_cost: int):
+        self.name = name
+        self.icon_path = icon_path
+        self.type = card_type
+        self.nation = nation
+        self.hit_points = hit_points
+        self.damage = damage
+        self.ammo_cost = ammo_cost
+        self.fuel_cost = fuel_cost
+
+    def build_card_object(self):
         card_back = Image(size=CARD_SIZE,
                           sprite=load_image('sprites/card_face_back.png'))
 
@@ -87,12 +90,4 @@ class Card:
         card_type.set_font_size(20)
         card_type.set_parent(card_back)
 
-        # lock_status = 'ui.locked' if not self.unlock else 'ui.unlocked'
-
-        # card_description = Text(position=BOTTOM_TEXT_POS + Vector(BOTTOM_TEXT_SIZE.x, 0),
-        #                         size=BOTTOM_TEXT_SIZE,
-        #                         title=translate_string(lock_status),
-        #                         align='center',
-        #                         valign='middle')
-        # card_description.set_parent(card_back)
         return card_back
