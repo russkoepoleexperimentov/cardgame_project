@@ -16,6 +16,7 @@ from game.button_sounds import ButtonSounds
 from game.cards import card_manager
 
 from game.contstants import BUTTON_DEFAULT_DESIGN, DATABASE
+from game.cards.card import CARD_SIZE
 
 from core import scene_manager
 
@@ -43,14 +44,6 @@ class DecksScene(Scene):
 
         background = Image(size=self.screen, sprite=load_image('sprites/ui/menu_blur.png'))
         self.add_game_object(background, -100)
-
-        label = Text(position=Vector(0, 50),
-                     size=Vector(self.screen_w, 50),
-                     title=translate_string('ui.own_decks'),
-                     align='center',
-                     valign='middle',
-                     font_size=72)
-        label.set_parent(background)
 
         back_btn = Button(**BUTTON_DEFAULT_DESIGN,
                           position=Vector(40, 30),
@@ -107,7 +100,6 @@ class DecksScene(Scene):
         content_size_fitter = content.add_component(VerticalContentSizeFitter)
         content_size_fitter.after_space = 100
 
-        from game.cards.card import CARD_SIZE
         layout_group = content.add_component(GridLayoutGroup)
         layout_group.cell_size = CARD_SIZE
         layout_group.spacing = 25
@@ -117,12 +109,31 @@ class DecksScene(Scene):
         self.scroll_view.slider.set_value(0)
         content.set_size(content.get_size() - content_offset * 2)
 
+        label = Text(position=Vector(0, 50),
+                     size=Vector(self.screen_w, 50),
+                     title=translate_string('ui.own_decks'),
+                     align='center',
+                     valign='middle',
+                     font_size=72)
+        label.set_parent(self.scroll_view.content)
+
+        my_deck_background = Image(size=Vector(self.screen_w - 2 * SV_SIDE_OFFSET -
+                                               SV_SLIDER_WIDTH, 200),
+                                   sprite=load_image('sprites/ui/my_deck_background.jpg'))
+        my_deck_background.set_parent(self.scroll_view.content)
+
     def show_nation(self, nation: str):
         self.clear_scroll_view()
 
         cards = card_manager.game_cards.get(nation, [])
+        deck_cards = list(filter(lambda x: x.in_deck == 'True', cards))
+        other_cards = list(filter(lambda x: x.in_deck == 'False', cards))
 
-        for card_info in cards:
+        for card_info in deck_cards:
+            card_obj = card_info.build_card_object()
+            card_obj.set_parent(self.scroll_view.content)
+
+        for card_info in other_cards:
             card_obj = card_info.build_card_object()
             card_obj.set_parent(self.scroll_view.content)
 

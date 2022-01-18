@@ -20,7 +20,9 @@ def init():
                              hit_points=card_data[1],
                              damage=card_data[2],
                              ammo_cost=card_data[3],
-                             fuel_cost=card_data[4])
+                             fuel_cost=card_data[4],
+                             unlock=card_data[8],
+                             in_deck=card_data[9])
 
         nation_list = game_cards.get(card_info.nation, list())
         nation_list.append(card_info)
