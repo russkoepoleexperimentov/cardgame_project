@@ -1,3 +1,7 @@
+import copy
+
+import pygame
+
 from core import config
 from core.resources import load_image
 from core.scene import Scene
@@ -14,6 +18,8 @@ from game.card import Card
 
 from game.contstants import BUTTON_DEFAULT_DESIGN, DATABASE
 
+from core import scene_manager
+
 import sqlite3
 
 # buttons
@@ -21,7 +27,7 @@ BTN_SIZE = Vector(150, 30)
 BTN_MARGIN = 5
 
 # scroll view
-SV_TOP_OFFSET = 100
+SV_TOP_OFFSET = 150
 SV_SIDE_OFFSET = 25
 SV_BOTTOM_OFFSET = 30
 SV_SLIDER_WIDTH = 20
@@ -32,18 +38,32 @@ ALL_NATIONS = 'inter'
 class DecksScene(Scene):
     def __init__(self):
         super(DecksScene, self).__init__()
+        self.nations = (ALL_NATIONS, 'soviet', 'germany')
         self.screen_w, self.screen_h = tuple(map(int, config.get_value('vid_mode').split('x')))
         self.screen = Vector(self.screen_w, self.screen_h)
 
         background = Image(size=self.screen, sprite=load_image('sprites/ui/menu.png'))
         self.add_game_object(background, -100)
 
-        label = Text(size=Vector(self.screen_w, 50),
-                     title='Личные колоды',
+        label = Text(position=Vector(0, 50),
+                     size=Vector(self.screen_w, 50),
+                     title=translate_string('ui.own_decks'),
                      align='center',
                      valign='middle',
                      font_size=72)
         label.set_parent(background)
+
+        back_btn = Button(**BUTTON_DEFAULT_DESIGN,
+                          position=Vector(40, 30),
+                          size=BTN_SIZE,
+                          title=translate_string('ui.back'))
+        back_btn.add_component(ButtonSounds)
+        back_btn.on_click.add_listener(self.load_menu)
+        back_btn.label.set_font_size(25)
+        back_btn.set_parent(background)
+
+        self.switch_buttons_group = None
+        self.scroll_view =None
 
         self.init_scroll_view()
         self.init_switch_buttons()
@@ -59,7 +79,7 @@ class DecksScene(Scene):
         horizontal_layout_group.spacing = BTN_MARGIN
 
         # DATABASE
-        '''con = sqlite3.connect(DATABASE)
+        con = sqlite3.connect(DATABASE)
         cur = con.cursor()
 
         nations = set([x[0] for x in cur.execute(f"SELECT nation FROM cards").fetchall()])
@@ -75,30 +95,10 @@ class DecksScene(Scene):
             btn.add_component(ButtonSounds)
             btn.label.set_font_size(20)
 
-            def click():
-                self.show_nation(nation)
-                print(nation)
-            btn.on_click.add_listener(click)
+            btn.on_click.add_listener(lambda n=nation: self.show_nation(n))
 
         if len(nations) > 0:
-            self.show_nation(nations[0])'''
-
-        nations = [ALL_NATIONS, 'soviet', 'germany']
-        btns = []
-
-        for i in range(len(nations)):
-            nation = nations[i]
-            btn = Button(**BUTTON_DEFAULT_DESIGN, size=BTN_SIZE, title=translate_string(nation))
-            btn.on_click.add_listener(lambda: self.show_nation(nations[i]))
-            btn.set_parent(self.switch_buttons_group)
-            btn.add_component(ButtonSounds)
-            btn.label.set_font_size(20)
-            btns.append(btn)
-
-       # btns[0].on_click.add_listener(lambda: self.show_nation(nations[0]))
-       # btns[1].on_click.add_listener(lambda: self.show_nation(nations[1]))
-       # btns[2].on_click.add_listener(lambda: self.show_nation(nations[2]))
-
+            self.show_nation(nations[0])
 
     def init_scroll_view(self):
         self.scroll_view = ScrollView(size=Vector(self.screen_w - 2 * SV_SIDE_OFFSET -
@@ -116,26 +116,20 @@ class DecksScene(Scene):
 
         content = self.scroll_view.content
         layout_group = content.add_component(GridLayoutGroup)
-        layout_group.cell_size = Vector(90, 100)
+        from game.card import CARD_SIZE
+        layout_group.cell_size = CARD_SIZE
         layout_group.spacing = 10
         self.scroll_view.content_offset = Vector(10, 10)
         self.scroll_view.slider.set_value(0)
         content.set_size(content.get_size() - Vector(10, 10) * 2)
 
     def show_nation(self, nation: str):
-
-        print(nation)
         self.clear_scroll_view()
 
         con = sqlite3.connect(DATABASE)
         cur = con.cursor()
 
-        if nation == ALL_NATIONS:
-            query = f"SELECT name FROM cards"
-        else:
-            query = f"SELECT name FROM cards WHERE nation = '{nation}'"
-
-        cards_names = cur.execute(query).fetchall()
+        cards_names = cur.execute(f"SELECT name FROM cards WHERE nation = '{nation}'").fetchall()
 
         cur.close()
         con.close()
@@ -150,3 +144,13 @@ class DecksScene(Scene):
         for child in self.scroll_view.content.get_children():
             child.set_parent(None)
             del child
+
+    def event_hook(self, event):
+        super().event_hook(event)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                self.load_menu()
+
+    def load_menu(self):
+        from scenes.menu import MenuScene
+        scene_manager.load(MenuScene())

@@ -27,7 +27,8 @@ class Application:
         self.target_framerate = int(config.get_value('target_fps'))
 
         pygame.display.set_caption(caption)
-        self.window = pygame.display.set_mode(self.size)
+        flags = pygame.HWSURFACE|pygame.DOUBLEBUF
+        self.window = pygame.display.set_mode(self.size, flags)
         self.clock = pygame.time.Clock()
 
     def dispatch_events(self):

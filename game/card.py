@@ -8,6 +8,24 @@ from core.resources import load_image
 
 from game.contstants import DATABASE
 
+CARD_WIDTH = 200
+CARD_SCALE = CARD_WIDTH / 720
+
+CARD_ASPECT_RATIO = 0.7
+CARD_SIZE = Vector(CARD_WIDTH, CARD_WIDTH / CARD_ASPECT_RATIO)
+
+CARD_ICON_SIZE = Vector(721 * CARD_SCALE, 765 * CARD_SCALE)
+CARD_ICON_POSITION = Vector(0, 173 * CARD_SCALE)
+
+TEXT_NAME_POS, TEXT_NAME_SIZE = Vector(157 * CARD_SCALE, 0), Vector(407 * CARD_SCALE,
+                                                                    102 * CARD_SCALE)
+TEXT_NAME_FONT_SIZE = 18
+
+COST_TEXT_TOP = 65 * CARD_SCALE
+COST_TEXT_SIZE = Vector(130 * CARD_SCALE, 100 * CARD_SCALE)
+
+BOTTOM_TEXT_SIZE = Vector(360 * CARD_SCALE, 100 * CARD_SCALE)
+BOTTOM_TEXT_POS = Vector(0, 937 * CARD_SCALE)
 
 class Card:
     def __init__(self, name):
@@ -27,24 +45,51 @@ class Card:
         con.close()
 
     def create_card(self):
-        card_face = Image(size=Vector(150, 250), sprite=load_image('sprites/card_face.jpg'))
-        card_icon = Image(size=Vector(150, 300), sprite=load_image(self.icon_path),
-                          position=Vector(0, 50))
-        card_icon.set_parent(card_face)
-        card_name = Text(size=Vector(150, 25), title=translate_string(self.name), align='center',
+        card_back = Image(size=CARD_SIZE,
+                          sprite=load_image('sprites/card_face_back.png'))
+
+        card_icon = Image(size=CARD_ICON_SIZE,
+                          sprite=load_image(self.icon_path),
+                          position=CARD_ICON_POSITION)
+        card_icon.set_parent(card_back)
+
+        card_face = Image(size=CARD_SIZE,
+                          sprite=load_image('sprites/card_face.png'))
+        card_face.set_parent(card_back)
+
+        card_name = Text(position=TEXT_NAME_POS,
+                         size=TEXT_NAME_SIZE,
+                         title=translate_string(self.name),
+                         align='center',
                          valign='middle')
-        card_name.set_parent(card_face)
-        card_ammo_cost = Text(size=Vector(25, 25), title=translate_string(str(self.ammo_cost)),
-                              align='center', valign='middle')
-        card_ammo_cost.set_parent(card_face)
-        if self.fuel_cost != 0:
-            card_fuel_cost = Text(size=Vector(25, 25), title=translate_string(str(self.fuel_cost)),
-                                  align='center', valign='middle', position=Vector(125, 0))
-            card_fuel_cost.set_parent(card_face)
-        card_type = Text(size=Vector(75, 50), title=translate_string(self.type), align='center',
-                         valign='middle', position=Vector(0, 350))
-        card_type.set_parent(card_face)
-        card_description = Text(size=Vector(75, 50), title=translate_string(self.description),
-                                align='center', valign='middle', position=Vector(75, 350))
-        card_description.set_parent(card_face)
-        return card_face
+        card_name.set_font_size(TEXT_NAME_FONT_SIZE)
+        card_name.set_parent(card_back)
+
+        card_ammo_cost = Text(position=Vector(0, COST_TEXT_TOP),
+                              size=COST_TEXT_SIZE,
+                              title=translate_string(str(self.ammo_cost)),
+                              align='right',
+                              valign='bottom')
+        card_ammo_cost.set_parent(card_back)
+
+        card_fuel_cost = Text(position=Vector(564 * CARD_SCALE, COST_TEXT_TOP),
+                              size=COST_TEXT_SIZE,
+                              title=translate_string(str(self.fuel_cost)),
+                              align='right',
+                              valign='bottom')
+        card_fuel_cost.set_parent(card_back)
+
+        card_type = Text(position=BOTTOM_TEXT_POS,
+                         size=BOTTOM_TEXT_SIZE,
+                         title=translate_string(self.type),
+                         align='center',
+                         valign='middle')
+        card_type.set_parent(card_back)
+
+        card_description = Text(position=BOTTOM_TEXT_POS + Vector(BOTTOM_TEXT_SIZE.x, 0),
+                                size=BOTTOM_TEXT_SIZE,
+                                title=translate_string(self.description),
+                                align='center',
+                                valign='middle')
+        card_description.set_parent(card_back)
+        return card_back

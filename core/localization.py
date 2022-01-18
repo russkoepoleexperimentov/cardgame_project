@@ -12,8 +12,8 @@ def load_localization(name: str):
     with open(fullname, encoding='utf-8') as file_stream:
         reader = csv_reader(file_stream, delimiter=':', quotechar='"')
         for key, value in reader:
-            __key_value_pairs[key] = value
+            __key_value_pairs[key.lower()] = value
 
 
 def translate_string(key: str):
-    return __key_value_pairs.get(key, key)
+    return __key_value_pairs.get(key.lower(), key)

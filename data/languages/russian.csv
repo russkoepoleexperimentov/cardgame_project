@@ -1,10 +1,12 @@
-game_name:=game name=
+game_name:Карточная игра
 ui.start:Играть
 ui.settings:Настройки
 ui.quit:Выход
 ui.yes:Да
 ui.no:Нет
+ui.back:Назад
 ui.decks:Колоды
 soviet:Советский Союз
 germany:Германия
-inter:Все
+international:Все
+ui.own_decks:Личные колоды

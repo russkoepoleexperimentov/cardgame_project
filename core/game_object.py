@@ -21,7 +21,7 @@ class GameObject:
 
     def set_sprite(self, sprite):
         if sprite:
-            self.__sprite = pygame.transform.scale(sprite, self.__size.xy())
+            self.__sprite = pygame.transform.scale(sprite, self.__size.xy()).convert_alpha()
         else:
             self.__sprite = None
 

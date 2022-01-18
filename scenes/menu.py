@@ -18,7 +18,6 @@ from game import cursor
 from game.button_sounds import ButtonSounds
 from game.card import Card
 from game.contstants import BUTTON_DEFAULT_DESIGN, BUTTONS_SIZE, BUTTONS_TOP_OFFSET
-from scenes.decks_scene import DecksScene
 
 
 class MenuScene(Scene):
@@ -80,4 +79,5 @@ class MenuScene(Scene):
                 close_app()
 
     def load_decks_showroom(self):
+        from scenes.decks_scene import DecksScene
         scene_manager.load(DecksScene())
