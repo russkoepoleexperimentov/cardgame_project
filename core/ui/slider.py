@@ -41,6 +41,9 @@ class Slider(Image):
         value = clamp(value, 0, 1)
         max_y = self.get_size().y - self.__scale
         y_pos = value * max_y
+
+        if self.__scale >= max_y:
+            return None
         self.handle.position = Vector(y=y_pos)
         self.__value = value
         self.on_value_changed.invoke(self.__value)

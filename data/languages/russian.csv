@@ -10,3 +10,19 @@ soviet:Советский Союз
 germany:Германия
 international:Все
 ui.own_decks:Личные колоды
+infantry:Фабрика
+light_tank:Легкий танк
+medium_tank:Средний Танк
+heavy_tank:Тяжёлый танк
+sau:САУ
+artillery:Артиллерия
+anti_tank:Противотанковый
+anti_aircraft:Зенитный
+fighter:Истребитель
+assault_aircraft:Штурмовой Самолет
+tactical_bomber:Тактич. Бомбард.
+heavy_fighter:Тяжелый Истребитель
+zsu:ЗСУ
+weapon_factory:Оруж. Фабрика
+fuel_factory:Топл. Фабрика
+strategy_bomber:Стратегич. Бомбард.

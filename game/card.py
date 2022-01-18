@@ -40,7 +40,7 @@ class Card:
         self.icon_path = card_data[5]
         self.nation = card_data[6]
         self.type = card_data[7]
-        self.description = 'desc'#cur.execute(f"SELECT description FROM types WHERE type = '{self.type}'").fetchall()[0][0]
+        self.unlock = card_data[8]
         cur.close()
         con.close()
 
@@ -84,12 +84,15 @@ class Card:
                          title=translate_string(self.type),
                          align='center',
                          valign='middle')
+        card_type.set_font_size(20)
         card_type.set_parent(card_back)
 
-        card_description = Text(position=BOTTOM_TEXT_POS + Vector(BOTTOM_TEXT_SIZE.x, 0),
-                                size=BOTTOM_TEXT_SIZE,
-                                title=translate_string(self.description),
-                                align='center',
-                                valign='middle')
-        card_description.set_parent(card_back)
+        # lock_status = 'ui.locked' if not self.unlock else 'ui.unlocked'
+
+        # card_description = Text(position=BOTTOM_TEXT_POS + Vector(BOTTOM_TEXT_SIZE.x, 0),
+        #                         size=BOTTOM_TEXT_SIZE,
+        #                         title=translate_string(lock_status),
+        #                         align='center',
+        #                         valign='middle')
+        # card_description.set_parent(card_back)
         return card_back

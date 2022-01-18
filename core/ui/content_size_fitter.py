@@ -6,6 +6,7 @@ from core.vector import Vector
 class ContentSizeFitter(Component):
     def __init__(self, owner: UIElement):
         super(ContentSizeFitter, self).__init__(owner)
+        self.after_space = 10
         owner.on_add_children.add_listener(self.on_add_children)
 
     def on_add_children(self, other):
@@ -25,4 +26,4 @@ class VerticalContentSizeFitter(ContentSizeFitter):
 
         size = self.get_game_object().get_size()
         self.get_game_object().set_size(Vector(size.x, lower_children.position.y +
-                                               lower_children.get_size().y))
+                                               lower_children.get_size().y + self.after_space))
