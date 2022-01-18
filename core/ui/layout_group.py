@@ -7,7 +7,7 @@ class LayoutGroup(Component):
     def __init__(self, owner: UIElement):
         super().__init__(owner)
         self.spacing = 0
-        owner.on_add_children = self.on_add_children
+        owner.on_add_children.add_listener(self.on_add_children)
 
     def on_add_children(self, other):
         self.refresh()

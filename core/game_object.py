@@ -1,4 +1,6 @@
 import pygame
+
+from core.action import Action
 from core.vector import Vector
 from core.component import Component
 
@@ -12,6 +14,8 @@ class GameObject:
         self.__components = []
         self.__parent = None
         self.__children = []
+
+        self.on_add_children = Action()
 
         self.__sprite = None
         self.__size = None
@@ -43,7 +47,7 @@ class GameObject:
 
         if self.__parent is not None:
             self.__parent.__children.append(self)
-            self.__parent.on_add_children(self)
+            self.__parent.on_add_children.invoke(self)
 
     def get_parent(self):
         return self.__parent
@@ -65,9 +69,6 @@ class GameObject:
             return -1
         else:
             return self.__parent.__children.index(self)
-
-    def on_add_children(self, other):
-        pass
 
     def get_global_position(self):
         if self.__parent is None:

@@ -49,7 +49,7 @@ class Slider(Image):
         return self.__value
 
     def set_scale(self, scale):
-        self.handle.set_size(Vector(self.get_size().x, scale))
+        self.handle.set_size(Vector(self.get_size().x, min(self.get_size().y, scale)))
         self.__scale = scale
 
     def get_scale(self):
@@ -63,6 +63,10 @@ class Slider(Image):
     def on_drag(self):
         mouse_pos = pygame.mouse.get_pos()
         max_y = self.get_size().y - self.__scale
+
+        if self.__scale >= max_y:
+            return None
+
         handle_y = clamp(mouse_pos[1] + self.__drag_offset.y, 0, max_y)
         self.__value = round(handle_y / max_y, 2)
         self.on_value_changed.invoke(self.__value)

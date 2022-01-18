@@ -6,6 +6,7 @@ from core import config
 from core.resources import load_image
 from core.scene import Scene
 from core.ui.button import Button
+from core.ui.content_size_fitter import VerticalContentSizeFitter
 from core.ui.image import Image
 from core.ui.layout_group import GridLayoutGroup, HorizontalLayoutGroup
 from core.ui.scroll_view import ScrollView
@@ -115,6 +116,7 @@ class DecksScene(Scene):
         self.add_game_object(self.scroll_view)
 
         content = self.scroll_view.content
+        fitter = content.add_component(VerticalContentSizeFitter)
         layout_group = content.add_component(GridLayoutGroup)
         from game.card import CARD_SIZE
         layout_group.cell_size = CARD_SIZE

@@ -26,14 +26,16 @@ class ScrollView(Image):
         self.content = Image(size=size + Vector(0, size.y * 3))
         self.content.set_parent(self)
         self.content.render = self.render_content
+        self.content.on_add_children.add_listener(self.on_add_child)
 
         self.content_offset = Vector()
 
         self.rescale_slider()
 
     def move_content(self, value):
-        self.content.position = self.content_offset + Vector(0, -value *
-                                       (self.content.get_size().y - self.get_size().y))
+        y_pos = -value * (self.content.get_size().y - self.get_size().y)
+        y_pos = min(y_pos, 0)
+        self.content.position = self.content_offset + Vector(0, y_pos)
 
     def render_content(self, window, offset=Vector(0, 0)):
         surface = pygame.surface.Surface(size=(self.get_size().xy()), flags=pygame.SRCALPHA)
@@ -44,9 +46,13 @@ class ScrollView(Image):
 
         window.blit(surface, self.get_global_position().xy())
 
+    def on_add_child(self, ch):
+        self.rescale_slider()
+
     def rescale_slider(self):
         scale = self.content.get_size().y / self.get_size().y
-        self.slider.set_scale(max(self.min_slider_width, self.slider.get_size().y / scale))
+        width = self.slider.get_size().y / scale
+        self.slider.set_scale(max(self.min_slider_width, width))
 
     def event_hook(self, event):
         super().event_hook(event)
