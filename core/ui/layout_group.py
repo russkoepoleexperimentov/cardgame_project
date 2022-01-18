@@ -38,7 +38,7 @@ class GridLayoutGroup(LayoutGroup):
         self.cell_size = Vector(100, 100)
 
     def refresh(self):
-        columns = max(1, self.get_game_object().get_size().x // (self.cell_size.x + self.spacing))
+        columns = max(1, self.get_game_object().get_size().x // self.cell_size.x)
         for i in range(self.get_game_object().child_count()):
             column_count = i % columns
             row_count = i // columns

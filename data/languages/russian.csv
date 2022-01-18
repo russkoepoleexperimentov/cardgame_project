@@ -6,11 +6,10 @@ ui.yes:Да
 ui.no:Нет
 ui.back:Назад
 ui.decks:Колоды
+ui.own_decks:Мои колоды
 soviet:Советский Союз
 germany:Германия
-international:Все
-ui.own_decks:Личные колоды
-infantry:Фабрика
+infantry:Пехота
 light_tank:Легкий танк
 medium_tank:Средний Танк
 heavy_tank:Тяжёлый танк
