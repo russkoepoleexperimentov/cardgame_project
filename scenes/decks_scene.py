@@ -1,5 +1,3 @@
-import copy
-
 import pygame
 
 from core import config
@@ -117,16 +115,17 @@ class DecksScene(Scene):
 
         content = self.scroll_view.content
         content_size_fitter = content.add_component(VerticalContentSizeFitter)
-        content_size_fitter.after_space = 20
+        content_size_fitter.after_space = 100
 
         from game.card import CARD_SIZE
         layout_group = content.add_component(GridLayoutGroup)
         layout_group.cell_size = CARD_SIZE
-        layout_group.spacing = 10
+        layout_group.spacing = 25
 
-        self.scroll_view.content_offset = Vector(10, 10)
+        content_offset = Vector(90, 50)
+        self.scroll_view.content_offset = content_offset
         self.scroll_view.slider.set_value(0)
-        content.set_size(content.get_size() - Vector(10, 10) * 2)
+        content.set_size(content.get_size() - content_offset * 2)
 
     def show_nation(self, nation: str):
         self.clear_scroll_view()
