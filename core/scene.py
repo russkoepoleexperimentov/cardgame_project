@@ -9,7 +9,8 @@ class Scene:
 
     def event_hook(self, event):
         for game_object in self.__game_objects.keys():
-            game_object.event_hook(event)
+            if game_object.enabled:
+                game_object.event_hook(event)
 
     def pre_update(self, delta_time):
         if len(self.__game_objects_to_remove) > 0:
@@ -26,11 +27,13 @@ class Scene:
             self.sort_game_objects_by_priority()
 
         for game_object in self.__game_objects.keys():
-            game_object.pre_update(delta_time)
+            if game_object.enabled:
+                game_object.pre_update(delta_time)
 
     def update(self, delta_time):
         for game_object in self.__game_objects.keys():
-            game_object.update(delta_time)
+            if game_object.enabled:
+                game_object.update(delta_time)
 
     def sort_game_objects_by_priority(self):
         self.__game_objects = dict(sorted(self.__game_objects.items(), key=lambda item: item[1]))

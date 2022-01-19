@@ -5,6 +5,7 @@ from game.contstants import DATABASE
 
 nations = set()
 game_cards = list()
+deck_by_nation = dict()
 
 
 def init():
@@ -27,6 +28,15 @@ def init():
 
         game_cards.append(card_info)
         nations.add(card_info.nation)
+
+        if card_info.in_deck:
+            deck = deck_by_nation.get(card_info.nation, [])
+            deck.append(card_info)
+            deck_by_nation[card_info.nation] = deck
+
+
+
+
     """con = sqlite3.connect(DATABASE)
         cur = con.cursor()
         card_data = cur.execute(f"SELECT * FROM cards WHERE name = '{name}'").fetchall()[0]
