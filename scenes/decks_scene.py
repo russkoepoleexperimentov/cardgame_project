@@ -15,12 +15,10 @@ from game.button_sounds import ButtonSounds
 
 from game.cards import card_manager
 
-from game.contstants import BUTTON_DEFAULT_DESIGN, DATABASE
+from game.contstants import BUTTON_DEFAULT_DESIGN
 from game.cards.card import CARD_SIZE
 
 from core import scene_manager
-
-import sqlite3
 
 # buttons
 BTN_SIZE = Vector(150, 30)
@@ -31,6 +29,13 @@ SV_TOP_OFFSET = 150
 SV_SIDE_OFFSET = 25
 SV_BOTTOM_OFFSET = 30
 SV_SLIDER_WIDTH = 20
+
+# label
+LABEL_HEIGHT = 50
+LABEL_BOT_OFFSET = 20
+
+# own deck board height
+OWN_DECK_BOARD_HEIGHT = 1007 + LABEL_HEIGHT + LABEL_BOT_OFFSET
 
 ALL_NATIONS = 'inter'
 
@@ -52,10 +57,12 @@ class DecksScene(Scene):
         back_btn.add_component(ButtonSounds)
         back_btn.on_click.add_listener(self.load_menu)
         back_btn.label.set_font_size(25)
-        back_btn.set_parent(background)
+        self.add_game_object(back_btn, 150)
 
         self.switch_buttons_group = None
-        self.scroll_view =None
+        self.scroll_view = None
+
+        self.chosen_nation = ''
 
         self.init_scroll_view()
         self.init_switch_buttons()
@@ -72,12 +79,15 @@ class DecksScene(Scene):
 
         nations = sorted(card_manager.game_cards)
 
+        self.nation_buttons = dict()
+
         for nation in nations:
             btn = Button(**BUTTON_DEFAULT_DESIGN, size=BTN_SIZE, title=translate_string(nation))
             btn.set_parent(self.switch_buttons_group)
             btn.add_component(ButtonSounds)
             btn.label.set_font_size(20)
             btn.on_click.add_listener(lambda n=nation: self.show_nation(n))
+            self.nation_buttons[nation] = btn
 
         if len(nations) > 0:
             self.show_nation(nations[0])
@@ -96,34 +106,56 @@ class DecksScene(Scene):
                                       slider_width=SV_SLIDER_WIDTH)
         self.add_game_object(self.scroll_view)
 
-        content = self.scroll_view.content
-        content_size_fitter = content.add_component(VerticalContentSizeFitter)
+        content_offset = Vector(90, 50)
+
+        self.other_cards_parent = Image(size=Vector(self.scroll_view.get_size().x, 0),
+                                        position=content_offset + Vector(0, OWN_DECK_BOARD_HEIGHT))
+        self.other_cards_parent.set_parent(self.scroll_view.content)
+        content_size_fitter = self.other_cards_parent.add_component(VerticalContentSizeFitter)
         content_size_fitter.after_space = 100
 
-        layout_group = content.add_component(GridLayoutGroup)
+        layout_group = self.other_cards_parent.add_component(GridLayoutGroup)
         layout_group.cell_size = CARD_SIZE
         layout_group.spacing = 25
 
-        content_offset = Vector(90, 50)
-        self.scroll_view.content_offset = content_offset
         self.scroll_view.slider.set_value(0)
-        content.set_size(content.get_size() - content_offset * 2)
+        self.other_cards_parent.set_size(self.other_cards_parent.get_size() - content_offset * 2)
+
+        own_deck_background = Image(size=Vector(self.scroll_view.content.get_size().x,
+                                                OWN_DECK_BOARD_HEIGHT),
+                                    sprite=load_image('sprites/ui/slider_back.png'))
+        own_deck_background.set_parent(self.scroll_view.content)
+
+        self.deck_cards_parent = Image(size=Vector(self.scroll_view.content.get_size().x -
+                                                   content_offset.x * 2, 1),
+                                       position=content_offset + Vector(0, LABEL_HEIGHT +
+                                                                        LABEL_BOT_OFFSET))
+        self.deck_cards_parent.set_parent(own_deck_background)
+
+        self.other_cards_parent.position = content_offset + Vector(0, OWN_DECK_BOARD_HEIGHT)
+
+        content_size_fitter = self.deck_cards_parent.add_component(VerticalContentSizeFitter)
+        content_size_fitter.after_space = 100
+
+        layout_group = self.deck_cards_parent.add_component(GridLayoutGroup)
+        layout_group.cell_size = CARD_SIZE
+        layout_group.spacing = 25
 
         label = Text(position=Vector(0, 50),
-                     size=Vector(self.screen_w, 50),
+                     size=Vector(self.screen_w, LABEL_HEIGHT),
                      title=translate_string('ui.own_decks'),
                      align='center',
                      valign='middle',
                      font_size=72)
-        label.set_parent(self.scroll_view.content)
-
-        my_deck_background = Image(size=Vector(self.screen_w - 2 * SV_SIDE_OFFSET -
-                                               SV_SLIDER_WIDTH, 200),
-                                   sprite=load_image('sprites/ui/my_deck_background.jpg'))
-        my_deck_background.set_parent(self.scroll_view.content)
+        label.set_parent(own_deck_background)
 
     def show_nation(self, nation: str):
         self.clear_scroll_view()
+        self.chosen_nation = nation
+
+        for button in self.nation_buttons.values():
+            button.interactable = True
+        self.nation_buttons[nation].interactable = False
 
         cards = card_manager.game_cards.get(nation, [])
         deck_cards = list(filter(lambda x: x.in_deck == 'True', cards))
@@ -131,14 +163,17 @@ class DecksScene(Scene):
 
         for card_info in deck_cards:
             card_obj = card_info.build_card_object()
-            card_obj.set_parent(self.scroll_view.content)
+            card_obj.set_parent(self.deck_cards_parent)
 
         for card_info in other_cards:
             card_obj = card_info.build_card_object()
-            card_obj.set_parent(self.scroll_view.content)
+            card_obj.set_parent(self.other_cards_parent)
 
     def clear_scroll_view(self):
-        for child in self.scroll_view.content.get_children():
+        for child in self.deck_cards_parent.get_children():
+            child.set_parent(None)
+            del child
+        for child in self.other_cards_parent.get_children():
             child.set_parent(None)
             del child
         self.scroll_view.slider.set_value(0)

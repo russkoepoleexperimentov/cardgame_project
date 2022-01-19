@@ -51,6 +51,12 @@ class CardInfo:
         self.unlock = unlock
         self.in_deck = in_deck
 
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return str(self)
+
     def build_card_object(self):
         card_back = Image(size=CARD_SIZE,
                           sprite=load_image('sprites/card_face_back.png'))
