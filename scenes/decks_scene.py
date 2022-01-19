@@ -109,7 +109,8 @@ class DecksScene(Scene):
         content_offset = Vector(90, 50)
 
         self.other_cards_parent = Image(size=Vector(self.scroll_view.get_size().x, 0),
-                                        position=content_offset + Vector(0, OWN_DECK_BOARD_HEIGHT))
+                                        position=content_offset + Vector(0, OWN_DECK_BOARD_HEIGHT) +
+                                                 Vector(0, LABEL_HEIGHT + LABEL_BOT_OFFSET))
         self.other_cards_parent.set_parent(self.scroll_view.content)
         content_size_fitter = self.other_cards_parent.add_component(VerticalContentSizeFitter)
         content_size_fitter.after_space = 100
@@ -132,8 +133,6 @@ class DecksScene(Scene):
                                                                         LABEL_BOT_OFFSET))
         self.deck_cards_parent.set_parent(own_deck_background)
 
-        self.other_cards_parent.position = content_offset + Vector(0, OWN_DECK_BOARD_HEIGHT)
-
         content_size_fitter = self.deck_cards_parent.add_component(VerticalContentSizeFitter)
         content_size_fitter.after_space = 100
 
@@ -143,7 +142,15 @@ class DecksScene(Scene):
 
         label = Text(position=Vector(0, 50),
                      size=Vector(self.screen_w, LABEL_HEIGHT),
-                     title=translate_string('ui.own_decks'),
+                     title=translate_string('ui.own_deck'),
+                     align='center',
+                     valign='middle',
+                     font_size=72)
+        label.set_parent(own_deck_background)
+
+        label = Text(position=Vector(0, OWN_DECK_BOARD_HEIGHT + LABEL_BOT_OFFSET * 2),
+                     size=Vector(self.screen_w, LABEL_HEIGHT),
+                     title=translate_string('ui.others_cards'),
                      align='center',
                      valign='middle',
                      font_size=72)
@@ -168,6 +175,10 @@ class DecksScene(Scene):
         for card_info in other_cards:
             card_obj = card_info.build_card_object()
             card_obj.set_parent(self.other_cards_parent)
+
+        self.scroll_view.content.set_size(Vector(self.scroll_view.get_size().x,
+                                                 self.other_cards_parent.position.y +
+                                                 self.other_cards_parent.get_size().y))
 
     def clear_scroll_view(self):
         for child in self.deck_cards_parent.get_children():

@@ -6,7 +6,8 @@ ui.yes:Да
 ui.no:Нет
 ui.back:Назад
 ui.decks:Колоды
-ui.own_decks:Мои колоды
+ui.own_deck:Моя колода
+ui.others_cards:Доступные карты
 soviet:Советский Союз
 germany:Германия
 infantry:Пехота
