@@ -123,7 +123,7 @@ class DecksScene(Scene):
 
         own_deck_background = Image(size=Vector(self.scroll_view.content.get_size().x,
                                                 OWN_DECK_BOARD_HEIGHT),
-                                    sprite=load_image('sprites/ui/slider_back.png'))
+                                    sprite=load_image('sprites/ui/my_deck_background.jpg'))
         own_deck_background.set_parent(self.scroll_view.content)
 
         self.deck_cards_parent = Image(size=Vector(self.scroll_view.content.get_size().x -
