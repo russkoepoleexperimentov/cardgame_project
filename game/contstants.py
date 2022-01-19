@@ -12,3 +12,4 @@ BUTTON_DEFAULT_DESIGN = {
 }
 
 DATABASE = 'data/cards.sqlite3'
+PLAYER_STATS_BASE = 'data/player_stats.sqlite3'
