@@ -48,6 +48,12 @@ class MenuScene(Scene):
         decks_button.add_component(ButtonSounds)
         decks_button.on_click.add_listener(self.load_decks_showroom)
 
+        chests_button = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE,
+                              title=translate_string('ui.chests'))
+        chests_button.set_parent(buttons_holder)
+        chests_button.add_component(ButtonSounds)
+        chests_button.on_click.add_listener(self.load_chests_showroom)
+
         settings_button = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE,
                                  title=translate_string('ui.settings'))
         settings_button.set_parent(buttons_holder)
@@ -77,3 +83,7 @@ class MenuScene(Scene):
     def load_decks_showroom(self):
         from scenes.decks_scene import DecksScene
         scene_manager.load(DecksScene())
+
+    def load_chests_showroom(self):
+        from scenes.chests_scene import ChestsScene
+        scene_manager.load(ChestsScene())
