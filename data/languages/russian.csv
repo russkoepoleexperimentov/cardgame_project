@@ -12,21 +12,21 @@ soviet:Советский Союз
 germany:Германия
 infantry:Пехота
 light_tank:Легкий танк
-medium_tank:Средний Танк
+medium_tank:Средний танк
 heavy_tank:Тяжёлый танк
 sau:САУ
 pt_sau:ПТ САУ
 artillery:Артиллерия
-anti_tank:Противотанковый
-anti_aircraft:Зенитный
+anti_tank:ПТО
+anti_aircraft:Зенитка
 fighter:Истребитель
-assault_aircraft:Штурмовой Самолет
-tactical_bomber:Тактич. Бомбард.
-heavy_fighter:Тяжелый Истребитель
+assault_aircraft:Штурмовик
+tactical_bomber:Тактич. бомб.
+heavy_fighter:Тяж. Истр.
 zsu:ЗСУ
-weapon_factory:Оруж. Фабрика
-fuel_factory:Топл. Фабрика
-strategy_bomber:Стратегич. Бомбард.
+weapon_factory:Оруж. фабрика
+fuel_factory:Топл. фабрика
+strategy_bomber:Страт. бомб.
 ui.chests:Сундуки
 ui.chest_info:Количество сундуков
 ui.open:Открыть!

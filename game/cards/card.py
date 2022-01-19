@@ -37,9 +37,7 @@ class CardInfo:
                  hit_points: int,
                  damage: int,
                  ammo_cost: int,
-                 fuel_cost: int,
-                 unlock: bool,
-                 in_deck: bool):
+                 fuel_cost: int):
         self.name = name
         self.icon_path = icon_path
         self.type = card_type
@@ -48,8 +46,6 @@ class CardInfo:
         self.damage = damage
         self.ammo_cost = ammo_cost
         self.fuel_cost = fuel_cost
-        self.unlock = unlock
-        self.in_deck = in_deck
 
     def __str__(self):
         return self.name

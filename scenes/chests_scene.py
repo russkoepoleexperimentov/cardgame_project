@@ -1,6 +1,6 @@
 import sqlite3
 from core import config
-from game.contstants import DATABASE, BUTTON_DEFAULT_DESIGN, BUTTONS_SIZE
+from game.contstants import PLAYER_STATS_BASE, BUTTON_DEFAULT_DESIGN, BUTTONS_SIZE
 from core.resources import load_image
 from core.scene import Scene
 from core.ui.button import Button
@@ -19,7 +19,7 @@ class ChestsScene(Scene):
     def __init__(self):
         super(ChestsScene, self).__init__()
         self.card_on_screen = False
-        self.con = sqlite3.connect(DATABASE)
+        self.con = sqlite3.connect(PLAYER_STATS_BASE)
         self.cur = self.con.cursor()
         self.screen_w, self.screen_h = tuple(map(int, config.get_value('vid_mode').split('x')))
         self.screen = Vector(self.screen_w, self.screen_h)
@@ -55,15 +55,24 @@ class ChestsScene(Scene):
             claim_info = Text(position=Vector(750, 150), size=BUTTONS_SIZE,
                               title=translate_string('ui.congratulations') + ':')
             self.add_game_object(claim_info)
-        self.card_on_screen = True
-        lock_cards = list(filter(lambda x: x.unlock == 'False', card_manager.game_cards))
+            self.card_on_screen = True
+        else:
+            self.remove_game_object(self.card)
+        unlock_cards = self.cur.execute('SELECT unlock_cards FROM '
+                                        'player_stats').fetchall()[0][0].split(', ')
+        lock_cards = list(filter(lambda x: x.name not in unlock_cards, card_manager.game_cards))
         random_card_info = choice(lock_cards)
-        card = random_card_info.build_card_object()
-        card.position = Vector(800, 180)
-        self.add_game_object(card)
-        self.cur.execute(f'UPDATE cards SET unlock = "True" WHERE name = "{random_card_info.name}"')
+        random_card_name = random_card_info.name
+        unlock_cards.append(random_card_name)
+        self.card = random_card_info.build_card_object()
+        self.card.position = Vector(800, 180)
+        self.add_game_object(self.card)
+        unlock_cards = ', '.join(unlock_cards)
+        self.cur.execute(f'UPDATE player_stats SET unlock_cards = "{unlock_cards}"')
         self.con.commit()
 
-
     def back(self):
+        self.cur.execute(f'UPDATE player_stats SET chests_count = {self.chest_count}')
+        self.con.commit()
+        self.con.close()
         scene_manager.load(MenuScene())
