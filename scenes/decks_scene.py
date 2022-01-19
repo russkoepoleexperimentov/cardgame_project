@@ -77,7 +77,7 @@ class DecksScene(Scene):
         horizontal_layout_group = self.switch_buttons_group.add_component(HorizontalLayoutGroup)
         horizontal_layout_group.spacing = BTN_MARGIN
 
-        nations = sorted(card_manager.game_cards)
+        nations = sorted(card_manager.nations)
 
         self.nation_buttons = dict()
 
@@ -164,7 +164,11 @@ class DecksScene(Scene):
             button.interactable = True
         self.nation_buttons[nation].interactable = False
 
-        cards = card_manager.game_cards.get(nation, [])
+        cards = list(filter(lambda card_info: card_info.nation == nation, card_manager.game_cards))
+
+        if len(cards) < 1:
+            return None
+
         deck_cards = list(filter(lambda x: x.in_deck == 'True', cards))
         other_cards = list(filter(lambda x: x.in_deck == 'False', cards))
 

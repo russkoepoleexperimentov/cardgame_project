@@ -40,7 +40,6 @@ class Scene:
 
     def add_game_object(self, obj: GameObject, priority=0):
         if not self.has_game_object(obj):
-            # self.__game_objects[obj] = priority
             self.__game_objects_to_add[obj] = priority
         else:
             raise ValueError(obj)
@@ -54,7 +53,6 @@ class Scene:
 
     def remove_game_object(self, obj: GameObject):
         if self.has_game_object(obj):
-            #del self.__game_objects[obj]
             self.__game_objects_to_remove.add(obj)
         else:
             raise ValueError(obj)

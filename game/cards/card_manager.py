@@ -3,7 +3,8 @@ import sqlite3
 from game.cards.card import CardInfo
 from game.contstants import DATABASE
 
-game_cards = {}
+nations = set()
+game_cards = list()
 
 
 def init():
@@ -24,9 +25,8 @@ def init():
                              unlock=card_data[8],
                              in_deck=card_data[9])
 
-        nation_list = game_cards.get(card_info.nation, list())
-        nation_list.append(card_info)
-        game_cards[card_info.nation] = nation_list
+        game_cards.append(card_info)
+        nations.add(card_info.nation)
     """con = sqlite3.connect(DATABASE)
         cur = con.cursor()
         card_data = cur.execute(f"SELECT * FROM cards WHERE name = '{name}'").fetchall()[0]
