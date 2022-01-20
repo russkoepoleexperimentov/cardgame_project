@@ -8,6 +8,8 @@ game_cards = list()
 deck_by_nation = dict()
 cards_by_nation = dict()
 
+player_id = 1
+
 
 def init():
     # cards db
@@ -18,9 +20,6 @@ def init():
     con.close()
 
     # player_stats db
-    # TODO: get unique player id
-    player_id = 1
-
     con = sqlite3.connect(PLAYER_STATS_BASE)
     cur = con.cursor()
     player_data = cur.execute(f"""SELECT * FROM player_stats 
@@ -28,7 +27,6 @@ def init():
     cur.close()
     con.close()
 
-    # TODO: dynamic nation deck assign
     SEP = ', '
     soviet_deck, germany_deck, unlocked_cards = map(lambda t: t.split(SEP), player_data[1:4])
     deck_data = {
@@ -61,3 +59,16 @@ def init():
 
 def check_in_deck(card_info: CardInfo):
     return card_info in deck_by_nation[card_info.nation]
+
+
+def save_cards_to_db():
+    soviet_deck = ', '.join([x.name for x in deck_by_nation['soviet']])
+    germany_deck = ', '.join([x.name for x in deck_by_nation['germany']])
+
+    con = sqlite3.connect(PLAYER_STATS_BASE)
+    cur = con.cursor()
+    cur.execute(f"""UPDATE player_stats SET soviet_deck = '{soviet_deck}',
+    germany_deck = '{germany_deck}' WHERE player_id = '{player_id}'""")
+    con.commit()
+    cur.close()
+    con.close()

@@ -7,11 +7,10 @@ from core.vector import Vector
 from game.button_sounds import ButtonSounds
 from game.cards import card_manager
 from game.contstants import BUTTON_DEFAULT_DESIGN
+from game.decks_scene.cards_list import CardsList
 
 
 # buttons
-from game.decks_scene.cards_list import CardsList
-
 BTN_SIZE = Vector(150, 30)
 BTN_MARGIN = 5
 
@@ -39,6 +38,7 @@ class NationButtons(Component):
 
     def set_cards_list(self, cards_list):
         self.cards_list = cards_list
+        self.cards_list.nation_buttons = self.get_game_object()
         nations = sorted(card_manager.nations)
 
         if nations:

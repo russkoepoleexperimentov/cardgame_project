@@ -11,3 +11,4 @@ def switch_cards(nation, in_deck: CardInfo, other: CardInfo):
     in_deck_index = deck.index(in_deck)
     deck.remove(in_deck)
     deck.insert(in_deck_index, other)
+    card_manager.save_cards_to_db()

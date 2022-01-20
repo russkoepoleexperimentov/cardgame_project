@@ -14,6 +14,7 @@ from core.localization import translate_string
 from game.button_sounds import ButtonSounds
 
 from game.cards import card_manager
+from game.decks_scene import card_click_handler
 
 from game.contstants import BUTTON_DEFAULT_DESIGN
 from game.cards.card import CARD_SIZE
@@ -54,7 +55,6 @@ class DecksScene(Scene):
 
         self.init_scroll_view()
         self.init_switch_buttons()
-        self.init_add_to_deck_elems()
 
     def init_scroll_view(self):
         self.scroll_view = ScrollView(size=Vector(self.screen_w - 2 * SV_SIDE_OFFSET -
@@ -88,86 +88,7 @@ class DecksScene(Scene):
                 self.load_menu()
 
     def load_menu(self):
+        if card_click_handler.swap_candidate:
+            return
         from scenes.menu import MenuScene
         scene_manager.load(MenuScene())
-
-    def init_add_to_deck_elems(self):
-        self.exchange_cards_message = Text(position=Vector(0, 20),
-                                           size=Vector(self.screen_w, LABEL_HEIGHT),
-                                           title=translate_string('ui.change_deck_card_msg'),
-                                           align='center',
-                                           valign='middle',
-                                           font_size=72)
-        self.exchange_cards_message.enabled = False
-        self.add_game_object(self.exchange_cards_message)
-
-        size = self.screen * 2
-        self.ui_disabler = Button(size=size)
-
-        def on_click():
-            self.ui_disabler.enabled = False
-
-        self.ui_disabler.on_click.add_listener(on_click)
-        self.add_game_object(self.ui_disabler)
-
-        self.btn_add = Button(**BUTTON_DEFAULT_DESIGN, size=BTN_SIZE, position=self.screen,
-                              title='ui.move_to_deck')
-        self.btn_add.set_parent(self.ui_disabler)
-        self.ui_disabler.enabled = False
-
-        self.exchange_dialog = ScrollView(size=Vector(self.screen_w - 2 * SV_SIDE_OFFSET -
-                                                  SV_SLIDER_WIDTH,
-                                                  self.screen_h - SV_TOP_OFFSET - SV_BOTTOM_OFFSET),
-                                          position=Vector(SV_SIDE_OFFSET, SV_TOP_OFFSET),
-                                          background_sprite=
-                                          load_image('sprites/ui/scroll_view_back.png'),
-                                          slider_background_sprite=
-                                          load_image('sprites/ui/slider_back.png'),
-                                          slider_handle_sprite=
-                                          load_image('sprites/ui/slider_handle.png'),
-                                          slider_width=SV_SLIDER_WIDTH)
-        self.add_game_object(self.exchange_dialog)
-
-        self.exchange_dialog.enabled = False
-
-    def on_click_deck_card(self, card_info, card_object):
-        if self.exchanging_card:
-            self.exchanging_card_obj.set_parent(self.deck_cards_parent)
-            card_object.set_parent(self.other_cards_parent)
-
-            self.exchanging_card_obj = None
-            self.exchanging_card_info = None
-            self.exchanging_card = False
-
-            self.exchange_dialog.enabled = False
-            self.scroll_view.enabled = True
-            self.switch_buttons_group.enabled = True
-            self.exchange_cards_message.enabled = False
-
-            self.other_layouts_group.refresh()
-            self.deck_layouts_group.refresh()
-
-
-    def on_click_other_card(self, card_info, card_object):
-        self.ui_disabler.enabled = True
-        self.ui_disabler.position = Vector(*pygame.mouse.get_pos()) - self.screen
-        self.btn_add.on_click.clear()
-
-        def click():
-            self.scroll_view.slider.set_value(0)
-            self.exchange_cards_message.enabled = True
-
-            self.exchanging_card = True
-            self.exchanging_card_obj = card_object
-            self.exchanging_card_info = card_info
-
-            #self.exchange_dialog.enabled = True
-            self.ui_disabler.enabled = False
-            #self.scroll_view.enabled = False
-            #self.switch_buttons_group.enabled = False
-
-            #cards = list(
-            #    filter(lambda info: card_info.nation == info.nation, card_manager.game_cards))
-            #deck_cards = list(filter(lambda x: x.in_deck == 'True', cards))
-
-        self.btn_add.on_click.add_listener(click)

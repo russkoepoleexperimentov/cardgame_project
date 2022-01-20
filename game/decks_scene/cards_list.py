@@ -40,10 +40,10 @@ class CardsList(Component):
         self.scroll_view = owner
         self.screen_w, self.screen_h = tuple(map(int, config.get_value('vid_mode').split('x')))
         self.screen = Vector(self.screen_w, self.screen_h)
+        self.nation_buttons = None
 
         # vars for swap cards
         self.card_swapping = False
-        self.card_to_deck = None
 
         # deck cards parent
         deck_background = Image(size=Vector(self.scroll_view.content.get_size().x,
@@ -127,10 +127,7 @@ class CardsList(Component):
         deck_cards = tuple(card_manager.deck_by_nation[nation])
         for card_info in deck_cards:
             card_obj = card_info.build_card_object()
-            """btn = Button(size=card_obj.get_size())
-            btn.set_parent(card_obj)
-            btn.on_click.add_listener(lambda cinfo=card_info, cobj=card_obj:
-                                      self.on_click_deck_card(cinfo, cobj))"""
+            card_obj.add_component(CardClickHandler).init(card_info, self, True)
             card_obj.set_parent(self.deck_cards_parent)
 
         self.scroll_view.content.set_size(Vector(self.scroll_view.get_size().x,
@@ -142,10 +139,23 @@ class CardsList(Component):
         other_cards = tuple(set(card_manager.cards_by_nation[nation]) - set(deck_cards))
         for card_info in other_cards:
             card_obj = card_info.build_card_object()
-            card_obj.add_component(CardClickHandler).init(False)
+            card_obj.add_component(CardClickHandler).init(card_info, self, False)
             card_obj.set_parent(self.other_cards_parent)
 
         self.scroll_view.content.set_size(Vector(self.scroll_view.get_size().x,
                                                  self.other_cards_parent.position.y +
                                                  self.other_cards_parent.get_size().y))
+
+    def start_card_swap_operation(self):
+        self.clear_scroll_view()
+        self.scroll_to_top()
+        self.display_deck(self._displayed_nation)
+        self.nation_buttons.enabled = False
+        self.card_swapping = True
+
+    def swap_cards(self, in_deck, other):
+        card_switcher.switch_cards(self._displayed_nation, in_deck, other)
+        self.card_swapping = False
+        self.display_nation(self._displayed_nation)
+        self.nation_buttons.enabled = True
 
