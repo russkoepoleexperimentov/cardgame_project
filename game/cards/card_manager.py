@@ -1,19 +1,41 @@
 import sqlite3
 
 from game.cards.card import CardInfo
-from game.contstants import DATABASE
+from game.contstants import DATABASE, PLAYER_STATS_BASE
 
 nations = set()
 game_cards = list()
 deck_by_nation = dict()
+cards_by_nation = dict()
 
 
 def init():
+    # cards db
     con = sqlite3.connect(DATABASE)
     cur = con.cursor()
     cards_data = cur.execute(f"SELECT * FROM cards").fetchall()
     cur.close()
     con.close()
+
+    # player_stats db
+    # TODO: get unique player id
+    player_id = 1
+
+    con = sqlite3.connect(PLAYER_STATS_BASE)
+    cur = con.cursor()
+    player_data = cur.execute(f"""SELECT * FROM player_stats 
+    WHERE player_id = '{player_id}'""").fetchall()[0]
+    cur.close()
+    con.close()
+
+    # TODO: dynamic nation deck assign
+    SEP = ', '
+    soviet_deck, germany_deck, unlocked_cards = map(lambda t: t.split(SEP), player_data[1:4])
+    deck_data = {
+        'soviet': soviet_deck,
+        'germany': germany_deck
+    }
+
     for card_data in cards_data:
         card_info = CardInfo(name=card_data[0],
                              icon_path=card_data[5],
@@ -27,42 +49,15 @@ def init():
         game_cards.append(card_info)
         nations.add(card_info.nation)
 
-        if card_info.in_deck:
+        cards = cards_by_nation.get(card_info.nation, [])
+        cards.append(card_info)
+        cards_by_nation[card_info.nation] = cards
+
+        if card_info.name in deck_data[card_info.nation]:
             deck = deck_by_nation.get(card_info.nation, [])
             deck.append(card_info)
             deck_by_nation[card_info.nation] = deck
 
 
-
-
-    """con = sqlite3.connect(DATABASE)
-        cur = con.cursor()
-        card_data = cur.execute(f"SELECT * FROM cards WHERE name = '{name}'").fetchall()[0]
-        self.name = name
-        self.hit_points = card_data[1]
-        self.damage = card_data[2]
-        self.ammo_cost = card_data[3]
-        self.fuel_cost = card_data[4]
-        self.icon_path = card_data[5]
-        self.nation = card_data[6]
-        self.type = card_data[7]
-        self.unlock = card_data[8]
-        cur.close()
-        con.close()
-    con = sqlite3.connect(DATABASE)
-    cur = con.cursor()
-
-    nations = set([x[0] for x in cur.execute(f"SELECT nation FROM cards").fetchall()])
-    nations = list(nations)
-    nations.sort()
-
-    cur.close()
-    con.close()
-
-    for nation in nations:
-        btn = Button(**BUTTON_DEFAULT_DESIGN, size=BTN_SIZE, title=translate_string(nation))
-        btn.set_parent(self.switch_buttons_group)
-        btn.add_component(ButtonSounds)
-        btn.label.set_font_size(20)
-
-        btn.on_click.add_listener(lambda n=nation: self.show_nation(n))"""
+def check_in_deck(card_info: CardInfo):
+    return card_info in deck_by_nation[card_info.nation]
