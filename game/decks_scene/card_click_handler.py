@@ -22,6 +22,9 @@ class CardClickHandler(Component):
 
         if in_deck:
             def process_click():
+                if not card_list.card_swapping:
+                    return
+
                 global swap_candidate
                 card_list.swap_cards(card_info, swap_candidate)
                 swap_candidate = None
