@@ -25,10 +25,26 @@ class VerticalLayoutGroup(LayoutGroup):
 
 
 class HorizontalLayoutGroup(LayoutGroup):
+    def __init__(self, owner: UIElement):
+        super(HorizontalLayoutGroup, self).__init__(owner)
+        self.anchor = 'left'
+
     def refresh(self):
+        size_x = 0
+        for child in self.get_game_object().get_children():
+            size_x += child.get_size().x + self.spacing
+        else:
+            size_x -= self.spacing
+
+        start_pos = Vector()
+        if self.anchor == 'left':
+            start_pos = Vector()
+        elif self.anchor == 'center':
+            start_pos = Vector(self.get_game_object().get_size().x // 2 - size_x // 2, 0)
+
         offset = 0
         for child in self.get_game_object().get_children():
-            child.position = Vector(offset, 0)
+            child.position = start_pos + Vector(offset, 0)
             offset += child.get_size().x + self.spacing
 
 
