@@ -60,6 +60,11 @@ def init():
 def check_in_deck(card_info: CardInfo):
     return card_info in deck_by_nation[card_info.nation]
 
+def return_card_by_name(name):
+    for card in game_cards:
+        if card.name == name:
+            return card
+
 
 def save_cards_to_db():
     soviet_deck = ', '.join([x.name for x in deck_by_nation['soviet']])

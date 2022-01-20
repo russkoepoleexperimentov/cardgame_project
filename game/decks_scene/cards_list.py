@@ -10,7 +10,6 @@ from core.ui.scroll_view import ScrollView
 from core.ui.text import Text
 from core.vector import Vector
 from game.cards import card_manager
-from game.cards.card import CARD_SIZE, BOTTOM_TEXT_SIZE, BOTTOM_TEXT_POS
 from game.contstants import BUTTON_DEFAULT_DESIGN
 from game.decks_scene import card_switcher
 
@@ -63,7 +62,7 @@ class CardsList(Component):
 
         layout_group = self.deck_layouts_group = \
             self.deck_cards_parent.add_component(GridLayoutGroup)
-        layout_group.cell_size = CARD_SIZE
+        layout_group.cell_size = Vector(200, 200 / 0.7)
         layout_group.spacing = 25
 
         # other cards parent
@@ -76,7 +75,7 @@ class CardsList(Component):
 
         layout_group = self.other_layouts_group = \
             self.other_cards_parent.add_component(GridLayoutGroup)
-        layout_group.cell_size = CARD_SIZE
+        layout_group.cell_size = Vector(200, 200 / 0.7)
         layout_group.spacing = 25
 
         # labels / titles

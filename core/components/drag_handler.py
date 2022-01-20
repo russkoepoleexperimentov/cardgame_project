@@ -20,7 +20,8 @@ class DragHandler(Component):
     def event_hook(self, event):
         mouse_pos = pygame.mouse.get_pos()
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
-            if ui_manager.get_selected() == self.get_game_object() and ui_manager.get_dragged() is None:
+            if ui_manager.get_selected() == self.get_game_object() and ui_manager.get_dragged() \
+                    is None:
                 ui_manager.set_dragged(self)
                 self.get_game_object().block_raycasts = False
                 self.drag_offset = self.get_game_object().position - Vector(*mouse_pos)

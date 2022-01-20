@@ -19,6 +19,7 @@ class ChestsScene(Scene):
     def __init__(self):
         super(ChestsScene, self).__init__()
         self.card_on_screen = False
+        self.card = None
         self.con = sqlite3.connect(PLAYER_STATS_BASE)
         self.cur = self.con.cursor()
         self.screen_w, self.screen_h = tuple(map(int, config.get_value('vid_mode').split('x')))

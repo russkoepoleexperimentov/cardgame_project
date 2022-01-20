@@ -41,6 +41,7 @@ class MenuScene(Scene):
                               title=translate_string('ui.start'))
         start_button.set_parent(buttons_holder)
         start_button.add_component(ButtonSounds)
+        start_button.on_click.add_listener(self.load_game)
 
         decks_button = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE,
                               title=translate_string('ui.decks'))
@@ -87,3 +88,7 @@ class MenuScene(Scene):
     def load_chests_showroom(self):
         from scenes.chests_scene import ChestsScene
         scene_manager.load(ChestsScene())
+
+    def load_game(self):
+        from scenes.game_scene import GameScene
+        scene_manager.load(GameScene())

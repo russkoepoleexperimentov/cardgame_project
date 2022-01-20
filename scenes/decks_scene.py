@@ -17,7 +17,6 @@ from game.cards import card_manager
 from game.decks_scene import card_click_handler
 
 from game.contstants import BUTTON_DEFAULT_DESIGN
-from game.cards.card import CARD_SIZE
 
 from core import scene_manager
 from game.decks_scene.cards_list import SV_SLIDER_WIDTH, SV_SIDE_OFFSET, SV_TOP_OFFSET, \
@@ -88,7 +87,5 @@ class DecksScene(Scene):
                 self.load_menu()
 
     def load_menu(self):
-        if card_click_handler.swap_candidate:
-            return
         from scenes.menu import MenuScene
         scene_manager.load(MenuScene())

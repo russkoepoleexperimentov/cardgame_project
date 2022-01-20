@@ -2,14 +2,14 @@ from core.component import Component
 from core.ui.button import Button
 from core.ui.image import Image
 from core.vector import Vector
-from game.cards.card import CARD_SIZE, BOTTOM_TEXT_POS, BOTTOM_TEXT_SIZE, CardInfo
+from game.cards.card import CardInfo
 from game.contstants import BUTTON_DEFAULT_DESIGN
-
+from core.localization import translate_string
 swap_candidate: CardInfo = None
 swap_candidate_obj: Image = None
 
-SWAP_BUTTON_SIZE = Vector(CARD_SIZE.x, BOTTOM_TEXT_SIZE.y)
-SWAP_BUTTON_POS = Vector(0, BOTTOM_TEXT_POS.y)
+SWAP_BUTTON_SIZE = Vector(200, 100 * 200 / 720)
+SWAP_BUTTON_POS = Vector(0, 937 * 200 / 720)
 
 
 class CardClickHandler(Component):
@@ -35,7 +35,7 @@ class CardClickHandler(Component):
             self.swap_btn = Button(**BUTTON_DEFAULT_DESIGN,
                                    position=SWAP_BUTTON_POS,
                                    size=SWAP_BUTTON_SIZE,
-                                   title='swap')
+                                   title=translate_string('swap'))
 
             def start_swap_operation(swap_btn=self.swap_btn):
                 if card_list.card_swapping:
