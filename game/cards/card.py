@@ -124,6 +124,5 @@ class CardInfo:
                            font_size=damage_hp_text_font_size)
         card_damage.set_parent(card_back)
         card_damage.block_raycasts = False
-        print(card_hit_points.get_sibling_index(), card_damage.get_sibling_index())
 
         return card_back

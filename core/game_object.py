@@ -39,14 +39,17 @@ class GameObject:
     def get_size(self):
         return self.__size
 
-    def set_parent(self, other):
+    def set_parent(self, other, sibling_index=-1):
         if self.__parent is not None:
             self.__parent.__children.remove(self)
 
         self.__parent = other
 
         if self.__parent is not None:
-            self.__parent.__children.append(self)
+            if sibling_index == -1 or sibling_index >= len(self.__parent.__children):
+                self.__parent.__children.append(self)
+            else:
+                self.__parent.__children.insert(sibling_index, self)
             self.__parent.on_add_children.invoke(self)
 
     def get_parent(self):
@@ -63,6 +66,14 @@ class GameObject:
 
     def child_count(self):
         return len(self.__children)
+
+    def set_sibling_index(self, index):
+        if self.__parent is None:
+            return
+
+        parent = self.__parent
+        self.set_parent(None)
+        self.set_parent(parent, index)
 
     def get_sibling_index(self):
         if self.__parent is None:

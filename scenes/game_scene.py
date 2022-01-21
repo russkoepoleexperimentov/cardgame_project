@@ -11,6 +11,7 @@ from core.localization import translate_string
 from game.button_sounds import ButtonSounds
 from game.cards import card_manager
 from core import scene_manager
+from game.game_scene.card_line import CardLine
 from scenes.menu import MenuScene
 from random import sample
 from core.ui.layout_group import HorizontalLayoutGroup
@@ -132,6 +133,7 @@ class GameScene(Scene):
         self.my_frontline_box = Image(position=Vector(400, 384), size=line_box_size,
                                       sprite=background_image)
         self.my_frontline_box.add_component(HorizontalLayoutGroup)
+        self.my_frontline_box.add_component(CardLine)
         self.add_game_object(self.my_frontline_box)
 
         my_frontline_icon = Image(position=Vector(976, 429.8), size=icon_size,

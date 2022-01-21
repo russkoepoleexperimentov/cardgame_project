@@ -4,8 +4,11 @@ from core.action import Action
 from core.component import Component
 from core.components.drag_handler import DragHandler
 from core.ui.image import Image
+from core.ui.layout_group import HorizontalLayoutGroup
 from core.vector import Vector
 from game.cards.card import CardInfo
+
+from core import scene_manager
 
 
 class GameCard(Component):
@@ -18,12 +21,17 @@ class GameCard(Component):
         self.drag_handler.follow_mouse = False
         self.drag_handler.on_begin_drag.add_listener(self.on_begin_drag)
         self.drag_handler.on_drag.add_listener(self.on_drag)
+        self.drag_handler.on_end_drag.add_listener(self.on_end_drag)
 
         self.on_die = Action()
 
         self._card_info = None
         self._hit_points = 0
         self._damage = 0
+        self.on_table = False
+        self._last_parent = None
+        self._last_sibling_index = -1
+        self._last_position = Vector()
 
     def init(self, card_info: CardInfo):
         self._card_info = card_info
@@ -48,9 +56,24 @@ class GameCard(Component):
         return self._card_info
 
     def on_begin_drag(self):
+        self._last_parent = self.get_game_object().get_parent()
+        self._last_sibling_index = self.get_game_object().get_sibling_index()
+        self._last_position = self.get_game_object().position
+
+        self.get_game_object().position = self.get_game_object().get_global_position()
+        self.get_game_object().set_parent(None)
         mouse_pos = pygame.mouse.get_pos()
         self.drag_offset = self.get_game_object().position - Vector(*mouse_pos)
+
+        scene_manager.get_loaded_scene().add_game_object(self.get_game_object())
 
     def on_drag(self):
         mouse_pos = pygame.mouse.get_pos()
         self.get_game_object().position = Vector(*mouse_pos) + self.drag_offset
+
+    def on_end_drag(self):
+        if self.get_game_object().get_parent() is None:
+            if not self.on_table:
+                self.get_game_object().set_parent(self._last_parent, self._last_sibling_index)
+                self.get_game_object().position = self._last_position
+        scene_manager.get_loaded_scene().remove_game_object(self.get_game_object())
