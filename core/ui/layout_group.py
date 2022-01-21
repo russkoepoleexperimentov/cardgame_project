@@ -27,7 +27,8 @@ class VerticalLayoutGroup(LayoutGroup):
 class HorizontalLayoutGroup(LayoutGroup):
     def __init__(self, owner: UIElement):
         super(HorizontalLayoutGroup, self).__init__(owner)
-        self.anchor = 'left'
+        self.anchor = 'center'
+        self.spacing = 30
 
     def refresh(self):
         size_x = 0
