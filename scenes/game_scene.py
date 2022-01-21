@@ -1,6 +1,7 @@
 import sqlite3
+import pygame
 from core import config
-from game.contstants import PLAYER_STATS_BASE, BUTTON_DEFAULT_DESIGN
+from game.contstants import PLAYER_STATS_BASE, BUTTON_DEFAULT_DESIGN, BUTTONS_SIZE
 from core.resources import load_image
 from core.scene import Scene
 from core.ui.button import Button
@@ -8,13 +9,14 @@ from core.ui.image import Image
 from core.ui.text import Text
 from core.vector import Vector
 from core.localization import translate_string
+from core.application import close as close_app
 from game.button_sounds import ButtonSounds
 from game.cards import card_manager
 from core import scene_manager
 from game.game_scene.card_line import CardLine
 from scenes.menu import MenuScene
 from random import sample
-from core.ui.layout_group import HorizontalLayoutGroup
+from core.ui.layout_group import HorizontalLayoutGroup, VerticalLayoutGroup
 from game.game_scene.game_card import GameCard
 
 
@@ -60,6 +62,9 @@ class GameScene(Scene):
                                   valign='middle', size=Vector(350, 30), position=Vector(774, 450))
         self.add_game_object(self.germany_label)
 
+        self.game_menu_opened = False
+        self.game_loaded = False
+
     def soviet_choice(self):
         self.my_deck = list(card_manager.deck_by_nation.get('soviet'))
         self.enemy_deck = sample(list(card_manager.cards_by_nation.get('germany')), k=15)
@@ -71,6 +76,7 @@ class GameScene(Scene):
         self.load_game()
 
     def load_game(self):
+        self.game_loaded = True
         self.remove_game_object(self.back_btn)
         self.remove_game_object(self.choice_label)
         self.remove_game_object(self.soviet_btn)
@@ -89,19 +95,19 @@ class GameScene(Scene):
         icon_size = Vector(50, 50)
         line_box_size = Vector(566, 141.6)
         self.card_size = Vector(99.12, 141.6)
-        backside_image = load_image('sprites/card_face_back.png')
+        self.backside_image = load_image('sprites/card_face_back.png')
         deck_box_size = Vector(456.88, 141.6)
 
         enemy_backside_1 = Image(position=Vector(400, -80.8), size=self.card_size,
-                                 sprite=backside_image)
+                                 sprite=self.backside_image)
         self.add_game_object(enemy_backside_1)
 
         enemy_backside_2 = Image(position=Vector(403, -77.8), size=self.card_size,
-                                 sprite=backside_image)
+                                 sprite=self.backside_image)
         self.add_game_object(enemy_backside_2)
 
         enemy_backside_3 = Image(position=Vector(406, -74.8), size=self.card_size,
-                                 sprite=backside_image)
+                                 sprite=self.backside_image)
         self.add_game_object(enemy_backside_3)
 
         self.enemy_deck_box = Image(position=Vector(509.12, -80.8), size=deck_box_size)
@@ -149,7 +155,7 @@ class GameScene(Scene):
         self.add_game_object(my_backline_icon)
 
         my_backside = Image(position=Vector(400, 687.2), size=self.card_size,
-                            sprite=backside_image)
+                            sprite=self.backside_image)
         self.add_game_object(my_backside)
 
         self.my_deck_box = Image(position=Vector(509.12, 687.2), size=deck_box_size)
@@ -160,6 +166,7 @@ class GameScene(Scene):
                                    size=Vector(120, 50), title=translate_string('end_turn'))
         self.end_turn_btn.label.set_font_size(20)
         self.end_turn_btn.on_click.add_listener(self.end_turn)
+        self.end_turn_btn.add_component(ButtonSounds)
         self.add_game_object(self.end_turn_btn)
 
         ammo_icon = Image(position=Vector(1200, 444), size=icon_size,
@@ -208,3 +215,54 @@ class GameScene(Scene):
 
     def back(self):
         scene_manager.load(MenuScene())
+
+    def event_hook(self, event):
+        super().event_hook(event)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                if not self.game_menu_opened and self.game_loaded:
+                    self.game_menu_opened = True
+
+                    self.menu_background = Image(size=Vector(300, 316), position=Vector(533, 226),
+                                                 sprite=self.backside_image)
+                    self.add_game_object(self.menu_background, 200)
+
+                    game_menu = Image(size=Vector(260, 376), position=Vector(20, 20))
+                    btn_box = game_menu.add_component(VerticalLayoutGroup)
+                    btn_box.spacing = 20
+                    game_menu.set_parent(self.menu_background)
+
+                    menu_label = Text(size=BUTTONS_SIZE, title=translate_string('ui.menu'),
+                                      align='center', valign='middle')
+                    menu_label.set_parent(game_menu)
+
+                    resume_btn = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE,
+                                        title=translate_string('resume'))
+                    resume_btn.on_click.add_listener(self.resume)
+                    resume_btn.add_component(ButtonSounds)
+                    resume_btn.set_parent(game_menu)
+
+                    exit_match_btn = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE,
+                                        title=translate_string('exit_match'))
+                    exit_match_btn.on_click.add_listener(self.exit_match)
+                    exit_match_btn.add_component(ButtonSounds)
+                    exit_match_btn.set_parent(game_menu)
+
+                    exit_game_btn = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE,
+                                            title=translate_string('exit_game'))
+                    exit_game_btn.on_click.add_listener(self.exit_game)
+                    exit_game_btn.add_component(ButtonSounds)
+                    exit_game_btn.set_parent(game_menu)
+
+                elif self.game_menu_opened:
+                    self.resume()
+
+    def resume(self):
+        self.remove_game_object(self.menu_background)
+        self.game_menu_opened = False
+
+    def exit_match(self):
+        scene_manager.load(MenuScene())
+
+    def exit_game(self):
+        close_app()

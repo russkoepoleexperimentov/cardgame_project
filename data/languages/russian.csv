@@ -34,3 +34,7 @@ ui.congratulations:Поздравляем! Вы получили
 ui.deck_choice:Выберите нацию
 swap:Выбрать
 end_turn:Завершить ход
+resume:Продолжить
+exit_match:Покинуть матч
+exit_game:Выйти из игры
+ui.menu:Меню
