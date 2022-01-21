@@ -51,6 +51,12 @@ class CardInfo:
 
         bottom_text_size = Vector(360 * card_scale, 100 * card_scale)
         bottom_text_pos = Vector(0, 937 * card_scale)
+
+        damage_hp_text_size = Vector(175 * card_scale, 67 * card_scale)
+        damage_hp_text_font_size = int(70 * card_scale)
+        hp_text_pos = Vector(371 * card_scale, 104 * card_scale)
+        damage_text_pos = Vector(157 * card_scale, 104 * card_scale)
+
         card_back = Image(size=card_size,
                           sprite=load_image('sprites/card_face_back.png'))
 
@@ -58,10 +64,12 @@ class CardInfo:
                           sprite=load_image(self.icon_path),
                           position=card_icon_position)
         card_icon.set_parent(card_back)
+        card_icon.block_raycasts = False
 
         card_face = Image(size=card_size,
                           sprite=load_image('sprites/card_face.png'))
         card_face.set_parent(card_back)
+        card_face.block_raycasts = False
 
         card_name = Text(position=text_name_pos,
                          size=text_name_size,
@@ -70,6 +78,7 @@ class CardInfo:
                          valign='middle',
                          font_size=int(80 * card_scale))
         card_name.set_parent(card_back)
+        card_name.block_raycasts = False
 
         card_ammo_cost = Text(position=Vector(0, cost_text_top),
                               size=cost_text_size,
@@ -78,6 +87,7 @@ class CardInfo:
                               valign='bottom',
                               font_size=int(108 * card_scale))
         card_ammo_cost.set_parent(card_back)
+        card_ammo_cost.block_raycasts = False
 
         card_fuel_cost = Text(position=Vector(564 * card_scale, cost_text_top),
                               size=cost_text_size,
@@ -86,6 +96,7 @@ class CardInfo:
                               valign='bottom',
                               font_size=int(108 * card_scale))
         card_fuel_cost.set_parent(card_back)
+        card_fuel_cost.block_raycasts = False
 
         card_type = Text(position=bottom_text_pos,
                          size=bottom_text_size,
@@ -94,5 +105,25 @@ class CardInfo:
                          valign='middle',
                          font_size=int(70 * card_scale))
         card_type.set_parent(card_back)
+        card_type.block_raycasts = False
+
+        card_hit_points = Text(position=hp_text_pos,
+                               size=damage_hp_text_size,
+                               title=str(self.hit_points),
+                               align='right',
+                               valign='middle',
+                               font_size=damage_hp_text_font_size)
+        card_hit_points.set_parent(card_back)
+        card_hit_points.block_raycasts = False
+
+        card_damage = Text(position=damage_text_pos,
+                           size=damage_hp_text_size,
+                           title=str(self.damage),
+                           align='right',
+                           valign='middle',
+                           font_size=damage_hp_text_font_size)
+        card_damage.set_parent(card_back)
+        card_damage.block_raycasts = False
+        print(card_hit_points.get_sibling_index(), card_damage.get_sibling_index())
 
         return card_back
