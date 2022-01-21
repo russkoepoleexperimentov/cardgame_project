@@ -28,7 +28,6 @@ class DragHandler(Component):
                 self.on_begin_drag.invoke()
         if event.type == pygame.MOUSEBUTTONUP and event.button == pygame.BUTTON_LEFT:
             if ui_manager.get_dragged() == self:
-                self.on_end_drag.invoke()
                 self.get_game_object().block_raycasts = True
                 ui_manager.remove_dragged()
 
@@ -36,6 +35,7 @@ class DragHandler(Component):
                     drop_handler = ui_manager.get_selected().get_component(DropHandler)
                     if drop_handler:
                         drop_handler.process_drop(self)
+                self.on_end_drag.invoke()
         if event.type == pygame.MOUSEMOTION:
             if ui_manager.get_dragged() == self:
                 if self.follow_mouse:

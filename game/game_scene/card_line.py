@@ -15,7 +15,12 @@ class CardLine(Component):
         self.drop_handler: DropHandler = owner.add_component(DropHandler)
         self.drop_handler.on_drop.add_listener(self.on_drop)
 
-        self._cards = []
+    def add_card(self, game_card: GameCard):
+        if game_card.on_table:
+            return
+
+        game_card.on_table = True
+        game_card.get_game_object().set_parent(self.get_game_object())
 
     def on_drop(self, drag: DragHandler):
         if not self.allow_add_cards:
@@ -25,9 +30,4 @@ class CardLine(Component):
         game_card: GameCard = obj.get_component(GameCard)
 
         if game_card:
-            if game_card.on_table:
-                return
-
-            game_card.on_table = True
-            obj.set_parent(self.get_game_object())
-
+            self.add_card(game_card)

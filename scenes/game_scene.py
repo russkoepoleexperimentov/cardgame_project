@@ -1,6 +1,8 @@
 import sqlite3
 import pygame
 from core import config
+from core.components.drag_handler import DragHandler
+from core.components.drop_handler import DropHandler
 from game.contstants import PLAYER_STATS_BASE, BUTTON_DEFAULT_DESIGN, BUTTONS_SIZE
 from core.resources import load_image
 from core.scene import Scene
@@ -13,6 +15,7 @@ from core.application import close as close_app
 from game.button_sounds import ButtonSounds
 from game.cards import card_manager
 from core import scene_manager
+from game.game_scene import game_manager
 from game.game_scene.card_line import CardLine
 from scenes.menu import MenuScene
 from random import sample
@@ -117,6 +120,8 @@ class GameScene(Scene):
         self.enemy_backline_box = Image(position=Vector(400, 70.8), size=line_box_size,
                                         sprite=background_image)
         self.enemy_backline_box.add_component(HorizontalLayoutGroup)
+        game_manager.enemy_second_line = self.enemy_backline_box.add_component(CardLine)
+        game_manager.enemy_second_line.allow_add_cards = False
         self.add_game_object(self.enemy_backline_box)
 
         enemy_backline_icon = Image(position=Vector(976, 116.6), size=icon_size,
@@ -126,6 +131,8 @@ class GameScene(Scene):
         self.enemy_frontline_box = Image(position=Vector(400, 222.4), size=line_box_size,
                                          sprite=background_image)
         self.enemy_frontline_box.add_component(HorizontalLayoutGroup)
+        game_manager.enemy_first_line = self.enemy_frontline_box.add_component(CardLine)
+        game_manager.enemy_first_line.allow_add_cards = False
         self.add_game_object(self.enemy_frontline_box)
 
         enemy_frontline_icon = Image(position=Vector(976, 268.2), size=icon_size,
@@ -139,7 +146,7 @@ class GameScene(Scene):
         self.my_frontline_box = Image(position=Vector(400, 384), size=line_box_size,
                                       sprite=background_image)
         self.my_frontline_box.add_component(HorizontalLayoutGroup)
-        self.my_frontline_box.add_component(CardLine)
+        game_manager.player_first_line = self.my_frontline_box.add_component(CardLine)
         self.add_game_object(self.my_frontline_box)
 
         my_frontline_icon = Image(position=Vector(976, 429.8), size=icon_size,
@@ -149,6 +156,7 @@ class GameScene(Scene):
         self.my_backline_box = Image(position=Vector(400, 535.6), size=line_box_size,
                                      sprite=background_image)
         self.my_backline_box.add_component(HorizontalLayoutGroup)
+        game_manager.player_second_line = self.my_backline_box.add_component(CardLine)
         self.add_game_object(self.my_backline_box)
 
         my_backline_icon = Image(position=Vector(976, 581.4), size=icon_size, sprite=backline_icon)
@@ -209,6 +217,15 @@ class GameScene(Scene):
             game_card = card.add_component(GameCard)
             game_card.init(card_info)
             card.set_parent(self.my_deck_box)
+
+        ########################################################################################
+
+        new_cards = sample(self.enemy_deck, k=3)
+        for card_info in new_cards:
+            card = card_info.build_card_object(card_width=self.card_size.x)
+            game_card = card.add_component(GameCard)
+            game_card.init(card_info)
+            game_manager.enemy_second_line.add_card(game_card)  # -=-=-===-=-=-=-
 
     def end_turn(self):
         pass
