@@ -4,7 +4,7 @@ from core.action import Action
 from core.component import Component
 from core.components.drag_handler import DragHandler
 from core.ui.image import Image
-from core.ui.layout_group import HorizontalLayoutGroup
+from core.ui.layout_group import HorizontalLayoutGroup, LayoutGroup
 from core.vector import Vector
 from game.cards.card import CardInfo
 
@@ -56,6 +56,9 @@ class GameCard(Component):
         return self._card_info
 
     def on_begin_drag(self):
+        if self.on_table:
+            return
+
         self._last_parent = self.get_game_object().get_parent()
         self._last_sibling_index = self.get_game_object().get_sibling_index()
         self._last_position = self.get_game_object().position
@@ -65,15 +68,27 @@ class GameCard(Component):
         mouse_pos = pygame.mouse.get_pos()
         self.drag_offset = self.get_game_object().position - Vector(*mouse_pos)
 
+        layout_group = self._last_parent.get_component(LayoutGroup)
+        if layout_group:
+            layout_group.refresh()
+
         scene_manager.get_loaded_scene().add_game_object(self.get_game_object())
 
     def on_drag(self):
+        if self.on_table:
+            return
         mouse_pos = pygame.mouse.get_pos()
         self.get_game_object().position = Vector(*mouse_pos) + self.drag_offset
 
     def on_end_drag(self):
+        if self.on_table:
+            return
+
         if self.get_game_object().get_parent() is None:
             if not self.on_table:
                 self.get_game_object().set_parent(self._last_parent, self._last_sibling_index)
-                self.get_game_object().position = self._last_position
+                # self.get_game_object().position = self._last_position
+                layout_group = self._last_parent.get_component(LayoutGroup)
+                if layout_group:
+                    layout_group.refresh()
         scene_manager.get_loaded_scene().remove_game_object(self.get_game_object())

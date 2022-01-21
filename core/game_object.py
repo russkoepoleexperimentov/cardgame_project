@@ -137,6 +137,6 @@ class GameObject:
 
     def get_component(self, component_type: type):
         for component in self.__components:
-            if type(component) == component_type:
+            if isinstance(component, component_type):
                 return component
         return None

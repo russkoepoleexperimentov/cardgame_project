@@ -28,5 +28,6 @@ class CardLine(Component):
             if game_card.on_table:
                 return
 
+            game_card.on_table = True
             obj.set_parent(self.get_game_object())
 
