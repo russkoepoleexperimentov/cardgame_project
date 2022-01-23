@@ -6,7 +6,21 @@ from core.ui.text import Text
 from core.vector import Vector
 from core.resources import load_image
 
-from game.contstants import DATABASE
+_hp_index = 0
+_highlight_index = 0
+_face_back_index = 0
+
+
+def hp_text_index():
+    return _hp_index
+
+
+def highlight_index():
+    return _highlight_index
+
+
+def face_back_index():
+    return _face_back_index
 
 
 class CardInfo:
@@ -116,6 +130,9 @@ class CardInfo:
         card_hit_points.set_parent(card_back)
         card_hit_points.block_raycasts = False
 
+        global _hp_index
+        _hp_index = card_hit_points.get_sibling_index()
+
         card_damage = Text(position=damage_text_pos,
                            size=damage_hp_text_size,
                            title=str(self.damage),
@@ -124,5 +141,21 @@ class CardInfo:
                            font_size=damage_hp_text_font_size)
         card_damage.set_parent(card_back)
         card_damage.block_raycasts = False
+
+        card_highlight = Image(size=card_size,
+                               sprite=load_image('sprites/card_face_highlight.png'))
+        card_highlight.set_parent(card_back)
+        card_highlight.block_raycasts = False
+        card_highlight.enabled = False
+
+        card_face_back = Image(size=card_size,
+                          sprite=load_image('sprites/card_face_back.png'))
+        card_face_back.set_parent(card_back)
+        card_face_back.block_raycasts = False
+        card_face_back.enabled = False
+
+        global _highlight_index, _face_back_index
+        _highlight_index = card_highlight.get_sibling_index()
+        _face_back_index = card_face_back.get_sibling_index()
 
         return card_back

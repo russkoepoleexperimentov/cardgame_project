@@ -1,8 +1,10 @@
+import random
 import sqlite3
 import pygame
 from core import config
 from core.components.drag_handler import DragHandler
 from core.components.drop_handler import DropHandler
+from game.cards.card import face_back_index
 from game.contstants import PLAYER_STATS_BASE, BUTTON_DEFAULT_DESIGN, BUTTONS_SIZE
 from core.resources import load_image
 from core.scene import Scene
@@ -16,9 +18,10 @@ from game.button_sounds import ButtonSounds
 from game.cards import card_manager
 from core import scene_manager
 from game.game_scene import game_manager
-from game.game_scene.card_line import CardLine
+from game.game_scene.card_line import CardLine, TYPE_ENEMY, TYPE_PLAYER, TYPE_PLAYER_HAND, \
+    TYPE_ENEMY_HAND
 from scenes.menu import MenuScene
-from random import sample
+from random import sample, shuffle
 from core.ui.layout_group import HorizontalLayoutGroup, VerticalLayoutGroup
 from game.game_scene.game_card import GameCard
 
@@ -69,13 +72,11 @@ class GameScene(Scene):
         self.game_loaded = False
 
     def soviet_choice(self):
-        self.my_deck = list(card_manager.deck_by_nation.get('soviet'))
-        self.enemy_deck = sample(list(card_manager.cards_by_nation.get('germany')), k=15)
+        game_manager.init_decks('soviet', 'germany')
         self.load_game()
 
     def germany_choice(self):
-        self.my_deck = list(card_manager.deck_by_nation.get('germany'))
-        self.enemy_deck = sample(list(card_manager.cards_by_nation.get('soviet')), k=15)
+        game_manager.init_decks('germany', 'soviet')
         self.load_game()
 
     def load_game(self):
@@ -87,11 +88,12 @@ class GameScene(Scene):
         self.remove_game_object(self.germany_btn)
         self.remove_game_object(self.germany_label)
 
-        self.my_cards_count = 15
         self.my_ammo = 0
-        self.turn_num = 0
-
         self.my_fuel = 0
+
+        self.enemy_ammo = 0
+        self.enemy_fuel = 0
+
         background_image = load_image('sprites/ui/my_deck_background.jpg')
         backline_icon = load_image('sprites/ui/backline.png')
         frontline_icon = load_image('sprites/ui/frontline.png')
@@ -120,8 +122,6 @@ class GameScene(Scene):
         self.enemy_backline_box = Image(position=Vector(400, 70.8), size=line_box_size,
                                         sprite=background_image)
         self.enemy_backline_box.add_component(HorizontalLayoutGroup)
-        game_manager.enemy_second_line = self.enemy_backline_box.add_component(CardLine)
-        game_manager.enemy_second_line.allow_add_cards = False
         self.add_game_object(self.enemy_backline_box)
 
         enemy_backline_icon = Image(position=Vector(976, 116.6), size=icon_size,
@@ -131,8 +131,6 @@ class GameScene(Scene):
         self.enemy_frontline_box = Image(position=Vector(400, 222.4), size=line_box_size,
                                          sprite=background_image)
         self.enemy_frontline_box.add_component(HorizontalLayoutGroup)
-        game_manager.enemy_first_line = self.enemy_frontline_box.add_component(CardLine)
-        game_manager.enemy_first_line.allow_add_cards = False
         self.add_game_object(self.enemy_frontline_box)
 
         enemy_frontline_icon = Image(position=Vector(976, 268.2), size=icon_size,
@@ -146,7 +144,6 @@ class GameScene(Scene):
         self.my_frontline_box = Image(position=Vector(400, 384), size=line_box_size,
                                       sprite=background_image)
         self.my_frontline_box.add_component(HorizontalLayoutGroup)
-        game_manager.player_first_line = self.my_frontline_box.add_component(CardLine)
         self.add_game_object(self.my_frontline_box)
 
         my_frontline_icon = Image(position=Vector(976, 429.8), size=icon_size,
@@ -156,7 +153,6 @@ class GameScene(Scene):
         self.my_backline_box = Image(position=Vector(400, 535.6), size=line_box_size,
                                      sprite=background_image)
         self.my_backline_box.add_component(HorizontalLayoutGroup)
-        game_manager.player_second_line = self.my_backline_box.add_component(CardLine)
         self.add_game_object(self.my_backline_box)
 
         my_backline_icon = Image(position=Vector(976, 581.4), size=icon_size, sprite=backline_icon)
@@ -173,7 +169,6 @@ class GameScene(Scene):
         self.end_turn_btn = Button(**BUTTON_DEFAULT_DESIGN, position=Vector(1200, 394),
                                    size=Vector(120, 50), title=translate_string('end_turn'))
         self.end_turn_btn.label.set_font_size(20)
-        self.end_turn_btn.on_click.add_listener(self.end_turn)
         self.end_turn_btn.add_component(ButtonSounds)
         self.add_game_object(self.end_turn_btn)
 
@@ -194,41 +189,105 @@ class GameScene(Scene):
         self.add_game_object(self.fuel_info)
 
         self.card_count_info = Text(position=Vector(400, 687.2), size=Vector(99.12, 80.8),
-                                    title=str(self.my_cards_count), align='center', valign='middle')
+                                    title=str(len(game_manager.get_player_deck())), align='center',
+                                    valign='middle', color=pygame.Color('black'))
         self.add_game_object(self.card_count_info)
 
-        self.my_turn()
+        # enemy lines
+        game_manager.enemy_second_line = self.enemy_backline_box.add_component(CardLine)
+        game_manager.enemy_second_line.type = TYPE_ENEMY
+        game_manager.enemy_first_line = self.enemy_frontline_box.add_component(CardLine)
+        game_manager.enemy_first_line.type = TYPE_ENEMY
 
-    def my_turn(self):
-        self.my_cards_count -= 3
-        self.card_count_info.set_title(str(self.my_cards_count))
-        self.turn_num += 1
-        if self.turn_num <= 3:
+        # player lines
+        game_manager.player_first_line = self.my_frontline_box.add_component(CardLine)
+        game_manager.player_first_line.type = TYPE_PLAYER
+        game_manager.player_second_line = self.my_backline_box.add_component(CardLine)
+        game_manager.player_second_line.type = TYPE_PLAYER
+
+        # hands
+        game_manager.player_hand = self.my_deck_box.add_component(CardLine)
+        game_manager.player_hand.type = TYPE_PLAYER_HAND
+        game_manager.enemy_hand = self.enemy_deck_box.add_component(CardLine)
+        game_manager.enemy_hand.type = TYPE_ENEMY_HAND
+
+        # end turn
+        self.end_turn_btn.on_click.add_listener(self.end_turn)
+
+        self.prepare_game()
+        self.player_turn()
+
+    def prepare_game(self):
+        shuffle(game_manager.get_player_deck())
+        shuffle(game_manager.get_enemy_deck())
+
+        for i in range(2):
+            self.pick_player_card()
+
+        for i in range(2):
+            self.pick_enemy_card()
+
+    def player_turn(self):
+        if game_manager.get_turn_count() <= 3:
             self.my_ammo += 1
-            self.ammo_info.set_title(str(self.my_ammo))
         else:
             self.my_ammo += 2
-            self.ammo_info.set_title(str(self.my_ammo))
             self.my_fuel += 1
-            self.fuel_info.set_title(str(self.my_fuel))
-        new_cards = sample(self.my_deck, k=3)
-        for card_info in new_cards:
-            card = card_info.build_card_object(card_width=self.card_size.x)
-            game_card = card.add_component(GameCard)
-            game_card.init(card_info)
-            card.set_parent(self.my_deck_box)
+        self.ammo_info.set_title(str(self.my_ammo))
+        self.fuel_info.set_title(str(self.my_fuel))
+        self.pick_player_card()
 
-        ########################################################################################
+        for card in game_manager.player_first_line.get_game_object().get_children():
+            card.get_component(GameCard).turn_tick()
 
-        new_cards = sample(self.enemy_deck, k=3)
-        for card_info in new_cards:
-            card = card_info.build_card_object(card_width=self.card_size.x)
-            game_card = card.add_component(GameCard)
-            game_card.init(card_info)
-            game_manager.enemy_second_line.add_card(game_card)  # -=-=-===-=-=-=-
+        for card in game_manager.player_second_line.get_game_object().get_children():
+            card.get_component(GameCard).turn_tick()
+
+    def pick_player_card(self):
+        if len(game_manager.get_player_deck()) < 1:
+            return
+        card_info = game_manager.get_player_deck().pop()
+        card = card_info.build_card_object(card_width=self.card_size.x)
+        game_card = card.add_component(GameCard)
+        game_card.init(card_info)
+        game_manager.player_hand.add_card(game_card)
+        self.card_count_info.set_title(str(len(game_manager.get_player_deck())))
+
+    def pick_enemy_card(self):
+        if len(game_manager.get_enemy_deck()) < 1:
+            return
+        card_info = game_manager.get_enemy_deck().pop()
+        card = card_info.build_card_object(card_width=self.card_size.x)
+        card.get_child(face_back_index()).enabled = True
+        game_card = card.add_component(GameCard)
+        game_card.init(card_info)
+        game_manager.enemy_hand.add_card(game_card)
+
+    def enemy_turn(self):
+        self.pick_enemy_card()
+        self.end_turn()
+
+        # pseudo AI
+        num_of_cards = \
+            random.randint(0, min(3, game_manager.enemy_hand.get_game_object().child_count()))
+
+        for _ in range(num_of_cards):
+            card = random.choice(game_manager.enemy_hand.get_game_object().get_children())
+            line = random.randint(0, 1)
+            if line:
+                game_manager.enemy_first_line.add_card(card.get_component(GameCard))
+            else:
+                game_manager.enemy_second_line.add_card(card.get_component(GameCard))
+            card.get_child(face_back_index()).enabled = False
 
     def end_turn(self):
-        pass
+        game_manager.end_turn()
+        if game_manager.is_player_turn():
+            self.end_turn_btn.interactable = True
+            self.player_turn()
+        else:
+            self.end_turn_btn.interactable = False
+            self.enemy_turn()
 
     def back(self):
         scene_manager.load(MenuScene())
