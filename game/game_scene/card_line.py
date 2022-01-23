@@ -6,7 +6,9 @@ from core.components.drop_handler import DropHandler
 from core.ui import ui_manager
 from core.ui.image import Image
 from core.ui.layout_group import HorizontalLayoutGroup, LayoutGroup
-from game.game_scene.game_card import GameCard, get_temp_card, get_temp_card_parent
+from game.cards.card import CardInfo
+from game.game_scene import game_manager
+from game.game_scene.game_card import GameCard, get_temp_card, get_temp_card_parent, error_sound
 
 TYPE_PLAYER = 'player_line'
 TYPE_ENEMY = 'enemy_line'
@@ -28,6 +30,19 @@ class CardLine(Component):
         self.mouse_inside = False
 
     def add_card(self, game_card: GameCard):
+        if self.type == TYPE_PLAYER:
+            info: CardInfo = game_card.get_card_info()
+            if game_manager.player_ammo < info.ammo_cost or \
+                    game_manager.player_fuel < info.fuel_cost:
+                error_sound.play()
+                return
+
+            game_manager.player_ammo -= info.ammo_cost
+            game_manager.player_fuel -= info.fuel_cost
+
+            game_manager.ui_player_ammo.set_title(str(game_manager.player_ammo))
+            game_manager.ui_player_fuel.set_title(str(game_manager.player_fuel))
+
         if game_card.on_table:
             return
 

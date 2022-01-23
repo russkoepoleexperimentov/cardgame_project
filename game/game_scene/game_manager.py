@@ -10,6 +10,12 @@ enemy_first_line: CardLine = None
 enemy_second_line: CardLine = None
 enemy_hand: CardLine = None
 
+player_ammo = 0
+player_fuel = 0
+
+ui_player_ammo = None
+ui_player_fuel = None
+
 player_deck = []
 enemy_deck = []
 

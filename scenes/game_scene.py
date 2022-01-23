@@ -88,8 +88,8 @@ class GameScene(Scene):
         self.remove_game_object(self.germany_btn)
         self.remove_game_object(self.germany_label)
 
-        self.my_ammo = 0
-        self.my_fuel = 0
+        game_manager.player_fuel = 0
+        game_manager.player_ammo = 0
 
         self.enemy_ammo = 0
         self.enemy_fuel = 0
@@ -176,17 +176,17 @@ class GameScene(Scene):
                                sprite=load_image('sprites/ui/ammo.png'))
         self.add_game_object(ammo_icon)
 
-        self.ammo_info = Text(position=Vector(1270, 444), size=icon_size, valign='middle',
-                              title=str(self.my_ammo))
-        self.add_game_object(self.ammo_info)
+        game_manager.ui_player_ammo = Text(position=Vector(1270, 444), size=icon_size,
+                                           valign='middle', title=str(0))
+        self.add_game_object(game_manager.ui_player_ammo)
 
         fuel_icon = Image(position=Vector(1200, 504), size=icon_size,
-                               sprite=load_image('sprites/ui/fuel.png'))
+                          sprite=load_image('sprites/ui/fuel.png'))
         self.add_game_object(fuel_icon)
 
-        self.fuel_info = Text(position=Vector(1270, 504), size=icon_size, valign='middle',
-                              title=str(self.my_fuel))
-        self.add_game_object(self.fuel_info)
+        game_manager.ui_player_fuel = Text(position=Vector(1270, 504), size=icon_size,
+                                           valign='middle', title=str(0))
+        self.add_game_object(game_manager.ui_player_fuel)
 
         self.card_count_info = Text(position=Vector(400, 687.2), size=Vector(99.12, 80.8),
                                     title=str(len(game_manager.get_player_deck())), align='center',
@@ -229,12 +229,12 @@ class GameScene(Scene):
 
     def player_turn(self):
         if game_manager.get_turn_count() <= 3:
-            self.my_ammo += 1
+            game_manager.player_ammo += 1
         else:
-            self.my_ammo += 2
-            self.my_fuel += 1
-        self.ammo_info.set_title(str(self.my_ammo))
-        self.fuel_info.set_title(str(self.my_fuel))
+            game_manager.player_ammo += 2
+            game_manager.player_fuel += 1
+        game_manager.ui_player_ammo.set_title(str(game_manager.player_ammo))
+        game_manager.ui_player_fuel.set_title(str(game_manager.player_fuel))
         self.pick_player_card()
 
         for card in game_manager.player_first_line.get_game_object().get_children():
