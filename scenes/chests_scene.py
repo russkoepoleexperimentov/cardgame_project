@@ -63,6 +63,10 @@ class ChestsScene(Scene):
         unlock_cards = player_data_manager.get_player_data().get(PD_UNLOCKED_CARDS)
 
         lock_cards = list(filter(lambda x: x.name not in unlock_cards, card_manager.game_cards))
+
+        if not lock_cards:
+            return
+
         random_card_info = choice(lock_cards)
         random_card_name = random_card_info.name
 

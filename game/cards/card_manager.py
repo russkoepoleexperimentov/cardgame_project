@@ -14,6 +14,12 @@ player_id = 1
 
 
 def init():
+    nations.clear()
+    game_cards.clear()
+    deck_by_nation.clear()
+    cards_by_nation.clear()
+    unlocked_cards_by_nation.clear()
+
     # cards db
     con = sqlite3.connect(DATABASE)
     cur = con.cursor()

@@ -9,6 +9,7 @@ from core.ui.scroll_view import ScrollView
 from core.vector import Vector
 from core.localization import translate_string
 from game.button_sounds import ButtonSounds
+from game.cards import card_manager
 
 from game.contstants import BUTTON_DEFAULT_DESIGN
 
@@ -82,4 +83,5 @@ class DecksScene(Scene):
 
     def load_menu(self):
         from scenes.menu import MenuScene
+        card_manager.init()
         scene_manager.load(MenuScene())
