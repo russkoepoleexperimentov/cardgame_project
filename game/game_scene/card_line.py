@@ -43,6 +43,11 @@ class CardLine(Component):
             game_manager.ui_player_ammo.set_title(str(game_manager.player_ammo))
             game_manager.ui_player_fuel.set_title(str(game_manager.player_fuel))
 
+        if self.type == TYPE_ENEMY:
+            info: CardInfo = game_card.get_card_info()
+            game_manager.enemy_ammo -= info.ammo_cost
+            game_manager.enemy_fuel -= info.fuel_cost
+
         if game_card.on_table:
             return
 

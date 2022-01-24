@@ -1,11 +1,8 @@
 import random
-import sqlite3
 import pygame
 from core import config
-from core.components.drag_handler import DragHandler
-from core.components.drop_handler import DropHandler
-from game.cards.card import face_back_index
-from game.contstants import PLAYER_STATS_BASE, BUTTON_DEFAULT_DESIGN, BUTTONS_SIZE
+from game.cards.card import face_back_index, CardInfo
+from game.contstants import *
 from core.resources import load_image
 from core.scene import Scene
 from core.ui.button import Button
@@ -15,15 +12,18 @@ from core.vector import Vector
 from core.localization import translate_string
 from core.application import close as close_app
 from game.button_sounds import ButtonSounds
-from game.cards import card_manager
 from core import scene_manager
 from game.game_scene import game_manager
 from game.game_scene.card_line import CardLine, TYPE_ENEMY, TYPE_PLAYER, TYPE_PLAYER_HAND, \
     TYPE_ENEMY_HAND
 from scenes.menu import MenuScene
-from random import sample, shuffle
+from random import shuffle
 from core.ui.layout_group import HorizontalLayoutGroup, VerticalLayoutGroup
 from game.game_scene.game_card import GameCard
+
+ENEMY_TURN_MIN = 2
+ENEMY_TURN_MAX = 5
+enemy_turn_timer = 0
 
 
 class GameScene(Scene):
@@ -173,7 +173,7 @@ class GameScene(Scene):
         self.add_game_object(self.end_turn_btn)
 
         ammo_icon = Image(position=Vector(1200, 444), size=icon_size,
-                               sprite=load_image('sprites/ui/ammo.png'))
+                          sprite=load_image('sprites/ui/ammo.png'))
         self.add_game_object(ammo_icon)
 
         game_manager.ui_player_ammo = Text(position=Vector(1270, 444), size=icon_size,
@@ -221,18 +221,24 @@ class GameScene(Scene):
         shuffle(game_manager.get_player_deck())
         shuffle(game_manager.get_enemy_deck())
 
-        for i in range(2):
+        for i in range(CARDS_AT_START):
             self.pick_player_card()
 
-        for i in range(2):
+        for i in range(CARDS_AT_START):
             self.pick_enemy_card()
 
     def player_turn(self):
-        if game_manager.get_turn_count() <= 3:
-            game_manager.player_ammo += 1
+
+        global enemy_turn_timer
+        enemy_turn_timer = random.randint(ENEMY_TURN_MIN, ENEMY_TURN_MAX)
+
+        if game_manager.get_turn_count() <= PHASE1_DURATION_IN_TURNS:
+            game_manager.player_ammo += PHASE1_AMMO_INCREASE
+            game_manager.player_fuel += PHASE1_FUEL_INCREASE
         else:
-            game_manager.player_ammo += 2
-            game_manager.player_fuel += 1
+            game_manager.player_ammo += PHASE2_AMMO_INCREASE
+            game_manager.player_fuel += PHASE2_FUEL_INCREASE
+
         game_manager.ui_player_ammo.set_title(str(game_manager.player_ammo))
         game_manager.ui_player_fuel.set_title(str(game_manager.player_fuel))
         self.pick_player_card()
@@ -244,8 +250,9 @@ class GameScene(Scene):
             card.get_component(GameCard).turn_tick()
 
     def pick_player_card(self):
-        if len(game_manager.get_player_deck()) < 1:
+        if not game_manager.get_player_deck():
             return
+
         card_info = game_manager.get_player_deck().pop()
         card = card_info.build_card_object(card_width=self.card_size.x)
         game_card = card.add_component(GameCard)
@@ -254,8 +261,9 @@ class GameScene(Scene):
         self.card_count_info.set_title(str(len(game_manager.get_player_deck())))
 
     def pick_enemy_card(self):
-        if len(game_manager.get_enemy_deck()) < 1:
+        if not game_manager.get_enemy_deck():
             return
+
         card_info = game_manager.get_enemy_deck().pop()
         card = card_info.build_card_object(card_width=self.card_size.x)
         card.get_child(face_back_index()).enabled = True
@@ -264,21 +272,38 @@ class GameScene(Scene):
         game_manager.enemy_hand.add_card(game_card)
 
     def enemy_turn(self):
+        if game_manager.get_turn_count() <= PHASE1_DURATION_IN_TURNS:
+            game_manager.enemy_ammo += PHASE1_AMMO_INCREASE
+            game_manager.enemy_fuel += PHASE1_FUEL_INCREASE
+        else:
+            game_manager.enemy_ammo += PHASE2_AMMO_INCREASE
+            game_manager.enemy_fuel += PHASE2_FUEL_INCREASE
+
         self.pick_enemy_card()
-        self.end_turn()
+
+        cards_hand = game_manager.enemy_hand.get_game_object()
+        cards = cards_hand.get_children()
 
         # pseudo AI
-        num_of_cards = \
-            random.randint(0, min(3, game_manager.enemy_hand.get_game_object().child_count()))
+        def is_available(c: GameCard):
+            info: CardInfo = c.get_card_info()
+            return info.fuel_cost <= game_manager.enemy_fuel and \
+                   info.ammo_cost <= game_manager.enemy_ammo
 
-        for _ in range(num_of_cards):
-            card = random.choice(game_manager.enemy_hand.get_game_object().get_children())
-            line = random.randint(0, 1)
+        while True:
+            available_cards = [card for card in map(lambda go: go.get_component(GameCard), cards)
+                               if is_available(card)]
+
+            if not available_cards:
+                break
+
+            card = available_cards[0]
+            line = random.randint(0, 1)  # first or second
             if line:
-                game_manager.enemy_first_line.add_card(card.get_component(GameCard))
+                game_manager.enemy_first_line.add_card(card)
             else:
-                game_manager.enemy_second_line.add_card(card.get_component(GameCard))
-            card.get_child(face_back_index()).enabled = False
+                game_manager.enemy_second_line.add_card(card)
+            card.get_game_object().get_child(face_back_index()).enabled = False
 
     def end_turn(self):
         game_manager.end_turn()
@@ -287,7 +312,17 @@ class GameScene(Scene):
             self.player_turn()
         else:
             self.end_turn_btn.interactable = False
-            self.enemy_turn()
+
+    def update(self, delta_time):
+        super(GameScene, self).update(delta_time)
+
+        if not game_manager.is_player_turn():
+            global enemy_turn_timer
+            if enemy_turn_timer > 0:
+                enemy_turn_timer -= delta_time / 1000
+            else:
+                self.enemy_turn()
+                self.end_turn()
 
     def back(self):
         scene_manager.load(MenuScene())
@@ -319,13 +354,13 @@ class GameScene(Scene):
                     resume_btn.set_parent(game_menu)
 
                     exit_match_btn = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE,
-                                        title=translate_string('exit_match'))
+                                            title=translate_string('exit_match'))
                     exit_match_btn.on_click.add_listener(self.exit_match)
                     exit_match_btn.add_component(ButtonSounds)
                     exit_match_btn.set_parent(game_menu)
 
                     exit_game_btn = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE,
-                                            title=translate_string('exit_game'))
+                                           title=translate_string('exit_game'))
                     exit_game_btn.on_click.add_listener(self.exit_game)
                     exit_game_btn.add_component(ButtonSounds)
                     exit_game_btn.set_parent(game_menu)

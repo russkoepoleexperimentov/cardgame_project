@@ -148,6 +148,7 @@ class GameCard(Component):
             self.get_game_object().set_parent(None)
 
         card_drag_end.play()
+        game_manager.refresh_card_parents()
 
     def on_drop(self, drag: DragHandler):
         if self.get_game_object().get_parent() == game_manager.enemy_second_line.get_game_object():
@@ -165,17 +166,6 @@ class GameCard(Component):
                     game_card.attack_used = True
                     game_card.get_game_object().get_child(highlight_index()).enabled = False
                     fight_sound.play()
-
-                    parents = (game_manager.enemy_first_line,
-                               game_manager.enemy_second_line,
-                               game_manager.player_first_line,
-                               game_manager.player_second_line)
-
-                    for p in parents:
-                        if p:
-                            layout_group = p.get_game_object().get_component(LayoutGroup)
-                            if layout_group:
-                                layout_group.refresh()
                 else:
                     error_sound.play()
             else:

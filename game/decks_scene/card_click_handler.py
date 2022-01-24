@@ -35,7 +35,7 @@ class CardClickHandler(Component):
             self.swap_btn = Button(**BUTTON_DEFAULT_DESIGN,
                                    position=SWAP_BUTTON_POS,
                                    size=SWAP_BUTTON_SIZE,
-                                   title=translate_string('swap'))
+                                   title=translate_string('ui.swap'))
 
             def start_swap_operation(swap_btn=self.swap_btn):
                 if card_list.card_swapping:

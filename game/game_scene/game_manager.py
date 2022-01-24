@@ -1,5 +1,6 @@
 from random import sample
 
+from core.ui.layout_group import LayoutGroup
 from game.cards import card_manager
 from game.game_scene.card_line import CardLine
 
@@ -12,6 +13,9 @@ enemy_hand: CardLine = None
 
 player_ammo = 0
 player_fuel = 0
+
+enemy_ammo = 0
+enemy_fuel = 0
 
 ui_player_ammo = None
 ui_player_fuel = None
@@ -26,6 +30,21 @@ def get_player_deck():
 
 def get_enemy_deck():
     return enemy_deck
+
+
+def refresh_card_parents():
+    parents = (enemy_first_line,
+               enemy_second_line,
+               player_first_line,
+               player_second_line,
+               player_hand,
+               enemy_hand)
+
+    for p in parents:
+        if p:
+            layout_group = p.get_game_object().get_component(LayoutGroup)
+            if layout_group:
+                layout_group.refresh()
 
 
 turn_count = 0

@@ -27,14 +27,15 @@ zsu:ЗСУ
 weapon_factory:Оруж. фабрика
 fuel_factory:Топл. фабрика
 strategy_bomber:Страт. бомб.
+heal_infantry:Медики
 ui.chests:Сундуки
 ui.chest_info:Количество сундуков
 ui.open:Открыть!
 ui.congratulations:Поздравляем! Вы получили
 ui.deck_choice:Выберите нацию
-swap:Выбрать
 end_turn:Завершить ход
 resume:Продолжить
 exit_match:Покинуть матч
 exit_game:Выйти из игры
 ui.menu:Меню
+ui.swap:В колоду
