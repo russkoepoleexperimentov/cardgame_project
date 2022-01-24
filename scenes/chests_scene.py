@@ -80,4 +80,5 @@ class ChestsScene(Scene):
     def back(self):
         player_data_manager.get_player_data().update({PD_CHESTS: self.chest_count})
         player_data_manager.commit()
+        card_manager.init()
         scene_manager.load(MenuScene())
