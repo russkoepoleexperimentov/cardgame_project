@@ -4,23 +4,17 @@ from core import config
 from core.resources import load_image
 from core.scene import Scene
 from core.ui.button import Button
-from core.ui.content_size_fitter import VerticalContentSizeFitter
 from core.ui.image import Image
-from core.ui.layout_group import GridLayoutGroup, HorizontalLayoutGroup
 from core.ui.scroll_view import ScrollView
-from core.ui.text import Text
 from core.vector import Vector
 from core.localization import translate_string
 from game.button_sounds import ButtonSounds
-
-from game.cards import card_manager
-from game.decks_scene import card_click_handler
 
 from game.contstants import BUTTON_DEFAULT_DESIGN
 
 from core import scene_manager
 from game.decks_scene.cards_list import SV_SLIDER_WIDTH, SV_SIDE_OFFSET, SV_TOP_OFFSET, \
-    SV_BOTTOM_OFFSET, CardsList, LABEL_HEIGHT
+    SV_BOTTOM_OFFSET, CardsList
 from game.decks_scene.nation_buttons import BTN_SIZE, BTN_MARGIN, NationButtons
 
 

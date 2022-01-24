@@ -1,6 +1,6 @@
 import sqlite3
 from core import config
-from game.contstants import PLAYER_STATS_BASE, BUTTON_DEFAULT_DESIGN, BUTTONS_SIZE
+from game.contstants import *
 from core.resources import load_image
 from core.scene import Scene
 from core.ui.button import Button
@@ -14,14 +14,15 @@ from core import scene_manager
 from scenes.menu import MenuScene
 from random import choice
 
+from game import player_data_manager
+
 
 class ChestsScene(Scene):
     def __init__(self):
         super(ChestsScene, self).__init__()
         self.card_on_screen = False
         self.card = None
-        self.con = sqlite3.connect(PLAYER_STATS_BASE)
-        self.cur = self.con.cursor()
+
         self.screen_w, self.screen_h = tuple(map(int, config.get_value('vid_mode').split('x')))
         self.screen = Vector(self.screen_w, self.screen_h)
         background = Image(size=self.screen, sprite=load_image('sprites/ui/menu_blur.png'))
@@ -35,7 +36,7 @@ class ChestsScene(Scene):
         chest = Image(sprite=load_image('sprites/ui/chest.png'), size=Vector(400, 400),
                       position=Vector(30, 120))
         self.add_game_object(chest)
-        self.chest_count = self.cur.execute('SELECT chests_count FROM player_stats').fetchall()[0][0]
+        self.chest_count = player_data_manager.get_player_data().get(PD_CHESTS)
         self.chest_info = Text(position=Vector(60, 550), size=BUTTONS_SIZE,
                           title=translate_string('ui.chest_info') + ': ' + str(self.chest_count))
         self.add_game_object(self.chest_info)
@@ -59,21 +60,20 @@ class ChestsScene(Scene):
             self.card_on_screen = True
         else:
             self.remove_game_object(self.card)
-        unlock_cards = self.cur.execute('SELECT unlock_cards FROM '
-                                        'player_stats').fetchall()[0][0].split(', ')
+        unlock_cards = player_data_manager.get_player_data().get(PD_UNLOCKED_CARDS)
+
         lock_cards = list(filter(lambda x: x.name not in unlock_cards, card_manager.game_cards))
         random_card_info = choice(lock_cards)
         random_card_name = random_card_info.name
+
         unlock_cards.append(random_card_name)
+        player_data_manager.commit()
+
         self.card = random_card_info.build_card_object()
         self.card.position = Vector(800, 180)
         self.add_game_object(self.card)
-        unlock_cards = ', '.join(unlock_cards)
-        self.cur.execute(f'UPDATE player_stats SET unlock_cards = "{unlock_cards}"')
-        self.con.commit()
 
     def back(self):
-        self.cur.execute(f'UPDATE player_stats SET chests_count = {self.chest_count}')
-        self.con.commit()
-        self.con.close()
+        player_data_manager.get_player_data().update({PD_CHESTS: self.chest_count})
+        player_data_manager.commit()
         scene_manager.load(MenuScene())

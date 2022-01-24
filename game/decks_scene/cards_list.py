@@ -135,7 +135,7 @@ class CardsList(Component):
 
     def display_other_cards(self, nation: str):
         deck_cards = tuple(card_manager.deck_by_nation[nation])
-        other_cards = tuple(set(card_manager.cards_by_nation[nation]) - set(deck_cards))
+        other_cards = tuple(set(card_manager.unlocked_cards_by_nation[nation]) - set(deck_cards))
         for card_info in other_cards:
             card_obj = card_info.build_card_object()
             card_obj.add_component(CardClickHandler).init(card_info, self, False)
