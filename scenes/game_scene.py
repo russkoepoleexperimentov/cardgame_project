@@ -28,7 +28,7 @@ ENEMY_TURN_MIN = 2
 ENEMY_TURN_MAX = 5
 enemy_turn_timer = 0
 
-HERO_ICON_POS, HERO_ICON_SIZE = Vector(100, 100), Vector(100, 100)
+HERO_ICON_POS, HERO_ICON_SIZE = Vector(70, 100), Vector(100, 100)
 HERO_ICON_BG = load_image('sprites/ui/slider_back.png')
 
 
@@ -95,75 +95,90 @@ class GameScene(Scene):
         self.remove_game_object(self.germany_btn)
         self.remove_game_object(self.germany_label)
 
-        background_image = load_image('sprites/ui/my_deck_background.jpg')
+        background_image = load_image('sprites/ui/scroll_view_back.png')
         backline_icon = load_image('sprites/ui/backline.png')
         frontline_icon = load_image('sprites/ui/frontline.png')
         icon_size = Vector(50, 50)
-        line_box_size = Vector(566, 141.6)
+        line_icon_pos = 1070
+        line_box_w_padding = 200
+        line_box_size = Vector(self.screen_w - line_box_w_padding * 2, 141.6)
         self.card_size = Vector(99.12, 141.6)
         self.backside_image = load_image('sprites/card_face_back.png')
         deck_box_size = Vector(456.88, 141.6)
 
-        enemy_backside_1 = Image(position=Vector(400, -80.8), size=self.card_size,
+        enemy_backside_1 = Image(position=Vector(1200, 70), size=self.card_size,
                                  sprite=self.backside_image)
         self.add_game_object(enemy_backside_1)
 
-        enemy_backside_2 = Image(position=Vector(403, -77.8), size=self.card_size,
+        enemy_backside_2 = Image(position=enemy_backside_1.position + Vector(3, 3),
+                                 size=self.card_size,
                                  sprite=self.backside_image)
         self.add_game_object(enemy_backside_2)
 
-        enemy_backside_3 = Image(position=Vector(406, -74.8), size=self.card_size,
+        enemy_backside_3 = Image(position=enemy_backside_2.position + Vector(3, 3),
+                                 size=self.card_size,
                                  sprite=self.backside_image)
         self.add_game_object(enemy_backside_3)
 
-        self.enemy_deck_box = Image(position=Vector(509.12, -80.8), size=deck_box_size)
+        self.enemy_deck_box = Image(position=Vector(self.screen_w // 2 - deck_box_size.x // 2,
+                                                    -80.8),
+                                    size=deck_box_size)
         self.enemy_deck_box.add_component(HorizontalLayoutGroup)
         self.add_game_object(self.enemy_deck_box)
 
-        self.enemy_backline_box = Image(position=Vector(400, 70.8), size=line_box_size,
+        self.enemy_backline_box = Image(position=Vector(line_box_w_padding, 70.8),
+                                        size=line_box_size,
                                         sprite=background_image)
         self.enemy_backline_box.add_component(HorizontalLayoutGroup)
         self.add_game_object(self.enemy_backline_box)
 
-        enemy_backline_icon = Image(position=Vector(976, 116.6), size=icon_size,
+        enemy_backline_icon = Image(position=Vector(line_icon_pos, 116.6), size=icon_size,
                                     sprite=backline_icon)
+        enemy_backline_icon.block_raycasts = False
         self.add_game_object(enemy_backline_icon)
 
-        self.enemy_frontline_box = Image(position=Vector(400, 222.4), size=line_box_size,
+        self.enemy_frontline_box = Image(position=Vector(line_box_w_padding, 222.4),
+                                         size=line_box_size,
                                          sprite=background_image)
         self.enemy_frontline_box.add_component(HorizontalLayoutGroup)
         self.add_game_object(self.enemy_frontline_box)
 
-        enemy_frontline_icon = Image(position=Vector(976, 268.2), size=icon_size,
+        enemy_frontline_icon = Image(position=Vector(line_icon_pos, 268.2), size=icon_size,
                                      sprite=frontline_icon)
+        enemy_frontline_icon.block_raycasts = False
         self.add_game_object(enemy_frontline_icon)
 
         black_line = Image(position=Vector(0, 369), size=Vector(1366, 10),
                            sprite=load_image('sprites/ui/black_line.jpg'))
         self.add_game_object(black_line)
 
-        self.my_frontline_box = Image(position=Vector(400, 384), size=line_box_size,
+        self.my_frontline_box = Image(position=Vector(line_box_w_padding, 384), size=line_box_size,
                                       sprite=background_image)
         self.my_frontline_box.add_component(HorizontalLayoutGroup)
         self.add_game_object(self.my_frontline_box)
 
-        my_frontline_icon = Image(position=Vector(976, 429.8), size=icon_size,
+        my_frontline_icon = Image(position=Vector(line_icon_pos, 429.8), size=icon_size,
                                   sprite=frontline_icon)
+        my_frontline_icon.block_raycasts = False
         self.add_game_object(my_frontline_icon)
 
-        self.my_backline_box = Image(position=Vector(400, 535.6), size=line_box_size,
+        self.my_backline_box = Image(position=Vector(line_box_w_padding, 535.6), size=line_box_size,
                                      sprite=background_image)
         self.my_backline_box.add_component(HorizontalLayoutGroup)
         self.add_game_object(self.my_backline_box)
 
-        my_backline_icon = Image(position=Vector(976, 581.4), size=icon_size, sprite=backline_icon)
+        my_backline_icon = Image(position=Vector(line_icon_pos, 581.4), size=icon_size,
+                                 sprite=backline_icon)
+        my_backline_icon.block_raycasts = False
         self.add_game_object(my_backline_icon)
 
-        my_backside = Image(position=Vector(400, 687.2), size=self.card_size,
+        my_backside = Image(position=Vector(1200, self.screen_h - 70 - self.card_size.y),
+                            size=self.card_size,
                             sprite=self.backside_image)
         self.add_game_object(my_backside)
 
-        self.my_deck_box = Image(position=Vector(509.12, 687.2), size=deck_box_size)
+        self.my_deck_box = Image(position=Vector(self.screen_w // 2 - deck_box_size.x // 2, 687.2),
+                                 size=deck_box_size)
         self.my_deck_box.add_component(HorizontalLayoutGroup)
         self.add_game_object(self.my_deck_box)
 
@@ -189,10 +204,10 @@ class GameScene(Scene):
                                            valign='middle', title=str(0))
         self.add_game_object(game_manager.ui_player_fuel)
 
-        self.card_count_info = Text(position=Vector(400, 687.2), size=Vector(99.12, 80.8),
+        self.card_count_info = Text(size=self.card_size,
                                     title=str(len(game_manager.get_player_deck())), align='center',
-                                    valign='middle', color=pygame.Color('black'))
-        self.add_game_object(self.card_count_info)
+                                    valign='middle', font_size=72)
+        self.card_count_info.set_parent(my_backside)
 
         # enemy lines
         game_manager.enemy_second_line = self.enemy_backline_box.add_component(CardLine)

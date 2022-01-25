@@ -88,7 +88,8 @@ class GameHero(Component):
         card.attack_used = True
 
         # disable highlight
-        card.get_game_object().get_child(highlight_index()).enabled = False
+        if game_manager.is_player_card(card):
+            card.get_game_object().get_child(highlight_index()).enabled = False
 
         # play sound
         fight_sound.play()

@@ -195,7 +195,8 @@ class GameCard(Component):
         card.attack_used = True
 
         # disable highlight
-        card.get_game_object().get_child(highlight_index()).enabled = False
+        if card.owned_by_player:
+            card.get_game_object().get_child(highlight_index()).enabled = False
 
         # play sound
         fight_sound.play()
@@ -220,8 +221,10 @@ class GameCard(Component):
         if self.on_table:
             if not self.can_attack:
                 self.can_attack = True
-                self.get_game_object().get_child(highlight_index()).enabled = True
+                if self.owned_by_player:
+                    self.get_game_object().get_child(highlight_index()).enabled = True
 
             if self.attack_used:
                 self.attack_used = False
-                self.get_game_object().get_child(highlight_index()).enabled = True
+                if self.owned_by_player:
+                    self.get_game_object().get_child(highlight_index()).enabled = True
