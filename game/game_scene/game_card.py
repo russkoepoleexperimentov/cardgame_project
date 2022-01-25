@@ -65,13 +65,15 @@ class GameCard(Component):
         self.attack_used = False
         self._last_parent = None
         self._last_sibling_index = -1
+        self.owned_by_player = False
 
         init_temp_card(owner.get_size())
 
-    def init(self, card_info: CardInfo):
+    def init(self, card_info: CardInfo, is_player=False):
         self._card_info = card_info
         self._hit_points = card_info.hit_points
         self._damage = card_info.damage
+        self.owned_by_player = is_player
 
     def decrease_hit_points(self, damage: int):
         if damage < 0:
@@ -152,27 +154,51 @@ class GameCard(Component):
         game_manager.refresh_card_parents()
 
     def on_drop(self, drag: DragHandler):
-        if self.get_game_object().get_parent() == game_manager.enemy_second_line.get_game_object():
-            if game_manager.enemy_first_line.get_game_object().child_count() > 0:
-                error_sound.play()
-                return
+        obj = drag.get_game_object()
+        game_card: GameCard = obj.get_component(GameCard)
 
-        if game_manager.is_enemy_card(self) and self.on_table:
-            obj = drag.get_game_object()
-            game_card: GameCard = obj.get_component(GameCard)
+        if game_card:
+            self.process_card(game_card)
 
-            if game_card:
-                if game_card.can_attack and not game_card.attack_used:
-                    game_manager.cards_fight(game_card, self)
-                    game_card.attack_used = True
-                    game_card.get_game_object().get_child(highlight_index()).enabled = False
-                    fight_sound.play()
-                else:
+    def process_card(self, card):
+        # if first line not empty we can't attack second
+        if game_manager.is_enemy_card(self):
+            if self.get_game_object().get_parent() == \
+                    game_manager.enemy_second_line.get_game_object():
+                if game_manager.enemy_first_line.get_game_object().child_count() > 0:
                     error_sound.play()
-            else:
-                error_sound.play()
-        else:
+                    return
+
+        # availability card
+        if not card or not card.can_attack or card.attack_used:
             error_sound.play()
+            return
+
+        # we can't attack cards which in hand
+        if not self.on_table:
+            error_sound.play()
+            return
+
+        # friendly-fire is disabled
+        if game_manager.is_enemy_card(self) and not game_manager.is_player_card(card):
+            error_sound.play()
+            return
+
+        if game_manager.is_player_card(self) and not game_manager.is_enemy_card(card):
+            error_sound.play()
+            return
+
+        # process fight
+        game_manager.cards_fight(card, self)
+
+        # disable attack
+        card.attack_used = True
+
+        # disable highlight
+        card.get_game_object().get_child(highlight_index()).enabled = False
+
+        # play sound
+        fight_sound.play()
 
     def check_position(self):
         parent: Image = temp_card.get_parent()

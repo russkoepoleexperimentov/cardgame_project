@@ -69,26 +69,11 @@ def init_decks(player: str, enemy: str):
 
 
 def is_player_card(card):
-    return card.get_game_object() in player_first_line.get_game_object().get_children() or \
-           card.get_game_object() in player_second_line.get_game_object().get_children() or \
-           card.get_game_object() in player_hand.get_game_object().get_children()
+    return card.owned_by_player
 
 
 def is_enemy_card(card):
-    return card.get_game_object().get_parent() == enemy_first_line.get_game_object() or \
-           card.get_game_object().get_parent() == enemy_second_line.get_game_object() or \
-           card.get_game_object().get_parent() == enemy_hand.get_game_object()
-
-
-def enemy_turn():
-    if player_first_line.get_game_object().get_children():
-        # attack first line
-        pass
-    else:
-        # attack second line
-        pass
-
-    end_turn()
+    return not is_player_card(card)
 
 
 def is_player_turn():

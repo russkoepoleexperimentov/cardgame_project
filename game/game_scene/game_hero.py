@@ -40,30 +40,55 @@ class GameHero(Component):
         self.hp_label.set_parent(self.get_game_object())
 
     def on_drop(self, drag: DragHandler):
-        if game_manager.enemy_first_line.get_game_object().child_count() > 0:
-            error_sound.play()
-            return
-
-        if self == game_manager.enemy_hero:
             obj = drag.get_game_object()
             game_card: GameCard = obj.get_component(GameCard)
 
             if game_card:
-                if game_card.can_attack and not game_card.attack_used:
-                    # game_manager.cards_fight(game_card, self)
-                    self.hit_points -= game_card.get_damage()
+                self.process_card(game_card)
 
-                    self.hp_label.set_title(str(self.hit_points))
-
-                    if self.hit_points <= 0:
-                        game_manager.game_result = game_manager.GR_PLAYER_WIN
-
-                    game_card.attack_used = True
-                    game_card.get_game_object().get_child(highlight_index()).enabled = False
-                    fight_sound.play()
-                else:
-                    error_sound.play()
-            else:
+    def process_card(self, card: GameCard):
+        # if first line not empty we can't attack hero
+        if game_manager.is_player_card(card):
+            if game_manager.enemy_first_line.get_game_object().child_count() > 0:
                 error_sound.play()
-        else:
+                return
+        if game_manager.is_enemy_card(card):
+            if game_manager.player_first_line.get_game_object().child_count() > 0:
+                error_sound.play()
+                return
+
+        # availability card
+        if not card or not card.can_attack or card.attack_used:
             error_sound.play()
+            return
+
+        # friendly-fire is disabled
+        if self == game_manager.enemy_hero:
+            if not game_manager.is_player_card(card):
+                error_sound.play()
+                return
+
+        if self == game_manager.player_hero:
+            if not game_manager.is_enemy_card(card):
+                error_sound.play()
+                return
+
+        # decrease hp and update ui
+        self.hit_points -= card.get_damage()
+        self.hp_label.set_title(str(self.hit_points))
+
+        # check for win
+        if self.hit_points <= 0:
+            if self == game_manager.enemy_hero:
+                game_manager.game_result = game_manager.GR_PLAYER_WIN
+            else:
+                game_manager.game_result = game_manager.GR_ENEMY_WIN
+
+        # disable attack
+        card.attack_used = True
+
+        # disable highlight
+        card.get_game_object().get_child(highlight_index()).enabled = False
+
+        # play sound
+        fight_sound.play()

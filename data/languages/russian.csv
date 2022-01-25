@@ -39,3 +39,7 @@ exit_match:Покинуть матч
 exit_game:Выйти из игры
 ui.menu:Меню
 ui.swap:В колоду
+ui.win:Вы победили!
+ui.loose:Вы проиграли!
+ui.chests_added:Получено {} сундука!
+ui.continue:Продолжить

@@ -1,4 +1,7 @@
 import sqlite3
+
+import pygame
+
 from core import config
 from game.contstants import *
 from core.resources import load_image
@@ -50,9 +53,17 @@ class ChestsScene(Scene):
 
     def open_chest(self):
         self.chest_count -= 1
+
         if self.chest_count == 0:
             self.open_btn.interactable = False
         self.chest_info.set_title(translate_string('ui.chest_info') + ': ' + str(self.chest_count))
+
+        unlock_cards = player_data_manager.get_player_data().get(PD_UNLOCKED_CARDS)
+        lock_cards = list(filter(lambda x: x.name not in unlock_cards, card_manager.game_cards))
+
+        if not lock_cards:
+            return
+
         if not self.card_on_screen:
             claim_info = Text(position=Vector(750, 150), size=BUTTONS_SIZE,
                               title=translate_string('ui.congratulations') + ':')
@@ -60,12 +71,6 @@ class ChestsScene(Scene):
             self.card_on_screen = True
         else:
             self.remove_game_object(self.card)
-        unlock_cards = player_data_manager.get_player_data().get(PD_UNLOCKED_CARDS)
-
-        lock_cards = list(filter(lambda x: x.name not in unlock_cards, card_manager.game_cards))
-
-        if not lock_cards:
-            return
 
         random_card_info = choice(lock_cards)
         random_card_name = random_card_info.name
@@ -76,6 +81,12 @@ class ChestsScene(Scene):
         self.card = random_card_info.build_card_object()
         self.card.position = Vector(800, 180)
         self.add_game_object(self.card)
+
+    def event_hook(self, event):
+        super().event_hook(event)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                self.back()
 
     def back(self):
         player_data_manager.get_player_data().update({PD_CHESTS: self.chest_count})

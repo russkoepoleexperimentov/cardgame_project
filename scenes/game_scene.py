@@ -94,12 +94,6 @@ class GameScene(Scene):
         self.remove_game_object(self.germany_btn)
         self.remove_game_object(self.germany_label)
 
-        game_manager.player_fuel = 0
-        game_manager.player_ammo = 0
-
-        self.enemy_ammo = 0
-        self.enemy_fuel = 0
-
         background_image = load_image('sprites/ui/my_deck_background.jpg')
         backline_icon = load_image('sprites/ui/backline.png')
         frontline_icon = load_image('sprites/ui/frontline.png')
@@ -241,6 +235,12 @@ class GameScene(Scene):
         self.player_turn()
 
     def prepare_game(self):
+        game_manager.player_fuel = 0
+        game_manager.player_ammo = 0
+
+        game_manager.enemy_fuel = 0
+        game_manager.enemy_ammo = 0
+
         shuffle(game_manager.get_player_deck())
         shuffle(game_manager.get_enemy_deck())
 
@@ -279,7 +279,7 @@ class GameScene(Scene):
         card_info = game_manager.get_player_deck().pop()
         card = card_info.build_card_object(card_width=self.card_size.x)
         game_card = card.add_component(GameCard)
-        game_card.init(card_info)
+        game_card.init(card_info, is_player=True)
         game_manager.player_hand.add_card(game_card)
         self.card_count_info.set_title(str(len(game_manager.get_player_deck())))
 
@@ -291,7 +291,7 @@ class GameScene(Scene):
         card = card_info.build_card_object(card_width=self.card_size.x)
         card.get_child(face_back_index()).enabled = True
         game_card = card.add_component(GameCard)
-        game_card.init(card_info)
+        game_card.init(card_info, is_player=False)
         game_manager.enemy_hand.add_card(game_card)
 
     def enemy_turn(self):
@@ -304,10 +304,18 @@ class GameScene(Scene):
 
         self.pick_enemy_card()
 
+        for card in game_manager.enemy_first_line.get_game_object().get_children():
+            card.get_component(GameCard).turn_tick()
+
+        for card in game_manager.enemy_second_line.get_game_object().get_children():
+            card.get_component(GameCard).turn_tick()
+
         cards_hand = game_manager.enemy_hand.get_game_object()
         cards = cards_hand.get_children()
 
         # pseudo AI
+
+        # step 1 throw cards into table (if we can)
         def is_available(c: GameCard):
             info: CardInfo = c.get_card_info()
             return info.fuel_cost <= game_manager.enemy_fuel and \
@@ -327,6 +335,37 @@ class GameScene(Scene):
             else:
                 game_manager.enemy_second_line.add_card(card)
             card.get_game_object().get_child(face_back_index()).enabled = False
+
+        # step 2 attack player
+        def is_can_attack(c: GameCard):
+            return c.can_attack and not c.attack_used
+
+        cards = game_manager.enemy_second_line.get_game_object().get_children() +\
+                game_manager.enemy_first_line.get_game_object().get_children()
+
+        attack_cards = [card for card in map(lambda go: go.get_component(GameCard), cards)
+                        if is_can_attack(card)]
+
+        player_cards = game_manager.player_first_line.get_game_object().get_children()
+        if not player_cards:
+            player_cards = game_manager.player_second_line.get_game_object().get_children()
+
+        player_cards = list(map(lambda go: go.get_component(GameCard), player_cards))
+
+        player_first_line = game_manager.player_first_line.get_game_object()
+
+        if not attack_cards:
+            return
+
+        for card in attack_cards:
+            solution = random.random()
+            if solution > 0.7 or not player_cards:
+                # attack hero
+                if player_first_line.child_count() == 0:
+                    game_manager.player_hero.process_card(card)
+            else:
+                chosen_card: GameCard = random.choice(player_cards)
+                chosen_card.process_card(card)
 
     def end_turn(self):
         game_manager.end_turn()
