@@ -2,12 +2,14 @@ import sqlite3
 
 from game import player_data_manager
 from game.cards.card import CardInfo
+from game.cards.hero_data import HeroData
 from game.contstants import *
 
 nations = set()
 game_cards = list()
 deck_by_nation = dict()
 cards_by_nation = dict()
+hero_by_nation = dict()
 unlocked_cards_by_nation = dict()
 
 player_id = 1
@@ -19,11 +21,13 @@ def init():
     deck_by_nation.clear()
     cards_by_nation.clear()
     unlocked_cards_by_nation.clear()
+    hero_by_nation.clear()
 
     # cards db
     con = sqlite3.connect(DATABASE)
     cur = con.cursor()
     cards_data = cur.execute(f"SELECT * FROM cards").fetchall()
+    heroes_data = cur.execute(f"SELECT * FROM heroes").fetchall()
     cur.close()
     con.close()
 
@@ -61,6 +65,12 @@ def init():
             deck = deck_by_nation.get(card_info.nation, [])
             deck.append(card_info)
             deck_by_nation[card_info.nation] = deck
+
+    for hero_data in heroes_data:
+        hero_info = HeroData(name=hero_data[0],
+                             nation=hero_data[1],
+                             icon_path=hero_data[2])
+        hero_by_nation.update({hero_info.nation: hero_info})
 
 
 def check_in_deck(card_info: CardInfo):

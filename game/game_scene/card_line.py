@@ -30,7 +30,8 @@ class CardLine(Component):
         self.mouse_inside = False
 
     def add_card(self, game_card: GameCard):
-        if self.type == TYPE_PLAYER:
+
+        if self.type == TYPE_PLAYER and not game_card.on_table:
             info: CardInfo = game_card.get_card_info()
             if game_manager.player_ammo < info.ammo_cost or \
                     game_manager.player_fuel < info.fuel_cost:

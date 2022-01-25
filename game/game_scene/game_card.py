@@ -102,6 +102,7 @@ class GameCard(Component):
         global temp_card_parent
 
         if not game_manager.is_player_turn() or not game_manager.is_player_card(self):
+            self.get_game_object().block_raycasts = True
             ui_manager.remove_dragged()
             return
 

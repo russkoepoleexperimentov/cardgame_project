@@ -2,7 +2,9 @@ from random import sample
 
 from core.ui.layout_group import LayoutGroup
 from game.cards import card_manager
+from game.cards.hero_data import HeroData
 from game.game_scene.card_line import CardLine
+from game.game_scene.game_hero import GameHero
 
 player_first_line: CardLine = None
 player_second_line: CardLine = None
@@ -22,6 +24,14 @@ ui_player_fuel = None
 
 player_deck = []
 enemy_deck = []
+player_nation: str = None
+enemy_nation: str = None
+player_hero: GameHero = None
+enemy_hero: GameHero = None
+
+GR_PLAYER_WIN = 'PLAYER_WIN'
+GR_ENEMY_WIN = 'ENEMY_WIN'
+game_result = ''
 
 
 def get_player_deck():
@@ -51,9 +61,11 @@ turn_count = 0
 
 
 def init_decks(player: str, enemy: str):
-    global player_deck, enemy_deck
+    global player_deck, enemy_deck, player_nation, enemy_nation
     player_deck = list(card_manager.deck_by_nation.get(player))
     enemy_deck = sample(list(card_manager.cards_by_nation.get(enemy)), k=15)
+    player_nation = player
+    enemy_nation = enemy
 
 
 def is_player_card(card):

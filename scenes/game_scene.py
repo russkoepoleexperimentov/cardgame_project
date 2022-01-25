@@ -1,6 +1,7 @@
 import random
 import pygame
 from core import config
+from game.cards import card_manager
 from game.cards.card import face_back_index, CardInfo
 from game.contstants import *
 from core.resources import load_image
@@ -20,10 +21,15 @@ from scenes.menu import MenuScene
 from random import shuffle
 from core.ui.layout_group import HorizontalLayoutGroup, VerticalLayoutGroup
 from game.game_scene.game_card import GameCard
+from game.game_scene.game_hero import GameHero
+from scenes.game_end_scene import GameEndScene
 
 ENEMY_TURN_MIN = 2
 ENEMY_TURN_MAX = 5
 enemy_turn_timer = 0
+
+HERO_ICON_POS, HERO_ICON_SIZE = Vector(100, 100), Vector(100, 100)
+HERO_ICON_BG = load_image('sprites/ui/slider_back.png')
 
 
 class GameScene(Scene):
@@ -214,6 +220,23 @@ class GameScene(Scene):
         # end turn
         self.end_turn_btn.on_click.add_listener(self.end_turn)
 
+        # heroes
+        enemy_hero = Image(position=HERO_ICON_POS,
+                           size=HERO_ICON_SIZE,
+                           sprite=HERO_ICON_BG)
+        self.enemy_hero = game_manager.enemy_hero = enemy_hero.add_component(GameHero)
+        self.enemy_hero.init(card_manager.hero_by_nation.get(game_manager.enemy_nation))
+        self.add_game_object(enemy_hero)
+
+        player_hero = Image(position=Vector(HERO_ICON_POS.x, self.screen_h - HERO_ICON_POS.y -
+                                            HERO_ICON_SIZE.y),
+                            size=HERO_ICON_SIZE,
+                            sprite=HERO_ICON_BG)
+        self.player_hero = game_manager.player_hero = player_hero.add_component(GameHero)
+        self.player_hero.init(card_manager.hero_by_nation.get(game_manager.player_nation), True)
+        self.add_game_object(player_hero)
+
+        # start game
         self.prepare_game()
         self.player_turn()
 
@@ -323,6 +346,9 @@ class GameScene(Scene):
             else:
                 self.enemy_turn()
                 self.end_turn()
+
+        if game_manager.game_result:
+            scene_manager.load(GameEndScene(game_manager.game_result == game_manager.GR_PLAYER_WIN))
 
     def back(self):
         scene_manager.load(MenuScene())
