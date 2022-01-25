@@ -35,6 +35,7 @@ HERO_ICON_BG = load_image('sprites/ui/slider_back.png')
 class GameScene(Scene):
     def __init__(self):
         super(GameScene, self).__init__()
+        game_manager.game_result = ''
         self.screen_w, self.screen_h = tuple(map(int, config.get_value('vid_mode').split('x')))
         self.screen = Vector(self.screen_w, self.screen_h)
 
