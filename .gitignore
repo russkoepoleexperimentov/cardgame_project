@@ -2,3 +2,6 @@
 /venv/
 .idea
 /data/player_stats.json
+/dist/
+/build/
+/World of WarCards.spec
