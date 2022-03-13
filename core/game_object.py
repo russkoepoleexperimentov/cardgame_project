@@ -114,11 +114,21 @@ class GameObject:
                 child.event_hook(event)
 
     def render(self, window, offset=Vector(0, 0)):
+        render_pos = (self.get_global_position() - offset)
+        wnd_size = Vector(*pygame.display.get_window_size())
+
+        # do not render objects outside window
+        if render_pos.x + self.get_size().x < 0\
+                or render_pos.y + self.get_size().y < 0 \
+                or render_pos.x > wnd_size.x \
+                or render_pos.y > wnd_size.y:
+            return
+
         if self.get_sprite() is not None:
-            window.blit(self.get_sprite(), (self.get_global_position() - offset).xy())
+            window.blit(self.get_sprite(), render_pos.xy())
 
         if self.draw_bounds:
-            rect = pygame.Rect(*(self.get_global_position() - offset).xy(), *self.get_size().xy())
+            rect = pygame.Rect(*render_pos.xy(), *self.get_size().xy())
             pygame.draw.rect(window, 'red', rect)
 
         for child in self.get_children():
