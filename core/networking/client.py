@@ -2,6 +2,7 @@ import asyncio
 import socket
 from pickle import loads, dumps
 
+from core.action import Action
 from core.coroutines_manager import start_coroutine, get_event_loop
 from core import log
 from server_core.server import SV_BUFFER_SIZE
@@ -11,6 +12,7 @@ class Client:
     def __init__(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connected = False
+        self.on_packet = Action()
 
     def connect(self, server='127.0.0.1', port=5555):
         conn_task = self.connection_coroutine(server, port)
@@ -24,6 +26,7 @@ class Client:
             start_coroutine(self.main_loop())
         except ConnectionRefusedError:
             log.trace('[CLIENT] server didn\'t responding...')
+            self.on_packet.invoke('sv_connrefused')
             self.connected = False
 
     async def main_loop(self, *args):
@@ -49,6 +52,7 @@ class Client:
 
     def receive_packet(self, raw_data: bytes):
         packet_name, *data = loads(raw_data)
+        self.on_packet.invoke(packet_name, *data)
         if packet_name == 'sv_full':
             log.trace('[CLIENT] server is full, disconnecting....')
             self.disconnect()

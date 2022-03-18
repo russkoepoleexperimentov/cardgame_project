@@ -20,8 +20,6 @@ class MenuScene(Scene):
     def __init__(self):
         super().__init__()
 
-        cursor.init()
-
         screen_w, screen_h = tuple(map(int, config.get_value('vid_mode').split('x')))
         screen = Vector(screen_w, screen_h)
         buttons_holder = Image(position=Vector(screen_w // 2 -

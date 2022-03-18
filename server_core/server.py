@@ -24,7 +24,6 @@ class Server:
     def receive_connections(self):
         while True:
             connection_socket, address = self.socket.accept()
-            print('conn', self.connections)
             if self.connections > 2:
                 self.send_packet(connection_socket, ('sv_full',))
             else:
@@ -54,7 +53,7 @@ class Server:
     def receive_packet(self, raw_data: bytes):
         packet_name, *data = loads(raw_data)
         if packet_name == 'authenticate_uid':
-            self.send_packet()
+            pass
 
 
 if __name__ == '__main__':
