@@ -6,13 +6,20 @@ from core import log
 from core import config
 from core.ui import ui_manager
 from core.action import Action
+from core import coroutines_manager
+
+from core.networking.client import Client
 
 import pygame
 
 on_update = Action()
+client = Client()
 
 
 def close():
+    client.disconnect()
+    coroutines_manager.shut_down()
+
     log.end()
     sys.exit()
 
@@ -20,6 +27,8 @@ def close():
 class Application:
     def __init__(self, caption):
         config.load_settings()
+
+        coroutines_manager.init()
 
         pygame.init()
         pygame.font.init()
@@ -29,7 +38,7 @@ class Application:
 
         pygame.display.set_caption(caption)
         flags = pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.NOFRAME
-        self.window = pygame.display.set_mode(self.size, flags | pygame.FULLSCREEN)
+        self.window = pygame.display.set_mode(self.size, flags)  # | pygame.FULLSCREEN)
         self.clock = pygame.time.Clock()
 
     def dispatch_events(self):
@@ -53,5 +62,7 @@ class Application:
             self.window.fill((0, 0, 0))
             renderer.render_scene(self.window)
             pygame.display.flip()
+
+            coroutines_manager.run_once()
 
             delta_time = self.clock.tick(self.target_framerate)

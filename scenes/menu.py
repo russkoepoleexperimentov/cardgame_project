@@ -90,5 +90,7 @@ class MenuScene(Scene):
         scene_manager.load(ChestsScene())
 
     def load_game(self):
-        from scenes.game_scene import GameScene
-        scene_manager.load(GameScene())
+        from scenes.lobby_scene import LobbyScene
+        scene_manager.load(LobbyScene())
+        # from scenes.game_scene import GameScene
+        # scene_manager.load(GameScene())

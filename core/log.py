@@ -6,12 +6,16 @@ log = []
 
 
 def trace(string: str):
-    log.append(f'[{str(datetime.now())}] {string}')
+    t = f'[{str(datetime.now())}] {string}'
+    print(t)
+    log.append(t)
     log.append('\n')
 
 
 def add_line():
-    log.append('-' * LOG_LINE_WIDTH)
+    t = '-' * LOG_LINE_WIDTH
+    print(t)
+    log.append(t)
     log.append('\n')
 
 
