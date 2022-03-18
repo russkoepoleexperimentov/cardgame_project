@@ -12,6 +12,7 @@ from game.cards import card_manager
 
 import argparse
 
+from scenes.startup_scene import StartupScene
 from server_core.server import Server
 
 if __name__ == '__main__':
@@ -44,5 +45,5 @@ if __name__ == '__main__':
             log.trace(f'[CLIENT] Something went wrong! \n\texception: {e}')
 
     card_manager.init()
-    scene_manager.load(MenuScene())
+    scene_manager.load(StartupScene())
     app.run()
