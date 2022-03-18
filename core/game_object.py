@@ -122,7 +122,7 @@ class GameObject:
                 or render_pos.y + self.get_size().y < 0 \
                 or render_pos.x > wnd_size.x \
                 or render_pos.y > wnd_size.y:
-            return
+            return 
 
         if self.get_sprite() is not None:
             window.blit(self.get_sprite(), render_pos.xy())
