@@ -9,7 +9,6 @@ class ServerResources:
         self._bases = dict()
 
         db = os.path.join(working_dir, 'data/cards.sqlite3')
-        print('WORKING WITH DB: ', db)
         con = sqlite3.connect(db)
         cur = con.cursor()
         cards_data = cur.execute('SELECT * FROM cards').fetchall()

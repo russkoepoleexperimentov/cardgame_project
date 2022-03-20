@@ -1,4 +1,5 @@
 import asyncio
+import os.path
 
 import pygame
 
@@ -75,6 +76,10 @@ class StartupScene(Scene):
 
         self.connection_status = ''
 
+        self.resources_count = 0
+        self.resources_loaded = False
+        self.resource_downloading = ''
+
         application.client.on_packet.add_listener(self.on_packet)
 
         start_coroutine(self.wait_connection_to_server())
@@ -102,13 +107,13 @@ class StartupScene(Scene):
             self.connection_status = 'sv_full'
         if name == 'sv_success':
             self.connection_status = 'sv_success'
+        if name == 'register_response':
+            self.connection_status_text.set_title(['register failed', 'register success'][data[0]])
         if name == 'authenticate_response':
             if data[0]:
                 scene_manager.load(MenuScene())
             else:
                 self.connection_status_text.set_title(data[1])
-        if name == 'register_response':
-            self.connection_status_text.set_title(['register failed', 'register success'][data[0]])
 
     def update(self, delta_time):
         super(StartupScene, self).update(delta_time)

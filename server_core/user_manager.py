@@ -46,7 +46,9 @@ class UserManager:
         with open(self.db_path, 'r', encoding=ENCODING) as file:
             users = json.load(file)
             for u in users:
-                self._users.append(UserData(*u.values()))
+                user = UserData(u['username'], u['password'], u['token'])
+                user.chests = u['chests']
+                self._users.append(user)
 
     def commit(self):
         users = []
@@ -54,10 +56,16 @@ class UserManager:
             users.append({
                 'username': u.username,
                 'password': u.password,
-                'token': u.get_token()
+                'token': u.get_token(),
+                'chests': u.chests,
             })
         with open(self.db_path, 'w', encoding=ENCODING) as file:
             json.dump(users, file, ensure_ascii=False, indent=2)
+
+    def get_user_by_token(self, token: int):
+        for u in self._users:
+            if u.get_token() == token:
+                return u
 
 
 class UserData:
@@ -69,6 +77,8 @@ class UserData:
             self._token = token
         else:
             self._token = next(unique_sequence)
+
+        self.chests = 10
 
     def get_token(self):
         return self._token
