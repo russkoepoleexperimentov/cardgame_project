@@ -40,6 +40,11 @@ def init():
     }
 
     for card_data in cards_data:
+
+        # DELETE ME
+        if card_data[6] == 'english':
+            continue
+
         card_info = CardInfo(name=card_data[0],
                              icon_path=card_data[5],
                              card_type=card_data[7],
