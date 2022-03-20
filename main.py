@@ -44,6 +44,6 @@ if __name__ == '__main__':
         except Exception as e:
             log.trace(f'[CLIENT] Something went wrong! \n\texception: {e}')
 
-    card_manager.init()
+    # card_manager.init()
     scene_manager.load(StartupScene())
     app.run()
