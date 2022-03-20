@@ -5,6 +5,9 @@ class Action:
     def add_listener(self, listener):
         self.__listeners.append(listener)
 
+    def remove_listener(self, listener):
+        self.__listeners.remove(listener)
+
     def clear(self):
         self.__listeners = list()
 

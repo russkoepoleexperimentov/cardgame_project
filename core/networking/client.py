@@ -82,6 +82,8 @@ class Client:
         self.socket.close()
 
     def send_packet(self, raw_data: tuple):
+        raw_data = list(raw_data)
+        raw_data.insert(1, self.token)
         data = dumps(raw_data)
         self.socket.send(data)
 
