@@ -1,5 +1,5 @@
-from game.cards.card import CardInfo
 from game.cards import card_manager
+from server_core.server_resources import CardInfo
 
 
 def switch_cards(nation, in_deck: CardInfo, other: CardInfo):

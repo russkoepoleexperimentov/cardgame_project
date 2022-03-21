@@ -1,21 +1,20 @@
 import sqlite3
 
+from core import application
 from game import player_data_manager
-from game.cards.card import CardInfo
 from game.cards.hero_data import HeroData
 from game.contstants import *
+from server_core.server_resources import CardInfo
 
 nations = set()
-game_cards = list()
+game_cards = dict()
 deck_by_nation = dict()
 cards_by_nation = dict()
 hero_by_nation = dict()
 unlocked_cards_by_nation = dict()
 
-player_id = 1
 
-
-def init():
+def register_cards(cards):
     nations.clear()
     game_cards.clear()
     deck_by_nation.clear()
@@ -23,59 +22,34 @@ def init():
     unlocked_cards_by_nation.clear()
     hero_by_nation.clear()
 
-    # cards db
-    con = sqlite3.connect(DATABASE)
-    cur = con.cursor()
-    cards_data = cur.execute(f"SELECT * FROM cards").fetchall()
-    heroes_data = cur.execute(f"SELECT * FROM heroes").fetchall()
-    cur.close()
-    con.close()
-
-    # player_stats db
-    player_data = player_data_manager.get_player_data()
-
-    deck_data = {
-        'soviet': player_data.get(PD_SOVIET_DECK),
-        'germany': player_data.get(PD_GERMANY_DECK)
-    }
-
-    for card_data in cards_data:
-
-        # DELETE ME
-        if card_data[6] == 'english':
-            continue
-
-        card_info = CardInfo(name=card_data[0],
-                             icon_path=card_data[5],
-                             card_type=card_data[7],
-                             nation=card_data[6],
-                             hit_points=card_data[1],
-                             damage=card_data[2],
-                             ammo_cost=card_data[3],
-                             fuel_cost=card_data[4])
-
-        game_cards.append(card_info)
+    for card_info in cards:
+        game_cards[card_info.name] = card_info
         nations.add(card_info.nation)
 
         cards = cards_by_nation.get(card_info.nation, [])
         cards.append(card_info)
         cards_by_nation[card_info.nation] = cards
 
-        if card_info.name in player_data.get(PD_UNLOCKED_CARDS):
-            unl_cards = unlocked_cards_by_nation.get(card_info.nation, [])
-            unl_cards.append(card_info)
-            unlocked_cards_by_nation[card_info.nation] = unl_cards
+    application.client.send_packet(('get_unlocked_cards',))
 
-        if card_info.name in deck_data[card_info.nation]:
-            deck = deck_by_nation.get(card_info.nation, [])
-            deck.append(card_info)
-            deck_by_nation[card_info.nation] = deck
 
-    for hero_data in heroes_data:
-        hero_info = HeroData(name=hero_data[0],
-                             nation=hero_data[1],
-                             icon_path=hero_data[2])
-        hero_by_nation.update({hero_info.nation: hero_info})
+def on_packet(name, *data):
+    print('received', name)
+    if name == 'decks_response':
+        deck_by_nation.update(data[0])
+    if name == 'unlocked_cards_response':
+        for n in nations:
+            unlocked_cards_by_nation[n] = []
+        for card_name in data[0]:
+            card = game_cards[card_name]
+            nation = unlocked_cards_by_nation.get(card.nation, [])
+            nation.append(card)
+            unlocked_cards_by_nation.update({card.nation: nation})
+        print('unl', unlocked_cards_by_nation)
+        application.client.send_packet(('get_decks',))
+
+
+application.client.on_packet.add_listener(on_packet)
 
 
 def check_in_deck(card_info: CardInfo):
@@ -83,12 +57,11 @@ def check_in_deck(card_info: CardInfo):
 
 
 def return_card_by_name(name):
-    for card in game_cards:
-        if card.name == name:
-            return card
+    return game_cards[name]
 
 
 def save_cards_to_db():
+    return
     soviet_deck = [x.name for x in deck_by_nation['soviet']]
     germany_deck = [x.name for x in deck_by_nation['germany']]
 

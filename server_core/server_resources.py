@@ -1,10 +1,12 @@
 import os
 import sqlite3
 
+from server_core.user_manager import UserData
+
 
 class ServerResources:
     def __init__(self, working_dir):
-        self._nations = []
+        self._nations = set()
         self._cards = []
         self._bases = dict()
 
@@ -27,6 +29,7 @@ class ServerResources:
                                  fuel_cost=card_data[4])
 
             self._cards.append(card_info)
+            self._nations.add(card_info.nation)
 
         for base_data in bases_data:
             base_info = BaseInfo(name=base_data[0],

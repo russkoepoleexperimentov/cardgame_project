@@ -64,5 +64,7 @@ class Application:
             pygame.display.flip()
 
             coroutines_manager.run_once()
-
-            delta_time = self.clock.tick(self.target_framerate)
+            try:
+                delta_time = self.clock.tick(self.target_framerate)
+            except KeyboardInterrupt:
+                close()

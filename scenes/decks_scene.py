@@ -83,5 +83,4 @@ class DecksScene(Scene):
 
     def load_menu(self):
         from scenes.menu import MenuScene
-        card_manager.init()
         scene_manager.load(MenuScene())

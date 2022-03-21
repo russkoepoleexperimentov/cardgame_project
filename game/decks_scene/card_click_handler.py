@@ -2,9 +2,10 @@ from core.component import Component
 from core.ui.button import Button
 from core.ui.image import Image
 from core.vector import Vector
-from game.cards.card import CardInfo
 from game.contstants import BUTTON_DEFAULT_DESIGN
 from core.localization import translate_string
+from server_core.server_resources import CardInfo
+
 swap_candidate: CardInfo = None
 swap_candidate_obj: Image = None
 
