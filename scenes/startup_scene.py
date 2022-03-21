@@ -16,6 +16,7 @@ from core.vector import Vector
 from core.coroutines_manager import start_coroutine
 from game import cursor
 from game.button_sounds import ButtonSounds
+from game.cards import card_manager
 from game.contstants import BUTTON_DEFAULT_DESIGN, BUTTONS_SIZE
 from scenes.menu import MenuScene
 
@@ -111,9 +112,13 @@ class StartupScene(Scene):
             self.connection_status_text.set_title(['register failed', 'register success'][data[0]])
         if name == 'authenticate_response':
             if data[0]:
-                scene_manager.load(MenuScene())
+                application.client.send_packet(('get_all_cards',))
             else:
                 self.connection_status_text.set_title(data[1])
+        if name == 'all_cards_response':
+            cards = data[0]
+            card_manager.register_cards(cards)
+            scene_manager.load(MenuScene())
 
     def update(self, delta_time):
         super(StartupScene, self).update(delta_time)

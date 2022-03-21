@@ -1,5 +1,6 @@
 import asyncio
 import socket
+from zlib import compress, decompress
 from pickle import loads, dumps
 
 from core.action import Action
@@ -85,10 +86,11 @@ class Client:
         raw_data = list(raw_data)
         raw_data.insert(1, self.token)
         data = dumps(raw_data)
-        self.socket.send(data)
+        compressed_data = compress(data)
+        self.socket.send(compressed_data)
 
     def receive_packet(self, raw_data: bytes):
-        packet_name, *data = loads(raw_data)
+        packet_name, *data = loads(decompress(raw_data))
         self.on_packet.invoke(packet_name, *data)
         if packet_name == 'sv_full':
             log.trace('[CLIENT] server is full, disconnecting....')

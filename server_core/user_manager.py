@@ -48,6 +48,8 @@ class UserManager:
             for u in users:
                 user = UserData(u['username'], u['password'], u['token'])
                 user.chests = u['chests']
+                user.decks = u['decks']
+                user.unlocked_cards = u['unlocked_cards']
                 self._users.append(user)
 
     def commit(self):
@@ -58,6 +60,8 @@ class UserManager:
                 'password': u.password,
                 'token': u.get_token(),
                 'chests': u.chests,
+                'decks': u.decks,
+                'unlocked_cards': u.unlocked_cards,
             })
         with open(self.db_path, 'w', encoding=ENCODING) as file:
             json.dump(users, file, ensure_ascii=False, indent=2)
@@ -79,6 +83,31 @@ class UserData:
             self._token = next(unique_sequence)
 
         self.chests = 10
+
+        # TODO: GET DEFAULT DECKS
+        self.decks = {
+            'soviet': ['Т-26',
+                       'Рота НКВД',
+                       'Т-34',
+                       'Т-34-85',
+                       'КВ-1',
+                       'ИС-2',
+                       'СУ-76',
+                       'СУ-85',
+                       'СУ-122',
+                       'СУ-152',
+                       'КВ-2',
+                       'ИСУ-122',
+                       'ИСУ-152',
+                       'Ил-2',
+                       'Ил-10'],
+            'germany': [],
+            'english': [],
+        }
+
+        # all in-deck cards must be unlocked
+        self.unlocked_cards = []
+        [self.unlocked_cards.extend(cards) for cards in self.decks.values()]
 
     def get_token(self):
         return self._token
