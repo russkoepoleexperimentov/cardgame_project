@@ -7,8 +7,12 @@ from _thread import start_new_thread
 from pickle import loads, dumps
 from zlib import compress, decompress
 
-from server_core.server_resources import ServerResources
-from server_core.user_manager import UserManager
+if __name__ == '__main__':
+    from server_resources import ServerResources
+    from user_manager import UserManager
+else:
+    from server_core.server_resources import ServerResources
+    from server_core.user_manager import UserManager
 
 SV_BUFFER_SIZE = 2048 * 4
 SV_MAX_PLAYERS = 8
@@ -24,6 +28,7 @@ def uniqueid():
 
 
 unique_sequence = uniqueid()
+global_server = None
 
 
 class Server:
@@ -35,6 +40,9 @@ class Server:
 
         self.resources = ServerResources(working_dir)
         self.user_manager = UserManager(working_dir)
+
+        global global_server
+        global_server = self
 
     def start(self):
         print('[SERVER] Starting')
@@ -77,6 +85,7 @@ class Server:
 
     def receive_packet(self, client, raw_data: bytes):
         packet_name, token, *data = loads(decompress(raw_data))
+        user = self.user_manager.get_user_by_token(token)
         if packet_name == 'authenticate_request':
             login_info = self.user_manager.try_login(*data)
             success, user_or_error = login_info
@@ -96,30 +105,40 @@ class Server:
                                       self.user_manager.get_user_by_token(token).chests))
         if packet_name == 'open_chest':
             # TODO: CHESTS
-            user = self.user_manager.get_user_by_token(token)
             if user.chests < 1:
-                self.send_packet(client, (False, ''))
+                self.send_packet(client, ('open_chest_response', ''))
             else:
                 user.chests -= 1
+                closed_cards = tuple(set(self.resources.card_sections()) - set(user.unlocked_cards))
+                card = random.choice(closed_cards)
+                user.unlocked_cards.append(card)
                 self.user_manager.commit()
-                self.send_packet(client, (True, 'aboba'))
+                self.send_packet(client, ('open_chest_response', card))
         if packet_name == 'get_all_cards':
-            self.send_packet(client, ('all_cards_response', self.resources.cards()))
+            self.send_packet(client, ('all_cards_response', self.resources.cards_tuple()))
         if packet_name == 'get_decks':
-            user = self.user_manager.get_user_by_token(token)
             nations = self.resources.nations()
-            print('nations ', nations)
             decks = dict()
             for n in nations:
                 decks.update({n: tuple(user.decks.get(n, []))})
-            print('decks', decks)
             self.send_packet(client, ('decks_response', decks))
         if packet_name == 'get_unlocked_cards':
-            user = self.user_manager.get_user_by_token(token)
             self.send_packet(client, ('unlocked_cards_response', tuple(user.unlocked_cards)))
+        if packet_name == 'switch_deck_card':
+            card_not_in_deck, card_in_deck, nation = data
+            card_not_in_deck, card_in_deck = (self.resources.card_by_section(card_not_in_deck),
+                                              self.resources.card_by_section(card_in_deck))
+            if card_not_in_deck.nation == nation and card_in_deck.nation == nation:
+                user.decks[nation].append(card_not_in_deck.section)
+                user.decks[nation].remove(card_in_deck.section)
+                self.user_manager.commit()
 
 
+
+server = None
 if __name__ == '__main__':
+    from time import sleep
+
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--server', default='127.0.0.1:5555', type=str)
     args = arg_parser.parse_args()
@@ -130,5 +149,11 @@ if __name__ == '__main__':
             ip, port = map(lambda x: x.strip(), args.server.split(':'))
             server = Server(ip, int(port))
             server.start()
+            while True:
+                try:
+                    sleep(1)
+                except KeyboardInterrupt:
+                    print('[SERVER] Shutting down')
+                    exit(0)
         except Exception as e:
             print(f'[SERVER] Something went wrong! \n\texception: {e}')

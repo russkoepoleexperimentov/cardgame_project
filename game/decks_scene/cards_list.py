@@ -125,8 +125,8 @@ class CardsList(Component):
 
     def display_deck(self, nation: str):
         deck_cards = tuple(card_manager.deck_by_nation[nation])
-        for card_name in deck_cards:
-            card_info = card_manager.game_cards[card_name]
+        for card_section in deck_cards:
+            card_info = card_manager.game_cards[card_section]
             card_obj = build_card_object(card_info)
             card_obj.add_component(CardClickHandler).init(card_info, self, True)
             card_obj.set_parent(self.deck_cards_parent)
@@ -138,7 +138,8 @@ class CardsList(Component):
     def display_other_cards(self, nation: str):
         deck_cards = tuple(card_manager.deck_by_nation[nation])
         other_cards = tuple(set(card_manager.unlocked_cards_by_nation[nation]) - set(deck_cards))
-        for card_info in other_cards:
+        for card_section in other_cards:
+            card_info = card_manager.game_cards[card_section]
             card_obj = build_card_object(card_info)
             card_obj.add_component(CardClickHandler).init(card_info, self, False)
             card_obj.set_parent(self.other_cards_parent)

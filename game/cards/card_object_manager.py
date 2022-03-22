@@ -62,7 +62,7 @@ def build_card_object(self: CardInfo, card_width=200):
 
     card_name = Text(position=text_name_pos,
                      size=text_name_size,
-                     title=translate_string(self.name),
+                     title=translate_string(self.display_name),
                      align='center',
                      valign='middle',
                      font_size=int(80 * card_scale))

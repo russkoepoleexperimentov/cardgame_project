@@ -20,6 +20,7 @@ if __name__ == '__main__':
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--server', type=str)
     arg_parser.add_argument('--client', default='127.0.0.1:5555', type=str)
+    arg_parser.add_argument('--login', default='', type=str)
     args = arg_parser.parse_args()
 
     player_data_manager.init()
@@ -44,6 +45,13 @@ if __name__ == '__main__':
         except Exception as e:
             log.trace(f'[CLIENT] Something went wrong! \n\texception: {e}')
 
+    username, password = '', ''
+    if args.login:
+        try:
+            username, password = map(lambda x: x.strip(), args.login.split())
+        except:
+            pass
+
     # card_manager.init()
-    scene_manager.load(StartupScene())
+    scene_manager.load(StartupScene(username, password))
     app.run()

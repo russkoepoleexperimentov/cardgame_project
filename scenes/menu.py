@@ -24,7 +24,7 @@ class MenuScene(Scene):
         screen = Vector(screen_w, screen_h)
         buttons_holder = Image(position=Vector(screen_w // 2 -
                                                BUTTONS_SIZE.x // 2,
-                                               BUTTONS_TOP_OFFSET))
+                                               BUTTONS_TOP_OFFSET + 100))
         buttons_layout_group = buttons_holder.add_component(VerticalLayoutGroup)
         self.add_game_object(buttons_holder)
 

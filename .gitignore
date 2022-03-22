@@ -5,3 +5,4 @@
 /dist/
 /build/
 /World of WarCards.spec
+/server_core/data/players.json
