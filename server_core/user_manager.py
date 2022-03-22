@@ -2,6 +2,8 @@ import json
 import os.path
 import random
 
+from server_core.server_resources import global_resources
+
 ENCODING = 'utf-8'
 
 
@@ -35,9 +37,9 @@ class UserManager:
                 if user.password == password:
                     return True, user
                 else:
-                    return False, 'passwords did not match'
+                    return False, 'password was incorrect'
 
-        return False, 'there are no users with this username'
+        return False, 'user not found'
 
     def load_db(self):
         if not os.path.exists(self.db_path):
@@ -84,26 +86,8 @@ class UserData:
 
         self.chests = 10
 
-        # TODO: GET DEFAULT DECKS
-        self.decks = {
-            'soviet': ['Т-26',
-                       'Рота НКВД',
-                       'Т-34',
-                       'Т-34-85',
-                       'КВ-1',
-                       'ИС-2',
-                       'СУ-76',
-                       'СУ-85',
-                       'СУ-122',
-                       'СУ-152',
-                       'КВ-2',
-                       'ИСУ-122',
-                       'ИСУ-152',
-                       'Ил-2',
-                       'Ил-10'],
-            'germany': [],
-            'english': [],
-        }
+        # GET DEFAULT DECKS
+        self.decks = global_resources().get_base_decks()
 
         # all in-deck cards must be unlocked
         self.unlocked_cards = []

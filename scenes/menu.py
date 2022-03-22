@@ -24,7 +24,7 @@ class MenuScene(Scene):
         screen = Vector(screen_w, screen_h)
         buttons_holder = Image(position=Vector(screen_w // 2 -
                                                BUTTONS_SIZE.x // 2,
-                                               BUTTONS_TOP_OFFSET))
+                                               BUTTONS_TOP_OFFSET + 100))
         buttons_layout_group = buttons_holder.add_component(VerticalLayoutGroup)
         self.add_game_object(buttons_holder)
 
@@ -55,7 +55,7 @@ class MenuScene(Scene):
 
         settings_button = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE,
                                  title=translate_string('ui.settings'))
-        settings_button.set_parent(buttons_holder)
+        # settings_button.set_parent(buttons_holder)
         settings_button.add_component(ButtonSounds)
         settings_button.interactable = False
 

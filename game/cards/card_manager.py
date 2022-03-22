@@ -23,29 +23,39 @@ def register_cards(cards):
     hero_by_nation.clear()
 
     for card_info in cards:
-        game_cards[card_info.name] = card_info
+        game_cards[card_info.section] = card_info
         nations.add(card_info.nation)
 
         cards = cards_by_nation.get(card_info.nation, [])
         cards.append(card_info)
         cards_by_nation[card_info.nation] = cards
 
+    print(game_cards)
     application.client.send_packet(('get_unlocked_cards',))
 
 
 def on_packet(name, *data):
     print('received', name)
     if name == 'decks_response':
-        deck_by_nation.update(data[0])
+        for k in data[0]:
+            v = data[0][k]
+            li = []
+            for section in v:
+                if section in game_cards.keys():
+                    li.append(section)
+                else:
+                    print(section, 'not found')
+            deck_by_nation.update({k: li})
+        print('decks loaded', deck_by_nation)
     if name == 'unlocked_cards_response':
         for n in nations:
             unlocked_cards_by_nation[n] = []
-        for card_name in data[0]:
-            card = game_cards[card_name]
+        for card_section in data[0]:
+            card = game_cards[card_section]
             nation = unlocked_cards_by_nation.get(card.nation, [])
-            nation.append(card)
+            nation.append(card.section)
             unlocked_cards_by_nation.update({card.nation: nation})
-        print('unl', unlocked_cards_by_nation)
+        print('ucbn', unlocked_cards_by_nation)
         application.client.send_packet(('get_decks',))
 
 

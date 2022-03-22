@@ -8,6 +8,8 @@ from core.coroutines_manager import start_coroutine, get_event_loop
 from core import log
 from server_core.server import SV_BUFFER_SIZE
 
+from server_core.server_resources import CardInfo
+
 
 class Client:
     def __init__(self):

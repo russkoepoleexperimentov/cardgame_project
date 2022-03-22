@@ -7,6 +7,8 @@ from core.resources import load_image
 from core.scene import Scene
 from core.ui.button import Button
 from core.ui.image import Image
+from core.ui.input_field import InputField
+from core.ui.layout_group import HorizontalLayoutGroup
 from core.vector import Vector
 
 import pygame
@@ -23,10 +25,6 @@ class LobbyScene(Scene):
 
         screen = Vector(*pygame.display.get_window_size())
 
-        # task
-        self.task = self.wait_for_play()
-        start_coroutine(self.task)
-
         self.player_ready = True
         self.opponent_ready = False
 
@@ -35,26 +33,36 @@ class LobbyScene(Scene):
         self.add_game_object(background)
 
         # back button
-        back_btn = Button(position=Vector(10, screen.y - BUTTONS_SIZE.y - 10), size=BUTTONS_SIZE,
-                          **BUTTON_DEFAULT_DESIGN, title=translate_string('ui.back'))
-        back_btn.on_click.add_listener(self.load_menu)
+        back_btn = Button(**BUTTON_DEFAULT_DESIGN, position=Vector(40, 30), size=Vector(150, 30),
+                          title=translate_string('ui.back'))
         back_btn.add_component(ButtonSounds)
-        back_btn.set_parent(background)
+        back_btn.on_click.add_listener(self.back)
+        back_btn.label.set_font_size(25)
+        self.add_game_object(back_btn, 150)
 
-        #
+        # room management
+        room_buttons = Image(size=Vector(screen.x, BUTTONS_SIZE.y),
+                             position=Vector(40, screen.y - 100))
+        l_group: HorizontalLayoutGroup = room_buttons.add_component(HorizontalLayoutGroup)
+        l_group.anchor = 'left'
+        l_group.spacing = 10
+        room_buttons.set_parent(background)
+        create_room_btn = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE,
+                                 title=translate_string('ui.room.create'))
+        create_room_btn.set_parent(room_buttons)
+        join_room_btn = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE,
+                                 title=translate_string('ui.room.join'))
+        join_room_btn.set_parent(room_buttons)
+        join_room_field = InputField(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE,
+                                     placeholder=translate_string('ui.room.join.id'))
+        join_room_field.set_parent(background)
+        join_room_field.position = join_room_btn.get_global_position() - Vector(0,
+                                                                                BUTTONS_SIZE.y + 2)
 
     def load_menu(self):
         self.task.close()
         self.task = None
         scene_manager.load(MenuScene())
-
-    async def wait_for_play(self):
-        while not (self.player_ready and self.opponent_ready):
-            try:
-                await asyncio.sleep(0)
-            except asyncio.CancelledError:
-                return
-        self.start_game()
 
     def start_game(self):
         from scenes.game_scene import GameScene
@@ -65,3 +73,6 @@ class LobbyScene(Scene):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_h:
                 self.opponent_ready = True
+
+    def back(self):
+        scene_manager.load(MenuScene())

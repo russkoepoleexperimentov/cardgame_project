@@ -1,4 +1,4 @@
-game_name:World of WarCards
+game_name:Cards of Iron 200
 ui.start:Играть
 ui.settings:Настройки
 ui.quit:Выход
@@ -10,6 +10,7 @@ ui.own_deck:Моя колода
 ui.others_cards:Доступные карты
 soviet:Советский Союз
 germany:Германия
+english:Англия
 infantry:Пехота
 light_tank:Легкий танк
 medium_tank:Средний танк
@@ -43,3 +44,17 @@ ui.win:Вы победили!
 ui.loose:Вы проиграли!
 ui.chests_added:Получено {} сундука!
 ui.continue:Продолжить
+ui.connecting:Подключение к серверу...
+ui.connection_success:Подключение к серверу установлено
+ui.connection_failed:Не удалось подключиться к серверу...
+ui.server_full:Сервер переполнен...
+ui.auth_failed:Не удалось войти. Ошибка
+ui.reg_failed:Не удалось зарегистрировать пользователя
+ui.reg_success:Пользователь успешно зарегистрирован
+ui.register:Зарегистрироваться
+ui.login:Войти
+ui.password:Пароль
+ui.username:Имя пользователя
+ui.room.create:Создать комнату
+ui.room.join:Подключиться
+ui.room.join.id:Номер комнаты

@@ -12,7 +12,7 @@ from core.ui.text import Text
 from core.vector import Vector
 from core.localization import translate_string
 from game.button_sounds import ButtonSounds
-from game.cards import card_manager
+from game.cards import card_manager, card_object_manager
 from core import scene_manager
 from scenes.menu import MenuScene
 from random import choice
@@ -28,7 +28,7 @@ class ChestsScene(Scene):
 
         self.screen_w, self.screen_h = tuple(map(int, config.get_value('vid_mode').split('x')))
         self.screen = Vector(self.screen_w, self.screen_h)
-        background = Image(size=self.screen, sprite=load_image('sprites/ui/menu_blur.png'))
+        self.bg = background = Image(size=self.screen, sprite=load_image('sprites/ui/menu_blur.png'))
         self.add_game_object(background, -100)
         back_btn = Button(**BUTTON_DEFAULT_DESIGN, position=Vector(40, 30), size=Vector(150, 30),
                           title=translate_string('ui.back'))
@@ -36,8 +36,8 @@ class ChestsScene(Scene):
         back_btn.on_click.add_listener(self.back)
         back_btn.label.set_font_size(25)
         self.add_game_object(back_btn, 150)
-        chest = Image(sprite=load_image('sprites/ui/chest.png'), size=Vector(400, 400),
-                      position=Vector(30, 120))
+        chest = Image(sprite=load_image('sprites/ui/chest.png'), size=Vector(350, 350),
+                      position=Vector(50, 150))
         self.add_game_object(chest)
 
         application.client.on_packet.add_listener(self.on_packet)
@@ -52,6 +52,8 @@ class ChestsScene(Scene):
         self.open_btn.on_click.add_listener(self.open_chest)
         self.add_game_object(self.open_btn)
         #self.open_btn.interactable = False
+
+        self._card = None
 
         application.client.send_packet(('get_chests_count',))
 
@@ -81,3 +83,14 @@ class ChestsScene(Scene):
         if name == 'open_chest_response':
             if not data[0]:
                 return
+            section = data[0]
+            card = card_manager.game_cards[section]
+            card_manager.unlocked_cards_by_nation[card.nation].append(section)
+
+            if self._card:
+                self._card.set_parent(None)
+                self._card = None
+
+            self._card = card_object_manager.build_card_object(card)
+            self._card.position = Vector(800, 50)
+            self._card.set_parent(self.bg)
