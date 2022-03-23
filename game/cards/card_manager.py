@@ -34,7 +34,7 @@ def init():
     # player_stats db
     player_data = player_data_manager.get_player_data()
 
-    deck_data = dict(player_data)
+    deck_data = player_data_manager.get_player_data()
 
     for card_data in cards_data:
         card_info = CardInfo(display_name=card_data[0],
@@ -45,7 +45,8 @@ def init():
                              damage=card_data[2],
                              ammo_cost=card_data[3],
                              fuel_cost=card_data[4],
-                             section=card_data[8])
+                             section=card_data[8],
+                             description=card_data[9])
 
         game_cards.append(card_info)
         nations.add(card_info.nation)
@@ -59,11 +60,10 @@ def init():
             unl_cards.append(card_info)
             unlocked_cards_by_nation[card_info.nation] = unl_cards
 
-        if card_info.nation in deck_data.keys():
-            if card_info.section in deck_data[card_info.nation]:
-                deck = deck_by_nation.get(card_info.nation, [])
-                deck.append(card_info)
-                deck_by_nation[card_info.nation] = deck
+        if card_info.section in deck_data[card_info.nation]:
+            deck = deck_by_nation.get(card_info.nation, [])
+            deck.append(card_info)
+            deck_by_nation[card_info.nation] = deck
 
     for hero_data in heroes_data:
         hero_info = HeroData(name=hero_data[0],
@@ -76,9 +76,9 @@ def check_in_deck(card_info: CardInfo):
     return card_info in deck_by_nation[card_info.nation]
 
 
-def return_card_by_section(section):
+def return_card_by_name(name):
     for card in game_cards:
-        if card.section == section:
+        if card.name == name:
             return card
 
 
@@ -86,4 +86,5 @@ def save_cards_to_db():
     for nation in nations:
         player_data_manager.get_player_data()\
             .update({nation: [x.section for x in deck_by_nation[nation]]})
+
     player_data_manager.commit()

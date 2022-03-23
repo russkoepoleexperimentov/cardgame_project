@@ -33,7 +33,8 @@ class CardInfo:
                  damage: int,
                  ammo_cost: int,
                  fuel_cost: int,
-                 section: str):
+                 section: str,
+                 description: str):
         self.display_name = display_name
         self.icon_path = icon_path
         self.type = card_type
@@ -43,6 +44,7 @@ class CardInfo:
         self.ammo_cost = ammo_cost
         self.fuel_cost = fuel_cost
         self.section = section
+        self.description = description
 
     def __str__(self):
         return self.display_name

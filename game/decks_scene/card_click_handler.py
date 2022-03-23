@@ -31,7 +31,6 @@ class CardClickHandler(Component):
         self.btn_info.on_click.add_listener(
             lambda: scene_manager.get_loaded_scene().show_info(card_info))
 
-
         if in_deck:
             def process_click():
                 if not card_list.card_swapping:
