@@ -1,4 +1,4 @@
-game_name:World of WarCards
+game_name:Cards of Iron
 ui.start:Играть
 ui.settings:Настройки
 ui.quit:Выход
@@ -45,3 +45,4 @@ ui.win:Вы победили!
 ui.loose:Вы проиграли!
 ui.chests_added:Получено {} сундука!
 ui.continue:Продолжить
+ui.close:Закрыть

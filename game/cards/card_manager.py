@@ -45,7 +45,8 @@ def init():
                              damage=card_data[2],
                              ammo_cost=card_data[3],
                              fuel_cost=card_data[4],
-                             section=card_data[8])
+                             section=card_data[8],
+                             description=card_data[9])
 
         game_cards.append(card_info)
         nations.add(card_info.nation)

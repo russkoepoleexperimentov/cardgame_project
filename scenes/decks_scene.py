@@ -6,10 +6,13 @@ from core.scene import Scene
 from core.ui.button import Button
 from core.ui.image import Image
 from core.ui.scroll_view import ScrollView
+from core.ui.text import Text
 from core.vector import Vector
 from core.localization import translate_string
 from game.button_sounds import ButtonSounds
 from game.cards import card_manager
+from game.cards.card import CardInfo
+import textwrap
 
 from game.contstants import BUTTON_DEFAULT_DESIGN
 
@@ -46,6 +49,29 @@ class DecksScene(Scene):
         self.exchanging_card = False
         self.exchanging_card_info = None
         self.exchanging_card_obj = None
+
+        size = Vector(800, 600)
+        self.info_wnd = Image(size=size, position=Vector((self.screen_w - size.x) // 2,
+                                                         (self.screen_h - size.y) // 2),
+                              sprite=load_image('sprites/ui/scroll_view_back.png'))
+        self.add_game_object(self.info_wnd, 10)
+        self.info_wnd.enabled = False
+
+        Text(size=self.info_wnd.get_size(), title='Информация', align='center',
+             position=Vector(0, 20)).set_parent(self.info_wnd)
+
+
+        self.info_texts = []
+
+        self.close_info = Button(**BUTTON_DEFAULT_DESIGN,
+                                 position=Vector(self.info_wnd.get_size().x - BTN_SIZE.x - 40,
+                                                 self.info_wnd.get_size().y - BTN_SIZE.y - 30),
+                                 size=BTN_SIZE,
+                                 title=translate_string('ui.close'))
+        self.close_info.set_parent(self.info_wnd)
+        def c(w=self.info_wnd):
+            w.enabled = False
+        self.close_info.on_click.add_listener(c)
 
         self.init_scroll_view()
         self.init_switch_buttons()
@@ -85,3 +111,15 @@ class DecksScene(Scene):
         from scenes.menu import MenuScene
         card_manager.init()
         scene_manager.load(MenuScene())
+
+    def show_info(self, card):
+        self.info_wnd.enabled = True
+        for t in self.info_texts:
+            t.set_parent(None)
+
+        for i, line in enumerate(textwrap.wrap(card.description, width=68)):
+            t = Text(title=line)
+            t.position=Vector(10, 70 + i * 25)
+            t.set_parent(self.info_wnd)
+            self.info_texts.append(t)
+

@@ -5,6 +5,7 @@ from core.vector import Vector
 from game.cards.card import CardInfo
 from game.contstants import BUTTON_DEFAULT_DESIGN
 from core.localization import translate_string
+from core import scene_manager
 swap_candidate: CardInfo = None
 swap_candidate_obj: Image = None
 
@@ -27,6 +28,8 @@ class CardClickHandler(Component):
                                title=translate_string('i'))
 
         self.btn_info.set_parent(self.button)
+        self.btn_info.on_click.add_listener(
+            lambda: scene_manager.get_loaded_scene().show_info(card_info))
 
 
         if in_deck:
