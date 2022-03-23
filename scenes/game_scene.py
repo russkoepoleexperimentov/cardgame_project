@@ -51,49 +51,44 @@ class GameScene(Scene):
 
         self.choice_label = Text(title=translate_string('ui.deck_choice'), align='center',
                                  valign='middle', size=Vector(400, 30), position=Vector(483, 30))
+
+        def make_flag(nation, position=Vector(), addgo=self.add_game_object, start=self.start_game):
+            flag = Button(size=Vector(350, 175), position=position,
+                          sprite=load_image(f'sprites/ui/{nation}_flag.png'))
+            flag.add_component(ButtonSounds)
+            flag.on_click.add_listener(lambda: start(nation))
+            addgo(flag)
+            lbl = Text(size=flag.get_size(), position=Vector(0, flag.get_size().y + 5),
+                       title=translate_string(nation))
+            lbl.block_raycasts = False
+            lbl.set_parent(flag)
+            return flag
+
         self.add_game_object(self.choice_label)
 
-        self.soviet_btn = Button(size=Vector(350, 175),
-                                 sprite=load_image('sprites/ui/soviet_flag.png'),
-                                 position=Vector(222, 250))
-        self.soviet_btn.add_component(ButtonSounds)
-        self.soviet_btn.on_click.add_listener(self.soviet_choice)
-        self.add_game_object(self.soviet_btn)
-
-        self.soviet_label = Text(title=translate_string('soviet'), align='center', valign='middle',
-                                 size=Vector(350, 30), position=Vector(222, 450))
-        self.add_game_object(self.soviet_label)
-
-        self.germany_btn = Button(size=Vector(350, 175),
-                                  sprite=load_image('sprites/ui/germany_flag.png'),
-                                  position=Vector(774, 250))
-        self.germany_btn.add_component(ButtonSounds)
-        self.germany_btn.on_click.add_listener(self.germany_choice)
-        self.add_game_object(self.germany_btn)
-
-        self.germany_label = Text(title=translate_string('germany'), align='center',
-                                  valign='middle', size=Vector(350, 30), position=Vector(774, 450))
-        self.add_game_object(self.germany_label)
+        self.soviet_flag = make_flag('soviet', position=Vector(222, 250 + 175))
+        self.germany_flag = make_flag('germany', position=Vector(774, 250 + 175))
+        self.english_flag = make_flag('english', position=Vector(222, 250 - 175))
+        self.usa_flag = make_flag('usa', position=Vector(774, 250 - 175))
 
         self.game_menu_opened = False
         self.game_loaded = False
 
-    def soviet_choice(self):
-        game_manager.init_decks('soviet', 'germany')
-        self.load_game()
-
-    def germany_choice(self):
-        game_manager.init_decks('germany', 'soviet')
+    def start_game(self, player_nation):
+        bot_available_nations = list(card_manager.nations)
+        bot_available_nations.remove(player_nation)
+        enemy_nation = random.choice(bot_available_nations)
+        game_manager.init_decks(player_nation, enemy_nation)
         self.load_game()
 
     def load_game(self):
         self.game_loaded = True
         self.remove_game_object(self.back_btn)
         self.remove_game_object(self.choice_label)
-        self.remove_game_object(self.soviet_btn)
-        self.remove_game_object(self.soviet_label)
-        self.remove_game_object(self.germany_btn)
-        self.remove_game_object(self.germany_label)
+        self.remove_game_object(self.soviet_flag)
+        self.remove_game_object(self.germany_flag)
+        self.remove_game_object(self.english_flag)
+        self.remove_game_object(self.usa_flag)
 
         background_image = load_image('sprites/ui/scroll_view_back.png')
         backline_icon = load_image('sprites/ui/backline.png')

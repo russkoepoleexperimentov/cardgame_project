@@ -17,8 +17,10 @@ from game.game_scene import game_manager
 temp_card_parent: Image = None
 temp_card: Image = None
 error_sound = load_sound('sfx/error.wav')
-card_drag_start = load_sound('sfx/action_open.wav')
-card_drag_end = load_sound('sfx/action_close.wav')
+card_drag_start = load_sound('sfx/inv_properties.ogg')
+card_drag_start.set_volume(0.1)
+card_drag_end = load_sound('sfx/inv_drop.ogg')
+card_drag_end.set_volume(0.1)
 fight_sound = load_sound('sfx/cards_fight.wav')
 
 

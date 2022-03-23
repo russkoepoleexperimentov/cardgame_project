@@ -4,7 +4,7 @@ import pygame
 
 from core import config
 from game.contstants import *
-from core.resources import load_image
+from core.resources import load_image, load_sound
 from core.scene import Scene
 from core.ui.button import Button
 from core.ui.image import Image
@@ -18,6 +18,9 @@ from scenes.menu import MenuScene
 from random import choice
 
 from game import player_data_manager
+
+open_snd = load_sound('sfx/inv_belt.ogg')
+open_snd.set_volume(0.1)
 
 
 class ChestsScene(Scene):
@@ -36,14 +39,15 @@ class ChestsScene(Scene):
         back_btn.on_click.add_listener(self.back)
         back_btn.label.set_font_size(25)
         self.add_game_object(back_btn, 150)
-        chest = Image(sprite=load_image('sprites/ui/chest.png'), size=Vector(400, 400),
-                      position=Vector(30, 120))
+        chest = Image(sprite=load_image('sprites/ui/chest.png'), size=Vector(500, 500),
+                      position=Vector(self.screen_w // 2 - 250 + 20, 150))
         self.add_game_object(chest)
         self.chest_count = player_data_manager.get_player_data().get(PD_CHESTS)
         self.chest_info = Text(position=Vector(60, 550), size=BUTTONS_SIZE,
                           title=translate_string('ui.chest_info') + ': ' + str(self.chest_count))
         self.add_game_object(self.chest_info)
-        self.open_btn = Button(**BUTTON_DEFAULT_DESIGN, position=Vector(60, 580), size=BUTTONS_SIZE,
+        self.open_btn = Button(**BUTTON_DEFAULT_DESIGN, position=Vector(self.screen_w // 2 - BUTTONS_SIZE.x // 2, 550),
+                               size=BUTTONS_SIZE,
                           title=translate_string('ui.open'))
         self.open_btn.add_component(ButtonSounds)
         self.open_btn.on_click.add_listener(self.open_chest)
@@ -51,7 +55,21 @@ class ChestsScene(Scene):
         if self.chest_count == 0:
             self.open_btn.interactable = False
 
+        self.card_bg = Image(size=self.screen, sprite=load_image('sprites/ui/scroll_view_back.png'))
+        self.add_game_object(self.card_bg)
+        self.card_bg.enabled = False
+
+        hide_card = Button(**BUTTON_DEFAULT_DESIGN,
+                           position=Vector(self.screen_w // 2 - BUTTONS_SIZE.x // 2, 604),
+                           size=BUTTONS_SIZE, title='Принять')
+        hide_card.set_parent(self.card_bg)
+        def l(cbg=self.card_bg):
+            cbg.enabled = False
+
+        hide_card.on_click.add_listener(l)
+
     def open_chest(self):
+        open_snd.play()
         self.chest_count -= 1
 
         if self.chest_count == 0:
@@ -65,12 +83,12 @@ class ChestsScene(Scene):
             return
 
         if not self.card_on_screen:
-            claim_info = Text(position=Vector(750, 150), size=BUTTONS_SIZE,
+            '''claim_info = Text(position=Vector(750, 150), size=BUTTONS_SIZE,
                               title=translate_string('ui.congratulations') + ':')
-            self.add_game_object(claim_info)
+            self.add_game_object(claim_info)'''
             self.card_on_screen = True
         else:
-            self.remove_game_object(self.card)
+            self.card.set_parent(None)
 
         random_card_info = choice(lock_cards)
         random_card_name = random_card_info.section
@@ -78,9 +96,10 @@ class ChestsScene(Scene):
         unlock_cards.append(random_card_name)
         player_data_manager.commit()
 
-        self.card = random_card_info.build_card_object()
-        self.card.position = Vector(800, 180)
-        self.add_game_object(self.card)
+        self.card = random_card_info.build_card_object(300)
+        self.card_bg.enabled = True
+        self.card.position = Vector(self.screen_w // 2 - 150, 170)
+        self.card.set_parent(self.card_bg)
 
     def event_hook(self, event):
         super().event_hook(event)
