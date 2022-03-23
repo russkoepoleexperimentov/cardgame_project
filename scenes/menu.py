@@ -57,7 +57,7 @@ class MenuScene(Scene):
 
         settings_button = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE,
                                  title=translate_string('ui.settings'))
-        settings_button.set_parent(buttons_holder)
+        # settings_button.set_parent(buttons_holder)
         settings_button.add_component(ButtonSounds)
         settings_button.interactable = False
 
