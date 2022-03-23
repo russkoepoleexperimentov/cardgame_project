@@ -10,9 +10,11 @@ from zlib import compress, decompress
 if __name__ == '__main__':
     from server_resources import ServerResources
     from user_manager import UserManager
+    from lobby import Lobby
 else:
     from server_core.server_resources import ServerResources
     from server_core.user_manager import UserManager
+    from server_core.lobby import Lobby
 
 SV_BUFFER_SIZE = 2048 * 4
 SV_MAX_PLAYERS = 8
@@ -41,6 +43,8 @@ class Server:
         self.resources = ServerResources(working_dir)
         self.user_manager = UserManager(working_dir)
 
+        self.lobbies = dict()
+
         global global_server
         global_server = self
 
@@ -57,7 +61,7 @@ class Server:
                 self.send_packet(connection_socket, ('sv_full',))
             else:
                 uid = next(unique_sequence)
-                self.connections[uid] = connection_socket
+                self.connections[uid] = [connection_socket]
                 print(self.connections)
                 print(connection_socket)
                 self.send_packet(connection_socket, ('sv_success', uid))
@@ -91,6 +95,7 @@ class Server:
             success, user_or_error = login_info
 
             if success:
+                self.connections[self.uid(client)].append(user_or_error)
                 self.send_packet(client, ('authenticate_response', success,
                                           user_or_error.get_token()))
             else:
@@ -104,7 +109,6 @@ class Server:
             self.send_packet(client, ('chests_count_response',
                                       self.user_manager.get_user_by_token(token).chests))
         if packet_name == 'open_chest':
-            # TODO: CHESTS
             if user.chests < 1:
                 self.send_packet(client, ('open_chest_response', ''))
             else:
@@ -132,8 +136,41 @@ class Server:
                 user.decks[nation].append(card_not_in_deck.section)
                 user.decks[nation].remove(card_in_deck.section)
                 self.user_manager.commit()
+        if packet_name == 'create_lobby':
+            lobby = Lobby()
+            self.lobbies.update({lobby.id: lobby})
+            self.send_packet(client, ('create_lobby_response', lobby.id))
+        if packet_name == 'join_lobby':
+            lobby_id = data[0]
+            err = ''
+            try:
+                lobby = self.lobbies[lobby_id]
+                for u in lobby.players:
+                    if u is not user:
+                        self.send_packet(self.connections[self.uid(u)][0], ('player_join',))
+                lobby.players.append(user)
+            except:
+                err = f'lobby with id {lobby_id} not found'
+            self.send_packet(client, ('join_lobby_response', err, lobby_id))
+        if packet_name == 'leave_lobby':
+            lobby_id = data[0]
+            try:
+                lobby = self.lobbies[lobby_id]
+                for u in lobby.players:
+                    if u is not user:
+                        self.send_packet(self.connections[self.uid(u)][0], ('player_left',))
+
+                lobby.players.remove(user)
+            except:
+                pass
+        if packet_name == 'ready':
+            lobby_id = data[0]
 
 
+    def uid(self, thing):
+        for k in self.connections:
+            if thing in self.connections[k]:
+                return k
 
 server = None
 if __name__ == '__main__':

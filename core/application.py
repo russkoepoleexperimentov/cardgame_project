@@ -38,7 +38,7 @@ class Application:
 
         pygame.display.set_caption(caption)
         flags = pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.NOFRAME
-        self.window = pygame.display.set_mode(self.size, flags | pygame.FULLSCREEN)
+        self.window = pygame.display.set_mode(self.size, flags)  # | pygame.FULLSCREEN)
         self.clock = pygame.time.Clock()
 
     def dispatch_events(self):
