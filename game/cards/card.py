@@ -33,8 +33,7 @@ class CardInfo:
                  damage: int,
                  ammo_cost: int,
                  fuel_cost: int,
-                 section: str,
-                 description: str):
+                 section: str):
         self.display_name = display_name
         self.icon_path = icon_path
         self.type = card_type
@@ -44,7 +43,6 @@ class CardInfo:
         self.ammo_cost = ammo_cost
         self.fuel_cost = fuel_cost
         self.section = section
-        self.description = description
 
     def __str__(self):
         return self.display_name
@@ -153,7 +151,7 @@ class CardInfo:
         card_highlight.enabled = False
 
         card_face_back = Image(size=card_size,
-                          sprite=load_image('sprites/card_face_back.png'))
+                               sprite=load_image('sprites/card_face_back.png'))
         card_face_back.set_parent(card_back)
         card_face_back.block_raycasts = False
         card_face_back.enabled = False

@@ -2,7 +2,7 @@ import json
 import sqlite3
 from pathlib import Path
 from game import contstants
-from game.contstants import DATABASE
+from game.contstants import DATABASE, PD_CHESTS, PD_UNLOCKED_CARDS
 
 ENCODING = 'utf-8'
 _player_data = dict()
@@ -15,22 +15,22 @@ def commit():
 
 def load_defaults():
     global _player_data
+    _player_data = {
+        PD_CHESTS: 10,
+    }
 
     con = sqlite3.connect(DATABASE)
     cur = con.cursor()
-    base_cards_data = cur.execute(f"SELECT * FROM base_cards").fetchall()
+    base_cards_data = cur.execute('SELECT * FROM base_cards').fetchall()
     cur.close()
     con.close()
 
-    _player_data = {
-        contstants.PD_CHESTS: 10
-    }
     for nation, cards in base_cards_data:
         cards = list(map(lambda x: x.strip(), cards.split(',')))
-        _player_data[nation] = cards
-        unl = _player_data.get(contstants.PD_UNLOCKED_CARDS, [])
+        _player_data.update({nation: cards})
+        unl = _player_data.get(PD_UNLOCKED_CARDS, [])
         unl.extend(cards)
-        _player_data[contstants.PD_UNLOCKED_CARDS] = unl
+        _player_data.update({PD_UNLOCKED_CARDS: unl})
 
     commit()
 
