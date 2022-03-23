@@ -25,15 +25,16 @@ def face_back_index():
 
 class CardInfo:
     def __init__(self,
-                 name: str,
+                 display_name: str,
                  icon_path: str,
                  card_type: str,
                  nation: str,
                  hit_points: int,
                  damage: int,
                  ammo_cost: int,
-                 fuel_cost: int):
-        self.name = name
+                 fuel_cost: int,
+                 section: str):
+        self.display_name = display_name
         self.icon_path = icon_path
         self.type = card_type
         self.nation = nation
@@ -41,6 +42,7 @@ class CardInfo:
         self.damage = damage
         self.ammo_cost = ammo_cost
         self.fuel_cost = fuel_cost
+        self.section = section
 
     def __str__(self):
         return self.name
@@ -87,7 +89,7 @@ class CardInfo:
 
         card_name = Text(position=text_name_pos,
                          size=text_name_size,
-                         title=translate_string(self.name),
+                         title=translate_string(self.display_name),
                          align='center',
                          valign='middle',
                          font_size=int(80 * card_scale))

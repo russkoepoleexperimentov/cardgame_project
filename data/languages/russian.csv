@@ -9,7 +9,9 @@ ui.decks:Колоды
 ui.own_deck:Моя колода
 ui.others_cards:Доступные карты
 soviet:Советский Союз
-germany:Германия
+germany:Третий Рейх
+english:Великобритания
+usa:США
 infantry:Пехота
 light_tank:Легкий танк
 medium_tank:Средний танк

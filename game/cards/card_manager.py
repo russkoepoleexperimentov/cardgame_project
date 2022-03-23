@@ -34,20 +34,18 @@ def init():
     # player_stats db
     player_data = player_data_manager.get_player_data()
 
-    deck_data = {
-        'soviet': player_data.get(PD_SOVIET_DECK),
-        'germany': player_data.get(PD_GERMANY_DECK)
-    }
+    deck_data = player_data_manager.get_player_data()
 
     for card_data in cards_data:
-        card_info = CardInfo(name=card_data[0],
+        card_info = CardInfo(display_name=card_data[0],
                              icon_path=card_data[5],
                              card_type=card_data[7],
                              nation=card_data[6],
                              hit_points=card_data[1],
                              damage=card_data[2],
                              ammo_cost=card_data[3],
-                             fuel_cost=card_data[4])
+                             fuel_cost=card_data[4],
+                             section=card_data[8])
 
         game_cards.append(card_info)
         nations.add(card_info.nation)
@@ -56,12 +54,12 @@ def init():
         cards.append(card_info)
         cards_by_nation[card_info.nation] = cards
 
-        if card_info.name in player_data.get(PD_UNLOCKED_CARDS):
+        if card_info.section in player_data.get(PD_UNLOCKED_CARDS):
             unl_cards = unlocked_cards_by_nation.get(card_info.nation, [])
             unl_cards.append(card_info)
             unlocked_cards_by_nation[card_info.nation] = unl_cards
 
-        if card_info.name in deck_data[card_info.nation]:
+        if card_info.section in deck_data[card_info.nation]:
             deck = deck_by_nation.get(card_info.nation, [])
             deck.append(card_info)
             deck_by_nation[card_info.nation] = deck
@@ -84,9 +82,8 @@ def return_card_by_name(name):
 
 
 def save_cards_to_db():
-    soviet_deck = [x.name for x in deck_by_nation['soviet']]
-    germany_deck = [x.name for x in deck_by_nation['germany']]
+    for nation in nations:
+        player_data_manager.get_player_data()\
+            .update({nation: [x.section for x in deck_by_nation[nation]]})
 
-    player_data_manager.get_player_data().update({PD_SOVIET_DECK: soviet_deck})
-    player_data_manager.get_player_data().update({PD_GERMANY_DECK: germany_deck})
     player_data_manager.commit()

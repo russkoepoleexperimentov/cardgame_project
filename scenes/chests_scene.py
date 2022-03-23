@@ -59,7 +59,7 @@ class ChestsScene(Scene):
         self.chest_info.set_title(translate_string('ui.chest_info') + ': ' + str(self.chest_count))
 
         unlock_cards = player_data_manager.get_player_data().get(PD_UNLOCKED_CARDS)
-        lock_cards = list(filter(lambda x: x.name not in unlock_cards, card_manager.game_cards))
+        lock_cards = list(filter(lambda x: x.section not in unlock_cards, card_manager.game_cards))
 
         if not lock_cards:
             return
@@ -73,7 +73,7 @@ class ChestsScene(Scene):
             self.remove_game_object(self.card)
 
         random_card_info = choice(lock_cards)
-        random_card_name = random_card_info.name
+        random_card_name = random_card_info.section
 
         unlock_cards.append(random_card_name)
         player_data_manager.commit()

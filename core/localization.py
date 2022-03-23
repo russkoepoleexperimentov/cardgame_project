@@ -16,4 +16,6 @@ def load_localization(name: str):
 
 
 def translate_string(key: str):
+    if key is None:
+        return ''
     return __key_value_pairs.get(key.lower(), key)
