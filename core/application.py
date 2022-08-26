@@ -3,7 +3,7 @@ import sys
 from core.rendering import renderer
 from core import scene_manager
 from core import log
-from core import config
+from core.config import Config
 from core.ui import ui_manager
 from core.action import Action
 
@@ -19,13 +19,12 @@ def close():
 
 class Application:
     def __init__(self, caption):
-        config.load_settings()
+        Config.load_main()
 
         pygame.init()
         pygame.font.init()
-        self.size = self.width, self.height = tuple(
-            map(int, config.get_value('vid_mode').split('x')))
-        self.target_framerate = int(config.get_value('target_fps'))
+        self.size = self.width, self.height = Config.get_value('screen_resolution').xy()
+        self.target_framerate = Config.get_value('target_framerate')
 
         pygame.display.set_caption(caption)
         flags = pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.NOFRAME

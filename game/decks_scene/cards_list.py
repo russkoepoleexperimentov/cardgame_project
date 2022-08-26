@@ -1,3 +1,5 @@
+import pygame
+
 from core import config, scene_manager
 from core.component import Component
 from core.localization import translate_string
@@ -37,7 +39,7 @@ class CardsList(Component):
         super(CardsList, self).__init__(owner)
 
         self.scroll_view = owner
-        self.screen_w, self.screen_h = tuple(map(int, config.get_value('vid_mode').split('x')))
+        self.screen_w, self.screen_h = pygame.display.get_window_size()
         self.screen = Vector(self.screen_w, self.screen_h)
         self.nation_buttons = None
 

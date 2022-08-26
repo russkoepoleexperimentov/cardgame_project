@@ -22,7 +22,7 @@ class MenuScene(Scene):
 
         cursor.init()
 
-        screen_w, screen_h = tuple(map(int, config.get_value('vid_mode').split('x')))
+        screen_w, screen_h = pygame.display.get_window_size()
         screen = Vector(screen_w, screen_h)
         buttons_holder = Image(position=Vector(screen_w // 2 -
                                                BUTTONS_SIZE.x // 2,

@@ -1,41 +1,52 @@
 import os
 from core import log
 
+from json import load
+
+from core.vector import Vector
+
 key_value_pairs = {}
 
 CONFIG_FILE_NAME = 'config.cfg'
 KEY_VALUE_DELIMITER = ':'
 
 
-def load_settings():
-    log.trace('loading settings')
-    load_defaults()
-
-    if not os.path.isfile(CONFIG_FILE_NAME):
-        save_settings()
-        return
-
-    file_stream = open(CONFIG_FILE_NAME, 'r')
-    for line in file_stream.read().strip().split('\n'):
-        key, value = line.split(KEY_VALUE_DELIMITER)
-        key_value_pairs[key] = value
-    file_stream.close()
+def _parse_vector(data, delimiter='x'):
+    return Vector(*map(float, data.split(delimiter)))
 
 
-def load_defaults():
-    key_value_pairs['vid_mode'] = '1366x768'
-    key_value_pairs['target_fps'] = '60'
-    key_value_pairs['volume'] = '100'
+class Config:
+    main = None
 
+    def __init__(self, path):
+        with open(path, 'r') as file:
+            self._raw_data = load(file)
+        self._values = dict()
 
-def save_settings():
-    file_stream = open(CONFIG_FILE_NAME, 'w')
-    for key in key_value_pairs.keys():
-        value = key_value_pairs.get(key)
-        file_stream.write(f'{key}{KEY_VALUE_DELIMITER}{value}')
-        file_stream.write('\n')
-    file_stream.close()
+        self._parse_values()
 
+    def _parse_values(self):
+        parsers = {
+            'float': float,
+            'int': int,
+            'vector': _parse_vector
+        }
 
-def get_value(key, default=''):
-    return str(key_value_pairs.get(key, default))
+        self._values = dict()
+        for data in self._raw_data:
+            dtype = data['type']
+            name = data['name']
+            value = parsers[dtype](data['value'])
+            self._values.update({name: value})
+
+    def get(self, name, default=None):
+        return self._values.get(name, default)
+
+    @staticmethod
+    def load_main():
+        Config.main = Config(CONFIG_FILE_NAME)
+        log.trace('Main config loaded')
+
+    @staticmethod
+    def get_value(name, default=None):
+        return Config.main.get(name, default)
