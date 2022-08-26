@@ -23,7 +23,7 @@ FONT_SIZE = 64
 class GameEndScene(Scene):
     def __init__(self, player_win=False):
         super(GameEndScene, self).__init__()
-        self.screen_w, self.screen_h = pygame.display.get_window_size()
+        self.screen_w, self.screen_h = config.Config.get_value('screen_resolution').xy()
         self.screen = Vector(self.screen_w, self.screen_h)
 
         background = Image(size=self.screen, sprite=load_image('sprites/ui/menu_blur.png'))

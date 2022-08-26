@@ -6,7 +6,7 @@ class Action:
         self.__listeners.append(listener)
 
     def clear(self):
-        self.__listeners = list()
+        self.__listeners.clear()
 
     def invoke(self, *args, **kwargs):
         for listener in self.__listeners:

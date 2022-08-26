@@ -27,8 +27,8 @@ class Application:
         self.target_framerate = Config.get_value('target_framerate')
 
         pygame.display.set_caption(caption)
-        flags = pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.NOFRAME
-        self.window = pygame.display.set_mode(self.size, flags | pygame.FULLSCREEN)
+        flags = pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.NOFRAME | pygame.SCALED
+        self.window = pygame.display.set_mode(self.size, flags)  # | pygame.FULLSCREEN)
         self.clock = pygame.time.Clock()
 
     def dispatch_events(self):

@@ -39,7 +39,7 @@ class CardsList(Component):
         super(CardsList, self).__init__(owner)
 
         self.scroll_view = owner
-        self.screen_w, self.screen_h = pygame.display.get_window_size()
+        self.screen_w, self.screen_h = config.Config.get_value('screen_resolution').xy()
         self.screen = Vector(self.screen_w, self.screen_h)
         self.nation_buttons = None
 

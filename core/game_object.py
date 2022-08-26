@@ -7,7 +7,6 @@ from core.component import Component
 
 class GameObject:
     def __init__(self, position=Vector(), size=Vector(), sprite=None):
-        self.position = position
         self.enabled = True
         self.draw_bounds = False
 
@@ -17,11 +16,21 @@ class GameObject:
 
         self.on_add_children = Action()
 
-        self.__sprite = None
+        self._position = None
         self.__size = None
+        self.__sprite = None
 
-        self.set_size(size)
-        self.set_sprite(sprite)
+        self.position = position
+        self.size = size
+        self.sprite = sprite
+
+    @property
+    def position(self):
+        return self._position
+
+    @position.setter
+    def position(self, value):
+        self._position = value
 
     @property
     def sprite(self):

@@ -2,7 +2,7 @@ import sqlite3
 
 import pygame
 
-from core import config
+from core.config import Config
 from game.contstants import *
 from core.resources import load_image, load_sound
 from core.scene import Scene
@@ -29,7 +29,7 @@ class ChestsScene(Scene):
         self.card_on_screen = False
         self.card = None
 
-        self.screen_w, self.screen_h = pygame.display.get_window_size()
+        self.screen_w, self.screen_h = Config.get_value('screen_resolution').xy()
         self.screen = Vector(self.screen_w, self.screen_h)
         background = Image(size=self.screen, sprite=load_image('sprites/ui/menu_blur.png'))
         self.add_game_object(background, -100)

@@ -7,7 +7,7 @@ __common_game_objects = Scene()
 
 def load(scene: Scene):
     global __loaded_scene
-    log.trace('loading scene...')
+    log.trace(f'Loading scene "{scene.__class__.__name__}"...')
     __loaded_scene = scene
 
 

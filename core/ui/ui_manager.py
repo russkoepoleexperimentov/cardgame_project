@@ -1,7 +1,7 @@
 from core.action import Action
 from core.ui.ui_element import UIElement
 from core.components.drag_handler import DragHandler
-from core import scene_manager
+
 
 ui_stack = []
 

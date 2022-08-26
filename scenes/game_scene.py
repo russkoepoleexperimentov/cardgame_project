@@ -36,7 +36,7 @@ class GameScene(Scene):
     def __init__(self):
         super(GameScene, self).__init__()
         game_manager.game_result = ''
-        self.screen_w, self.screen_h = pygame.display.get_window_size()
+        self.screen_w, self.screen_h = config.Config.get_value('screen_resolution').xy()
         self.screen = Vector(self.screen_w, self.screen_h)
 
         background = Image(size=self.screen, sprite=load_image('sprites/ui/menu_blur.png'))
