@@ -2,15 +2,15 @@ from core.component import Component
 from core.ui.button import Button
 from core.ui.image import Image
 from core.vector import Vector
-from game.cards.card import CardInfo
 from game.contstants import BUTTON_DEFAULT_DESIGN
 from core.localization import translate_string
-from core import scene_manager
+from server_core.server_resources import CardInfo
+
 swap_candidate: CardInfo = None
 swap_candidate_obj: Image = None
 
 SWAP_BUTTON_SIZE = Vector(200, 100 * 200 / 720)
-SWAP_BUTTON_POS = Vector(0, 937 * 200 / 720 - 10)
+SWAP_BUTTON_POS = Vector(0, 937 * 200 / 720)
 
 
 class CardClickHandler(Component):
@@ -20,16 +20,6 @@ class CardClickHandler(Component):
     def init(self, card_info, card_list, in_deck=False):
         self.button = Button(size=self.get_game_object().get_size())
         self.button.set_parent(self.get_game_object())
-
-        self.btn_info = Button(**BUTTON_DEFAULT_DESIGN,
-                               position=SWAP_BUTTON_POS +
-                                        Vector(SWAP_BUTTON_SIZE.x - SWAP_BUTTON_SIZE.y, 0),
-                               size=Vector(SWAP_BUTTON_SIZE.y, SWAP_BUTTON_SIZE.y),
-                               title=translate_string('i'))
-
-        self.btn_info.set_parent(self.button)
-        self.btn_info.on_click.add_listener(
-            lambda: scene_manager.get_loaded_scene().show_info(card_info))
 
         if in_deck:
             def process_click():
@@ -66,7 +56,6 @@ class CardClickHandler(Component):
                 global swap_candidate, swap_candidate_obj
                 if swap_candidate_obj:
                     swap_candidate_obj.get_component(CardClickHandler).swap_btn.enabled = False
-                    swap_candidate_obj.get_component(CardClickHandler).btn_info.enabled = False
                 swap_btn.enabled = True
                 swap_candidate = cinfo
                 swap_candidate_obj = obj
