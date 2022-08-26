@@ -23,23 +23,35 @@ class GameObject:
         self.set_size(size)
         self.set_sprite(sprite)
 
-    def set_sprite(self, sprite):
+    @property
+    def sprite(self):
+        return self.__sprite
+
+    @sprite.setter
+    def sprite(self, sprite):
         if sprite:
             self.__sprite = pygame.transform.scale(sprite, self.__size.xy()).convert_alpha()
         else:
             self.__sprite = None
 
-    def get_sprite(self):
-        return self.__sprite
+    @property
+    def size(self):
+        return self.__size
 
-    def set_size(self, size):
+    @size.setter
+    def size(self, size):
         self.__size = size
         self.set_sprite(self.__sprite)
 
-    def get_size(self):
-        return self.__size
+    @property
+    def parent(self):
+        return self.__parent
 
-    def set_parent(self, other, sibling_index=-1):
+    @parent.setter
+    def parent(self, other):
+        self._set_parent_with_sibling_index(other, -1)
+
+    def _set_parent_with_sibling_index(self, other, sibling_index=-1):
         if self.__parent is not None:
             self.__parent.__children.remove(self)
 
@@ -51,9 +63,6 @@ class GameObject:
             else:
                 self.__parent.__children.insert(sibling_index, self)
             self.__parent.on_add_children.invoke(self)
-
-    def get_parent(self):
-        return self.__parent
 
     def get_children(self):
         return tuple(self.__children)
@@ -150,3 +159,29 @@ class GameObject:
             if isinstance(component, component_type):
                 return component
         return None
+
+    from core.obsolete_decorator import obsolete
+
+    @obsolete
+    def set_size(self, size):
+        self.size = size
+
+    @obsolete
+    def get_size(self):
+        return self.size
+
+    @obsolete
+    def set_sprite(self, sprite):
+        self.sprite = sprite
+
+    @obsolete
+    def get_sprite(self):
+        return self.sprite
+
+    @obsolete
+    def set_parent(self, other, sibling_index=-1):
+        self._set_parent_with_sibling_index(other, sibling_index)
+
+    @obsolete
+    def get_parent(self):
+        return self.parent
