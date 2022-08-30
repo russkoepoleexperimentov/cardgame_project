@@ -2,6 +2,7 @@ import pygame
 
 from core.action import Action
 from core.components.drag_handler import DragHandler
+from core.scale_helpers import unscale_vector, scale_vector
 from core.ui import ui_manager
 from core.ui.image import Image
 from core.vector import Vector
@@ -38,22 +39,28 @@ class Slider(Image):
         self.__drag_offset = Vector()
 
     def set_value(self, value):
+        self.send_redraw_request()
         value = clamp(value, 0, 1)
         max_y = self.get_size().y - self.__scale
         y_pos = value * max_y
 
         if self.__scale >= max_y:
             return None
+
         self.handle.position = Vector(y=y_pos)
         self.__value = value
         self.on_value_changed.invoke(self.__value)
+
+        self.send_redraw_request()
 
     def get_value(self):
         return self.__value
 
     def set_scale(self, scale):
-        self.handle.set_size(Vector(self.get_size().x, min(self.get_size().y, scale)))
+        self.send_redraw_request()
+        self.handle.size = Vector(self.get_size().x, min(self.get_size().y, scale))
         self.__scale = scale
+        self.send_redraw_request()
 
     def get_scale(self):
         return self.__scale
@@ -71,9 +78,11 @@ class Slider(Image):
             return None
 
         handle_y = clamp(mouse_pos[1] + self.__drag_offset.y, 0, max_y)
-        self.__value = round(handle_y / max_y, 2)
-        self.on_value_changed.invoke(self.__value)
-        self.handle.position = Vector(y=handle_y)
+        self.set_value(round(handle_y / max_y, 2))
+
+        from core.application import Application
+        Application.get().redraw_request((*self.scaled_global_position.xy(),
+                                          *scale_vector(self.size).xy()))
 
     def event_hook(self, event):
         super().event_hook(event)

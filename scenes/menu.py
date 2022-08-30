@@ -57,9 +57,9 @@ class MenuScene(Scene):
 
         settings_button = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE,
                                  title=translate_string('ui.settings'))
-        # settings_button.set_parent(buttons_holder)
+        settings_button.set_parent(buttons_holder)
         settings_button.add_component(ButtonSounds)
-        settings_button.interactable = False
+        settings_button.on_click.add_listener(self.load_settings)
 
         exit_button = Button(**BUTTON_DEFAULT_DESIGN, size=BUTTONS_SIZE,
                              title=translate_string('ui.quit'))
@@ -92,3 +92,7 @@ class MenuScene(Scene):
     def load_game(self):
         from scenes.game_scene import GameScene
         scene_manager.load(GameScene())
+
+    def load_settings(self):
+        from scenes.settings import SettingsScene
+        scene_manager.load(SettingsScene())

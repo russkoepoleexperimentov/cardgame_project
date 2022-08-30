@@ -38,15 +38,17 @@ class ScrollView(Image):
         y_pos = -value * (self.content.get_size().y - self.get_size().y)
         y_pos = min(y_pos, 0)
         self.content.position = self.content_offset + Vector(0, y_pos)
+        self.content.send_redraw_request()
+        self.send_redraw_request()
 
     def render_content(self, window, offset=Vector(0, 0)):
         surface = pygame.surface.Surface(size=(self.get_size().xy()), flags=pygame.SRCALPHA)
 
         for child in self.content.get_children():
             if child.enabled:
-                child.render(surface, self.get_global_position())
+                child.render(surface, self.scaled_global_position)
 
-        window.blit(surface, self.get_global_position().xy())
+        window.blit(surface, self.scaled_global_position.xy())
 
     def on_add_child(self, ch):
         self.rescale_slider()
@@ -55,3 +57,4 @@ class ScrollView(Image):
         scale = self.content.get_size().y / self.get_size().y
         width = self.slider.get_size().y / scale
         self.slider.set_scale(max(self.min_slider_width, width))
+        self.slider.send_redraw_request()

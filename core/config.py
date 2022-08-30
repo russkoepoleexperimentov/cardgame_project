@@ -1,17 +1,11 @@
-import os
 from core import log
-
 from json import load
-
 from core.vector import Vector
 
-key_value_pairs = {}
-
 CONFIG_FILE_NAME = 'config.cfg'
-KEY_VALUE_DELIMITER = ':'
 
 
-def _parse_vector(data, delimiter='x'):
+def parse_vector(data, delimiter='x'):
     return Vector(*map(float, data.split(delimiter)))
 
 
@@ -29,7 +23,9 @@ class Config:
         parsers = {
             'float': float,
             'int': int,
-            'vector': _parse_vector
+            'bool': bool,
+            'string': str,
+            'vector': parse_vector
         }
 
         self._values = dict()
@@ -42,6 +38,9 @@ class Config:
     def get(self, name, default=None):
         return self._values.get(name, default)
 
+    def set(self, name, value):
+        return self._values.update({name: value})
+
     @staticmethod
     def load_main():
         Config.main = Config(CONFIG_FILE_NAME)
@@ -50,3 +49,7 @@ class Config:
     @staticmethod
     def get_value(name, default=None):
         return Config.main.get(name, default)
+
+    @staticmethod
+    def set_value(name, value):
+        Config.main.set(name, value)

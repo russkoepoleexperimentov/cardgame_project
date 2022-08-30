@@ -10,6 +10,9 @@ def load(scene: Scene):
     log.trace(f'Loading scene "{scene.__class__.__name__}"...')
     __loaded_scene = scene
 
+    from .application import Application
+    Application.get().redraw_screen()
+
 
 def pre_update(delta_time: float):
     global __loaded_scene

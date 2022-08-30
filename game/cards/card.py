@@ -1,5 +1,6 @@
 import sqlite3
 
+from core.config import Config
 from core.localization import translate_string
 from core.ui.image import Image
 from core.ui.text import Text
@@ -53,6 +54,7 @@ class CardInfo:
         return str(self)
 
     def build_card_object(self, card_width=200):
+        card_width *= Config.get_value('screen_resolution').x / 1366
         card_scale = card_width / 720
 
         card_aspect_ratio = 0.7

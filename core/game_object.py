@@ -3,11 +3,17 @@ import pygame
 from core.action import Action
 from core.vector import Vector
 from core.component import Component
+from core.scale_helpers import *
 
 
 class GameObject:
+    @staticmethod
+    def redraw_request(rect):
+        from core.application import Application
+        Application.get().redraw_request(rect)
+
     def __init__(self, position=Vector(), size=Vector(), sprite=None):
-        self.enabled = True
+        self._enabled = True
         self.draw_bounds = False
 
         self.__components = []
@@ -24,13 +30,41 @@ class GameObject:
         self.size = size
         self.sprite = sprite
 
+        self.send_redraw_request()
+
+    @property
+    def enabled(self):
+        return self._enabled
+
+    @enabled.setter
+    def enabled(self, value):
+        self._enabled = value
+        self.send_redraw_request()
+
     @property
     def position(self):
         return self._position
 
+    @property
+    def scaled_position(self):
+        return scale_vector(self._position)
+
     @position.setter
     def position(self, value):
+        self.send_redraw_request()
         self._position = value
+        self.send_redraw_request()
+
+    @property
+    def global_position(self):
+        return unscale_vector(self.scaled_global_position())
+
+    @property
+    def scaled_global_position(self):
+        if self.__parent is None:
+            return self.scaled_position
+        else:
+            return self.__parent.scaled_global_position + self.scaled_position
 
     @property
     def sprite(self):
@@ -39,17 +73,24 @@ class GameObject:
     @sprite.setter
     def sprite(self, sprite):
         if sprite:
-            self.__sprite = pygame.transform.scale(sprite, self.__size.xy()).convert_alpha()
+            self.__sprite = pygame.transform.scale(sprite, self.scaled_size.xy()).convert_alpha()
         else:
             self.__sprite = None
+        self.send_redraw_request()
 
     @property
     def size(self):
         return self.__size
 
+    @property
+    def scaled_size(self):
+        return scale_vector(self.__size)
+
     @size.setter
     def size(self, size):
+        self.send_redraw_request()
         self.__size = size
+        self.send_redraw_request()
         self.set_sprite(self.__sprite)
 
     @property
@@ -59,6 +100,10 @@ class GameObject:
     @parent.setter
     def parent(self, other):
         self._set_parent_with_sibling_index(other, -1)
+
+    def send_redraw_request(self):
+        if self.position and self.size:
+            GameObject.redraw_request((*self.scaled_position.xy(), *self.scaled_size.xy()))
 
     def _set_parent_with_sibling_index(self, other, sibling_index=-1):
         if self.__parent is not None:
@@ -72,6 +117,18 @@ class GameObject:
             else:
                 self.__parent.__children.insert(sibling_index, self)
             self.__parent.on_add_children.invoke(self)
+
+        self.send_redraw_request()
+
+        if self.parent:
+            self.parent.send_redraw_request()
+
+    def iterate_parents(self, func):
+        if self.parent is None:
+            return
+
+        self.parent.iterate_parents(func)
+        return func(self.parent)
 
     def get_children(self):
         return tuple(self.__children)
@@ -99,14 +156,8 @@ class GameObject:
         else:
             return self.__parent.__children.index(self)
 
-    def get_global_position(self):
-        if self.__parent is None:
-            return self.position
-        else:
-            return self.__parent.get_global_position() + self.position
-
     def get_rect(self):
-        return pygame.Rect(*self.get_global_position().xy(), *self.get_size().xy())
+        return pygame.Rect(*self.scaled_global_position.xy(), *self.size.xy())
 
     def pre_update(self, delta_time):
         for child in self.get_children():
@@ -132,11 +183,11 @@ class GameObject:
                 child.event_hook(event)
 
     def render(self, window, offset=Vector(0, 0)):
-        render_pos = (self.get_global_position() - offset)
+        render_pos = (self.scaled_global_position - offset)
         wnd_size = Vector(*pygame.display.get_window_size())
 
         # do not render objects outside window
-        if render_pos.x + self.get_size().x < 0\
+        if render_pos.x + self.get_size().x < 0 \
                 or render_pos.y + self.get_size().y < 0 \
                 or render_pos.x > wnd_size.x \
                 or render_pos.y > wnd_size.y:

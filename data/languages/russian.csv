@@ -46,3 +46,11 @@ ui.loose:Вы проиграли!
 ui.chests_added:Получено {} сундука!
 ui.continue:Продолжить
 ui.close:Закрыть
+ui.settings.resolution:Разрешение экрана
+ui.settings.resolution.custom:Пользоват.
+ui.settings.render:Путь отрисовки
+ui.settings.render.direct:Экран полностью
+ui.settings.render.smart:Частями (бета)
+ui.settings.fullscreen:Полный экран
+ui.off:Выкл.
+ui.on:Вкл.
