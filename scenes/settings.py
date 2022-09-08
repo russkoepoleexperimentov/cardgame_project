@@ -30,7 +30,7 @@ open_snd.set_volume(0.1)
 class SettingsScene(Scene):
     def __init__(self):
         super(SettingsScene, self).__init__()
-        self.screen_w, self.screen_h = Config.get_value('screen_resolution').xy()
+        self.screen_w, self.screen_h = 1366, 768
         self.screen = Vector(self.screen_w, self.screen_h)
 
         background = Image(size=self.screen, sprite=load_image('sprites/ui/menu_blur.png'))
@@ -64,6 +64,7 @@ class SettingsScene(Scene):
         ddn.on_change_value.add_listener(self.set_resolution)
         res = Config.get_value('screen_resolution', '800x600')
         res = f'{int(res.x)}x{int(res.y)}'
+
         try:
             ddn.select_value(res)
         except KeyError:
@@ -116,6 +117,7 @@ class SettingsScene(Scene):
     def set_fullscreen(self, value):
         from core.application import Application
         Application.get().fullscreen = value
+
 
     def set_renderer(self, renderer_id):
         from core.application import Application

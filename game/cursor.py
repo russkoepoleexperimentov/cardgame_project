@@ -2,6 +2,7 @@ import pygame
 from core.resources import load_image
 from core.rendering.renderer import on_render
 from core.vector import Vector
+from core.scale_helpers import scale_vector
 
 __initialized = False
 CURSOR_SIZE = Vector(24, 24)

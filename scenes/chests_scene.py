@@ -29,7 +29,7 @@ class ChestsScene(Scene):
         self.card_on_screen = False
         self.card = None
 
-        self.screen_w, self.screen_h = Config.get_value('screen_resolution').xy()
+        self.screen_w, self.screen_h = 1366, 768
         self.screen = Vector(self.screen_w, self.screen_h)
         background = Image(size=self.screen, sprite=load_image('sprites/ui/menu_blur.png'))
         self.add_game_object(background, -100)

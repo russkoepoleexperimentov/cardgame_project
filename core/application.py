@@ -22,7 +22,7 @@ def close():
 
 def make_window(size, fullscreen=False):
     Application.bounds().size = Vector(*size)
-    flags = pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE # | pygame.NOFRAME
+    flags = pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.NOFRAME
     if fullscreen:
         flags |= pygame.FULLSCREEN
     return pygame.display.set_mode(size, flags)
@@ -74,7 +74,7 @@ class Application:
     @fullscreen.setter
     def fullscreen(self, value):
         Config.set_value('screen_fullscreen', value)
-        self.window = make_window(pygame.display.get_window_size(), value)
+        self.window = make_window(Config.get_value('screen_resolution').xy(), value)
         self._fullscreen = value
 
     def run(self):

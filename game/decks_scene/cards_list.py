@@ -39,7 +39,7 @@ class CardsList(Component):
         super(CardsList, self).__init__(owner)
 
         self.scroll_view = owner
-        self.screen_w, self.screen_h = config.Config.get_value('screen_resolution').xy()
+        self.screen_w, self.screen_h = 1366, 768
         self.screen = Vector(self.screen_w, self.screen_h)
         self.nation_buttons = None
 

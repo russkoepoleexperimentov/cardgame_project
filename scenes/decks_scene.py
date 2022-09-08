@@ -19,6 +19,7 @@ from game.contstants import BUTTON_DEFAULT_DESIGN
 from core import scene_manager
 from game.decks_scene.cards_list import SV_SLIDER_WIDTH, SV_SIDE_OFFSET, SV_TOP_OFFSET, \
     SV_BOTTOM_OFFSET, CardsList
+from core.scale_helpers import get_scale_coefficient
 from game.decks_scene.nation_buttons import BTN_SIZE, BTN_MARGIN, NationButtons
 
 
@@ -26,8 +27,11 @@ class DecksScene(Scene):
     def __init__(self):
         super(DecksScene, self).__init__()
         self.nations = ('soviet', 'germany')
-        self.screen_w, self.screen_h = config.Config.get_value('screen_resolution').xy()
+        self.screen_w, self.screen_h = 1366, 768
         self.screen = Vector(self.screen_w, self.screen_h)
+
+        _ = get_scale_coefficient()
+
 
         background = Image(size=self.screen, sprite=load_image('sprites/ui/menu_blur.png'))
         self.add_game_object(background, -100)

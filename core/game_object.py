@@ -49,6 +49,10 @@ class GameObject:
     def scaled_position(self):
         return scale_vector(self._position)
 
+    @scaled_position.setter
+    def scaled_position(self, other):
+        self.position = unscale_vector(other)
+
     @position.setter
     def position(self, value):
         self.send_redraw_request()
@@ -57,7 +61,7 @@ class GameObject:
 
     @property
     def global_position(self):
-        return unscale_vector(self.scaled_global_position())
+        return unscale_vector(self.scaled_global_position)
 
     @property
     def scaled_global_position(self):
@@ -157,7 +161,7 @@ class GameObject:
             return self.__parent.__children.index(self)
 
     def get_rect(self):
-        return pygame.Rect(*self.scaled_global_position.xy(), *self.size.xy())
+        return pygame.Rect(*self.scaled_global_position.xy(), *self.scaled_size.xy())
 
     def pre_update(self, delta_time):
         for child in self.get_children():
@@ -183,15 +187,17 @@ class GameObject:
                 child.event_hook(event)
 
     def render(self, window, offset=Vector(0, 0)):
-        render_pos = (self.scaled_global_position - offset)
+        render_pos = (self.global_position - offset)
         wnd_size = Vector(*pygame.display.get_window_size())
 
-        # do not render objects outside window
+        '''# do not render objects outside window
         if render_pos.x + self.get_size().x < 0 \
                 or render_pos.y + self.get_size().y < 0 \
                 or render_pos.x > wnd_size.x \
                 or render_pos.y > wnd_size.y:
-            return
+            return'''
+
+        render_pos = (self.scaled_global_position - offset)
 
         if self.get_sprite() is not None:
             window.blit(self.get_sprite(), render_pos.xy())

@@ -42,7 +42,7 @@ class ScrollView(Image):
         self.send_redraw_request()
 
     def render_content(self, window, offset=Vector(0, 0)):
-        surface = pygame.surface.Surface(size=(self.get_size().xy()), flags=pygame.SRCALPHA)
+        surface = pygame.surface.Surface(size=(self.scaled_size.xy()), flags=pygame.SRCALPHA)
 
         for child in self.content.get_children():
             if child.enabled:

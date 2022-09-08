@@ -22,7 +22,7 @@ class MenuScene(Scene):
 
         cursor.init()
 
-        screen_w, screen_h = config.Config.get_value('screen_resolution').xy()
+        screen_w, screen_h = 1366, 768
         screen = Vector(screen_w, screen_h)
         buttons_holder = Image(position=Vector(screen_w // 2 -
                                                BUTTONS_SIZE.x // 2,

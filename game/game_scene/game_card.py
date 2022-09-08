@@ -113,10 +113,10 @@ class GameCard(Component):
         self._last_parent = temp_card_parent = self.get_game_object().get_parent()
         self._last_sibling_index = self.get_game_object().get_sibling_index()
 
-        self.get_game_object().position = self.get_game_object().scaled_global_position()
+        self.get_game_object().position = self.get_game_object().global_position
         self.get_game_object().set_parent(None)
         mouse_pos = pygame.mouse.get_pos()
-        self.drag_offset = self.get_game_object().position - Vector(*mouse_pos)
+        self.drag_offset = self.get_game_object().scaled_position - Vector(*mouse_pos)
 
         temp_card.set_parent(temp_card_parent)
         temp_card.set_sibling_index(self._last_sibling_index)
@@ -127,7 +127,7 @@ class GameCard(Component):
     def on_drag(self):
 
         mouse_pos = pygame.mouse.get_pos()
-        self.get_game_object().position = Vector(*mouse_pos) + self.drag_offset
+        self.get_game_object().scaled_position = Vector(*mouse_pos) + self.drag_offset
 
         self.check_position()
 
@@ -208,8 +208,8 @@ class GameCard(Component):
         new_index = parent.child_count()
 
         for i in range(parent.child_count()):
-            if self.get_game_object().scaled_global_position().x < \
-                    parent.get_child(i).scaled_global_position().x:
+            if self.get_game_object().scaled_global_position.x < \
+                    parent.get_child(i).scaled_global_position.x:
                 new_index = i
 
                 if temp_card.get_sibling_index() < new_index:
